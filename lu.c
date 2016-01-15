@@ -42,15 +42,13 @@ static int absMaxLeading(real * A,int n,int raw,int col)
 	return maxcol;
 }
 
-/*
- a*b=c
- |a[0][0] a[0][1] ... a[0][n]|
- |a[1][0] a[1][1] ... a[1][n]|
- |a[i][0] a[i][1] ... a[i][n]|
- |a[n][0] a[n][1] ... a[n][n]|
- c[i][0]=a[i][0]*b[0][0]+a[i][1]*b[0][1]+a[i][2]*b[0][2]+...+a[i][n]*b[0][n]
- c[i][j]=a[i][0]*b[j][0]+a[i][1]*b[j][1]+a[i][2]*b[j][2]+...+a[i][n]*b[j][n]
- */
+//消元，将低i行对应元素乘以d加到j上。
+static void decol(real * A,int n,int i,int j,real d)
+{
+	for(int k=0;k<n;k++)
+		A[j][k] += A[i][k]*d;
+}
+
 //进行lu分解，将U存入A中，将L'存入到L中
 //(Ls)*(Ls-1)....(L2)*(L1)*A=U,其中L'=(Ls)*(Ls-1)....(L2)*(L1)
 int lu(real * A,real * L,int n)
@@ -69,15 +67,8 @@ int lu(real * A,real * L,int n)
 			v = A[j][i];
 			if(v!=0){
 				d = -v/mr;
-				//	0			0				?			?			?
-				//A[j][0] A[j][1] .... A[j][i] ... A[j][j] ... A[j][n]
+				decol(A,n,j,i,v);
 				A[j][i]=0; 
-				for(k=i+1;k<n;k++){
-					A[j][k]+=A[i][k]*d;
-				}
-				for(k=0;k<n;k++){
-					L[j][k]=d*L[][]+L[][];
-				}
 			}
 		}
 	}
