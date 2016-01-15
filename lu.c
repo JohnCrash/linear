@@ -49,8 +49,10 @@ static void decol(real * A,int n,int i,int j,real d)
 		A[j][k] += A[i][k]*d;
 }
 
-//进行lu分解，将U存入A中，将L'存入到L中
-//(Ls)*(Ls-1)....(L2)*(L1)*A=U,其中L'=(Ls)*(Ls-1)....(L2)*(L1)
+/*
+ * 进行lu分解，将U存入A中，将L存入到L中
+ *
+ */
 int lu(real * A,real * L,int n)
 {
 	int m,i,j,k;
@@ -70,6 +72,7 @@ int lu(real * A,real * L,int n)
 				decol(A,n,j,i,v);
 				A[j][i]=0; 
 			}
+			
 		}
 	}
 }
