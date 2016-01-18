@@ -22,4 +22,6 @@ int pldu(real * A, real * P, real * D, real * L, int n);
 void multiply0(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply1(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply2(real *A, const real *B, const real *C, int p, int q, int r);
+
+void transpose(real * A,int n);
 #endif
