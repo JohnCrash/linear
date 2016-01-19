@@ -86,15 +86,18 @@ static void multiplyL(real * L, int n, int i, int j, real d)
  * 进行lu分解，将U存入A中，将L存入到L中
  *
  */
-int lu(real * A,real * L,int n)
+int lu(real * A,real * P,real * L,int n)
 {
 	int m,i,j;
 	real mr,v,d;
 	identity(L,n);
+	identity(P, n);
 	for(i=0;i<n-1;i++){
 		m=absMaxLeading(A,n,i,i);
-		if(m!=i)
-			xchangeRaw(A,n,i,m);
+		if (m != i){
+			xchangeRaw(A, n, i, m);
+			xchangeRaw(P, n, i, m);
+		}
 		mr = A[i*n+i];
 		if(mr==0)
 			return 0;

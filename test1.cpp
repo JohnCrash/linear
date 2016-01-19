@@ -11,7 +11,7 @@ static void printDiffent(char * s,real * A, real *B)
 	real v = 0;
 	for (int i = 0; i < N; i++){
 		for (int j = 0; j < N; j++){
-			real s = fabs(A[i*N+j], B[i*N+j]);
+			real s = fabs(A[i*N+j]-B[i*N+j]);
 			if (s>v){
 				v = s;
 			}
@@ -59,6 +59,7 @@ static void freeMatrix(real * A)
 static void test_lu_1()
 {
 	real * A = makeRandMatrix();
+	real * P = makeMatrix();
 	real * L = makeMatrix(); 
 	real * C = makeMatrix();
 	real * X = makeMatrix();
@@ -66,13 +67,16 @@ static void test_lu_1()
 	copyMatrix(X, A);
 	printf("test lu\n");
 	printMat("A=",A);
-	lu(A, L, N);
+	lu(A,P, L, N);
 	printMat("U=",A);
 	printMat("L=",L);
+	printMat("P=", P);
 	multiply0(C, L, A, N, N, N);
-	printMat("L*U=",C);
-	printDiffent("A=L*U",X,C);
+	multiply0(A, P, C, N, N, N);
+	printMat("L*U=",A);
+	printDiffent("A=L*U",X,A);
 	freeMatrix(A);
+	freeMatrix(P);
 	freeMatrix(L);
 	freeMatrix(C);
 	freeMatrix(X);
@@ -266,6 +270,7 @@ int main(int argn,const char *argv[])
 {
 	readom_init();
 	test_lu_1();
+	/*
 	test_pldu_1();
 	test_inverse_low_triangle();
 	test_inverse_upper_triangle();
@@ -273,6 +278,7 @@ int main(int argn,const char *argv[])
 	test_inverse_diagonal();
 	test_inverse_1();
 	test_crout_lu();
+	*/
 	return 0;
 }
 

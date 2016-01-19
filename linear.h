@@ -19,7 +19,7 @@ void identity(real * A,int n);
 void readom_init();
 void random_matrix(real * A,int n);
 
-int lu(real * A,real * L,int n);
+int lu(real * A,real * P,real * L,int n);
 int pldu(real * A, real * P, real * D, real * L, int n);
 int crout_lu(real * A,real * L,int n);
 int crout_plu(real * A,real * P,real * L,int n);
