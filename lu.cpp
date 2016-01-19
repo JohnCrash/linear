@@ -165,6 +165,36 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 	return 1;
 }
 
+/* crout algothim */
+int crout_lu(real * A,real * L,int n)
+{
+	int m,i,j;
+	real mr,v;
+	identity(L,n);
+	for(i=0;i<n;i++){
+		m=absMaxLeading(A,n,i,i);
+		if(m!=i)
+			xchangeRaw(A,n,i,m);
+		mr = A[i*n+i];
+		if(mr==0)
+			return 0;
+		L[i*n + i] = mr;
+		A[i*n+i] = 1;
+		for(j=i+1;j<n;j++){
+			A[i*n+j]/=mr;
+		}
+		for(j=i+1;j<n;j++){
+			v = A[j*n + i];
+			if(v!=0){
+				decol(A,n,i,j,-v);
+				A[j*n+i]=0;
+				multiplyL(L, n, j, i, v);
+			}
+		}
+	}
+	return 1;
+}
+
 /* 求下三角矩阵的逆矩阵 */
 static void inverse_low_triangle(real * L, int n)
 {
@@ -369,9 +399,25 @@ static void test_inverse_1()
 	printMat(C, 3, 3);
 }
 
+static void test_crout_lu()
+{
+	real A[] = { 1, 2, 3, 2, 5, 7, 3, 5, 3 };
+	real L[9], C[9];
+	printf("A=\n");
+	printMat(A, 3, 3);
+	crout_lu(A, L, 3);
+	printf("U=\n");
+	printMat(A, 3, 3);
+	printf("L=\n");
+	printMat(L, 3, 3);
+	multiply0(C, L, A, 3, 3, 3);
+	printf("C=L*U\n");
+	printMat(C, 3, 3);	
+}
+
 int main(int argn,const char *argv[])
 {
-	test_inverse_1();
+	test_crout_lu();
 	return 0;
 }
 

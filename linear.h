@@ -18,6 +18,7 @@ void identity(real * A,int n);
 
 int lu(real * A,real * L,int n);
 int pldu(real * A, real * P, real * D, real * L, int n);
+int crout_lu(real * A,real * L,int n);
 
 void multiply0(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply1(real *A, const real *B, const real *C, int p, int q, int r);
