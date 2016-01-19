@@ -34,7 +34,7 @@ void transpose(real * A, int n)
 }
 
 /* 交互i和j行上的全部元素 */
-static void xchangeRaw(real * A,int n,int i,int j)
+void xchangeRaw(real * A,int n,int i,int j)
 {
 	int x;
 	real temp;
@@ -49,7 +49,7 @@ static void xchangeRaw(real * A,int n,int i,int j)
 }
 
 /* 查找raw,col下面(同一列)全部元素中绝对值最大的行 */
-static int absMaxLeading(real * A,int n,int raw,int col)
+int absMaxLeading(real * A,int n,int raw,int col)
 {
 	int i;
 	real v;

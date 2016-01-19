@@ -86,3 +86,21 @@ void multiplyC(real * A,real c,int n)
 		}
 	}
 }
+
+void clearUpperTriangle(real * A,int n)
+{
+	for(int i=0;i<n;i++){
+		for(int j=i+1;j<n;j++){
+			A[i*n+j]=0;
+		}
+	}
+}
+
+void clearLowerTriangle(real * A,int n)
+{
+	for(int i=0;i<n;i++){
+		for(int j=i+1;j<n;j++){
+			A[j*n+i]=0;
+		}
+	}	
+}

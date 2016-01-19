@@ -25,7 +25,12 @@ int crout_lu(real * A,real * L,int n);
 int crout_plu(real * A,real * P,real * L,int n);
 void inverse(real * P, real * L, real * D, real * U, int n);
 
+void clearUpperTriangle(real * A, int n); 
+void clearLowerTriangle(real * A,int n);
 void multiplyC(real * A,real c,int n);
+
+void xchangeRaw(real * A,int n,int i,int j);
+int absMaxLeading(real * A,int n,int raw,int col);
 
 void multiply0(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply1(real *A, const real *B, const real *C, int p, int q, int r);
