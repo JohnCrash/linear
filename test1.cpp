@@ -3,8 +3,22 @@
 #include <stdlib.h>
 #include <memory.h>
 
-int N = 5;
+int N = 3;
 real S = 100;
+
+static void printDiffent(char * s,real * A, real *B)
+{
+	real v = 0;
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < N; j++){
+			real s = fabs(A[i*N+j], B[i*N+j]);
+			if (s>v){
+				v = s;
+			}
+		}
+	}
+	printf("%s --> %s\n", s, v>0.001 ? "failed" : "passed");
+}
 
 void printMat(const char * s,real * A)
 {
@@ -47,6 +61,9 @@ static void test_lu_1()
 	real * A = makeRandMatrix();
 	real * L = makeMatrix(); 
 	real * C = makeMatrix();
+	real * X = makeMatrix();
+
+	copyMatrix(X, A);
 	printf("test lu\n");
 	printMat("A=",A);
 	lu(A, L, N);
@@ -54,9 +71,11 @@ static void test_lu_1()
 	printMat("L=",L);
 	multiply0(C, L, A, N, N, N);
 	printMat("L*U=",C);
+	printDiffent("A=L*U",X,C);
 	freeMatrix(A);
 	freeMatrix(L);
 	freeMatrix(C);
+	freeMatrix(X);
 }
 
 static void test_pldu_1()
@@ -67,6 +86,9 @@ static void test_pldu_1()
 	real * P = makeMatrix();
 	real * D = makeMatrix();
 	real * T = makeMatrix();
+	real * X = makeMatrix();
+
+	copyMatrix(X, A);
 	printf("test pldu\n");
 	printMat("A=",A);
 	pldu(A, P,D,L, N);
@@ -77,13 +99,15 @@ static void test_pldu_1()
 	multiply0(C, P, L, N, N, N);
 	multiply0(T, C, D, N, N, N);
 	multiply0(C, T, A, N, N, N);
-	printMat("C=P*L*D*U",C);
+	printMat("P*L*D*U=",C);
+	printDiffent("A=P*L*D*U", X, C);
 	freeMatrix(A);
 	freeMatrix(L);
 	freeMatrix(C);
 	freeMatrix(P);
 	freeMatrix(D);
 	freeMatrix(T);	
+	freeMatrix(X);
 }
 
 static void test_inverse_low_triangle()
@@ -91,6 +115,9 @@ static void test_inverse_low_triangle()
 	real * A = makeRandMatrix();
 	real * B = makeMatrix();
 	real * C = makeMatrix();
+	real * X = makeMatrix();
+
+	identity(X, N);
 	printf("test inverse_low_triangle\n");
 	clearUpperTriangle(A,N);
 	printMat("A=",A);
@@ -99,9 +126,11 @@ static void test_inverse_low_triangle()
 	printMat("inverse=",A);
 	multiply0(C, B, A, N, N, N);
 	printMat("A*A'=",C);	
+	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
 	freeMatrix(B);
 	freeMatrix(C);	
+	freeMatrix(X);
 }
 
 static void test_inverse_upper_triangle()
@@ -109,6 +138,9 @@ static void test_inverse_upper_triangle()
 	real * A = makeRandMatrix();
 	real * B = makeMatrix();
 	real * C = makeMatrix();	
+	real * X = makeMatrix();
+
+	identity(X, N);
 	printf("test inverse_upper_triangle\n");
 	clearLowerTriangle(A,N);
 	printMat("A=",A);
@@ -117,9 +149,11 @@ static void test_inverse_upper_triangle()
 	printMat("inverse=",A);
 	multiply0(C, B, A, N, N, N);
 	printMat("A*A'=",C);	
+	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
 	freeMatrix(B);
-	freeMatrix(C);		
+	freeMatrix(C);	
+	freeMatrix(X);
 }
 
 static void test_inverse_pivoting()
@@ -127,6 +161,9 @@ static void test_inverse_pivoting()
 	real * A = makeRandMatrix();
 	real * B = makeMatrix();
 	real * C = makeMatrix();
+	real * X = makeMatrix();
+
+	identity(X, N);
 	printf("test inverse_pivoting\n");
 	identity(A, N);
 	for(int i=0;i<N;i++){
@@ -139,9 +176,11 @@ static void test_inverse_pivoting()
 	printMat("inverse=",A);
 	multiply0(C, B, A, 3, 3, 3);
 	printMat("A*A'=",C);
+	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
 	freeMatrix(B);
 	freeMatrix(C);
+	freeMatrix(X);
 }
 
 static void test_inverse_diagonal()
@@ -149,7 +188,9 @@ static void test_inverse_diagonal()
 	real * A = makeRandMatrix();
 	real * B = makeMatrix();
 	real * C = makeMatrix();	
+	real * X = makeMatrix();
 
+	identity(X, N);
 	printf("test inverse_diagonal\n");
 	clearLowerTriangle(A,N);
 	clearUpperTriangle(A,N);
@@ -159,9 +200,11 @@ static void test_inverse_diagonal()
 	printMat("inverse=",A);
 	multiply0(C, B, A, N, N, N);
 	printMat("A*A'=",C);
+	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
 	freeMatrix(B);
-	freeMatrix(C);		
+	freeMatrix(C);
+	freeMatrix(X);
 }
 
 static void test_inverse_1()
@@ -172,7 +215,9 @@ static void test_inverse_1()
 	real * P = makeMatrix();
 	real * D = makeMatrix();
 	real * T = makeMatrix();
+	real * X = makeMatrix();
 
+	identity(X, N);
 	printf("test inverse_1\n");
 	copyMatrix(T,A);
 	printMat("A=",A);
@@ -185,12 +230,14 @@ static void test_inverse_1()
 	printMat("inverse=",P);
 	multiply0(C, T, P, N, N, N);
 	printMat("A*A'=",C);
+	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
 	freeMatrix(L);
 	freeMatrix(C);
 	freeMatrix(P);
 	freeMatrix(D);
-	freeMatrix(T);		
+	freeMatrix(T);
+	freeMatrix(X);
 }
 
 static void test_crout_lu()
@@ -198,17 +245,21 @@ static void test_crout_lu()
 	real * A = makeRandMatrix();
 	real * L = makeMatrix();
 	real * C = makeMatrix();
+	real * X = makeMatrix();
 
+	copyMatrix(X, A);
 	printf("test crout_lu\n");
 	printMat("A=",A);
 	crout_lu(A, L, N);
 	printMat("U=",A);
 	printMat("L=",L);
 	multiply0(C, L, A, N, N, N);
-	printMat("C=L*U",C);	
+	printMat("L*U=",C);	
+	printDiffent("A=L*U", X, C);
 	freeMatrix(A);
 	freeMatrix(L);
 	freeMatrix(C);
+	freeMatrix(X);
 }
 
 int main(int argn,const char *argv[])
