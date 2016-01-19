@@ -3,17 +3,6 @@
 #include <memory.h>
 #include <stdlib.h>
 
-void printMat(real * A, int n, int m)
-{
-	int i, j;
-	for (i = 0; i<n; i++){
-		for (j = 0; j<m; j++){
-			printf("%f ", A[i*n + j]);
-		}
-		printf("\n");
-	}
-}
-
 void zero(real * A,int n,int m)
 {
 	real *a,*aa;
@@ -228,7 +217,7 @@ int crout_plu(real * A,real * P,real * L,int n)
 }
 
 /* 求下三角矩阵的逆矩阵 */
-static void inverse_low_triangle(real * L, int n)
+void inverse_low_triangle(real * L, int n)
 {
 	real * A, *B,*C;
 	A = (real *)malloc(n*n*sizeof(real));
@@ -260,7 +249,7 @@ static void inverse_low_triangle(real * L, int n)
 }
 
 /* 求上三角逆矩阵 */
-static void inverse_upper_triangle(real * L, int n)
+void inverse_upper_triangle(real * L, int n)
 {
 	transpose(L, n);
 	inverse_low_triangle(L, n);
@@ -268,12 +257,12 @@ static void inverse_upper_triangle(real * L, int n)
 }
 
 /* 求交换矩阵的逆矩阵 */
-static void inverse_pivoting(real * L, int n)
+void inverse_pivoting(real * L, int n)
 {
 	transpose(L, n);
 }
 
-static void inverse_diagonal(real * D, int n)
+void inverse_diagonal(real * D, int n)
 {
 	for (int i = 0; i < n; i++){
 		D[i*n + i] = 1 / D[i*n + i];
@@ -306,150 +295,3 @@ void inverse(real * P, real * L, real * D, real * U, int n)
 	memcpy(P, T, n*n*sizeof(real));
 	free(T);
 }
-
-static void test_lu_1()
-{
-	real A[] = { 1, 2, 3, 2, 5, 7, 3, 5, 3 };
-	real L[9], C[9];
-	printf("A=\n");
-	printMat(A, 3, 3);
-	lu(A, L, 3);
-	printf("U=\n");
-	printMat(A, 3, 3);
-	printf("L=\n");
-	printMat(L, 3, 3);
-	multiply0(C, L, A, 3, 3, 3);
-	printf("C=\n");
-	printMat(C, 3, 3);
-}
-
-static void test_pldu_1()
-{
-	real A[] = { 1, 2, 3, 2, 5, 7, 3, 5, 3 };
-	real L[9], C[9];
-	real P[9], D[9], T[9];
-	printf("A=\n");
-	printMat(A, 3, 3);
-	pldu(A, P,D,L, 3);
-	printf("P=\n");
-	printMat(P, 3, 3);
-	printf("D=\n");
-	printMat(D, 3, 3);
-	printf("U=\n");
-	printMat(A, 3, 3);
-	printf("L=\n");
-	printMat(L, 3, 3);
-	multiply0(C, P, L, 3, 3, 3);
-	multiply0(T, C, D, 3, 3, 3);
-	multiply0(C, T, A, 3, 3, 3);
-	printf("C=P*L*D*U\n");
-	printMat(C, 3, 3);
-}
-
-static void test_inverse_low_triangle()
-{
-	real A[] = { 1, 0, 0, 2, 1, 0, 3, 5, 1 };
-	real B[9],C[9];
-	printf("A=\n");
-	memcpy(B, A, 9 * sizeof(real));
-	printMat(A, 3, 3);
-	inverse_low_triangle(A,3);
-	printf("inverse=\n");
-	printMat(A, 3, 3);
-	multiply0(C, B, A, 3, 3, 3);
-	printf("A*A'=\n");
-	printMat(C, 3, 3);	
-}
-
-static void test_inverse_upper_triangle()
-{
-	real A[] = { 1, 2, 3, 0, 1, 7, 0, 0, 1 };
-	real B[9], C[9];
-	printf("A=\n");
-	memcpy(B, A, 9 * sizeof(real));
-	printMat(A, 3, 3);
-	inverse_upper_triangle(A, 3);
-	printf("inverse=\n");
-	printMat(A, 3, 3);
-	multiply0(C, B, A, 3, 3, 3);
-	printf("A*A'=\n");
-	printMat(C, 3, 3);
-}
-
-static void test_inverse_pivoting()
-{
-	real A[] = { 0, 1, 0, 0, 0, 1,1, 0,0 };
-	real B[9], C[9];
-	printf("A=\n");
-	memcpy(B, A, 9 * sizeof(real));
-	printMat(A, 3, 3);
-	inverse_pivoting(A, 3);
-	printf("inverse=\n");
-	printMat(A, 3, 3);
-	multiply0(C, B, A, 3, 3, 3);
-	printf("A*A'=\n");
-	printMat(C, 3, 3);
-}
-
-static void test_inverse_diagonal()
-{
-	real A[] = { 2, 0, 0, 0, 3, 0,0, 0, 5 };
-	real B[9], C[9];
-	printf("A=\n");
-	memcpy(B, A, 9 * sizeof(real));
-	printMat(A, 3, 3);
-	inverse_diagonal(A, 3);
-	printf("inverse=\n");
-	printMat(A, 3, 3);
-	multiply0(C, B, A, 3, 3, 3);
-	printf("A*A'=\n");
-	printMat(C, 3, 3);
-}
-
-static void test_inverse_1()
-{
-	real A[] = { 1, 2, 3, 2, 5, 7, 3, 5, 3 };
-	real L[9], C[9];
-	real P[9], D[9], T[9];
-	printf("A=\n");
-	memcpy(T, A, 9 * sizeof(real));
-	printMat(A, 3, 3);
-	pldu(A, P, D, L, 3);
-	printf("P=\n");
-	printMat(P, 3, 3);
-	printf("D=\n");
-	printMat(D, 3, 3);
-	printf("U=\n");
-	printMat(A, 3, 3);
-	printf("L=\n");
-	printMat(L, 3, 3);
-	inverse(P, L, D, A, 3);
-	printf("inverse=\n");
-	printMat(P, 3, 3);
-	multiply0(C, T, P, 3, 3, 3);
-	printf("A*A'=\n");
-	printMat(C, 3, 3);
-}
-
-static void test_crout_lu()
-{
-	real A[] = { 1, 2, 3, 2, 5, 7, 3, 5, 3 };
-	real L[9], C[9];
-	printf("A=\n");
-	printMat(A, 3, 3);
-	crout_lu(A, L, 3);
-	printf("U=\n");
-	printMat(A, 3, 3);
-	printf("L=\n");
-	printMat(L, 3, 3);
-	multiply0(C, L, A, 3, 3, 3);
-	printf("C=L*U\n");
-	printMat(C, 3, 3);	
-}
-
-int main(int argn,const char *argv[])
-{
-	test_crout_lu();
-	return 0;
-}
-
