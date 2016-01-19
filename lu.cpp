@@ -69,7 +69,7 @@ int absMaxLeading(real * A,int n,int raw,int col)
 static void decol(real * A,int n,int i,int j,real d)
 {
 	int k;
-	for(k=0;k<n;k++){
+	for(k=i+1;k<n;k++){
 		A[j*n+k] += A[i*n+k]*d;
 	}
 }
@@ -95,6 +95,19 @@ static void printMat(const char * s, real * A,int N)
 	}
 }
 
+/* 将一列的绝对值最大元素作为主元 */
+static void sortPovit(real * A,real * P,int n)
+{
+	int m;
+	for (int i = 0; i < n; i++){
+		m = absMaxLeading(A, n, i, i);
+		if (m != i){
+			xchangeRaw(A, n, i, m);
+			if (P)
+				xchangeRaw(P, n, i, m);
+		}
+	}
+}
 /*
  * 进行lu分解，将U存入A中，将L存入到L中
  *
@@ -105,30 +118,18 @@ int lu(real * A,real * P,real * L,int n)
 	real mr,v,d;
 	identity(L,n);
 	identity(P, n);
+	sortPovit(A, P, n);
 	for(i=0;i<n-1;i++){//column
-		m=absMaxLeading(A,n,i,i);
-		if (m != i){
-			xchangeRaw(A, n, i, m);
-			xchangeRaw(P, n, i, m);
-		}
 		mr = A[i*n+i];
 		if(mr==0)
 			return 0;
 		for(j=i+1;j<n;j++){
 			v = A[j*n+i];
 			if(v!=0){
-				printMat("L:", L, n);
-				printMat("U:", A, n);
-				d = -v/mr;
-				decol(A,n,i,j,d);
+				d = v/mr;
+				decol(A,n,i,j,-d);
 				A[j*n+i]=0;
 				multiplyL(L, n, j, i, d);
-				printMat("L'->", L, n);
-				printMat("U'->", A, n);
-				real * X = (real*)malloc(n*n*sizeof(real));
-				multiply0(X, L, A, n, n, n);
-				printMat("L*U->", X,n);
-				free(X);
 			}
 		}
 	}
@@ -148,22 +149,18 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 	identity(L, n);
 	identity(P, n);
 	identity(D, n);
+	sortPovit(A, P, n);
 	for (i = 0; i<n - 1; i++){
-		m = absMaxLeading(A, n, i, i);
-		if (m != i){
-			xchangeRaw(A, n, i, m);
-			xchangeRaw(P, n, i, m);
-		}
 		mr = A[i*n + i];
 		if (mr == 0)
 			return 0;
 		for (j = i + 1; j<n; j++){
 			v = A[j*n + i];
 			if (v != 0){
-				d = -v/mr;
-				decol(A, n, i, j, d);
+				d = v/mr;
+				decol(A, n, i, j, -d);
 				A[j*n + i] = 0;
-				multiplyL(L, n, j, i, -d);
+				multiplyL(L, n, j, i, d);
 			}
 		}
 	}
@@ -176,6 +173,7 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 		}
 		D[i*n + i] = mr;
 	}
+	transpose(P, n);
 	return 1;
 }
 
@@ -185,10 +183,8 @@ int crout_lu(real * A,real * L,int n)
 	int m,i,j;
 	real mr,v;
 	identity(L,n);
+	sortPovit(A, NULL, n);
 	for(i=0;i<n;i++){
-		m=absMaxLeading(A,n,i,i);
-		if(m!=i)
-			xchangeRaw(A,n,i,m);
 		mr = A[i*n+i];
 		if(mr==0)
 			return 0;
@@ -215,12 +211,8 @@ int crout_plu(real * A,real * P,real * L,int n)
 	real mr,v;
 	identity(L,n);
 	identity(P, n);
+	sortPovit(A, P, n);
 	for(i=0;i<n;i++){
-		m=absMaxLeading(A,n,i,i);
-		if(m!=i){
-			xchangeRaw(A,n,i,m);
-			xchangeRaw(P, n, i, m);
-		}
 		mr = A[i*n+i];
 		if(mr==0)
 			return 0;
@@ -238,6 +230,7 @@ int crout_plu(real * A,real * P,real * L,int n)
 			}
 		}
 	}
+	transpose(P, n);
 	return 1;	
 }
 

@@ -68,7 +68,7 @@ static void test_lu_1()
 	real * L = makeMatrix(); 
 	real * C = makeMatrix();
 	real * X = makeMatrix();
-
+	/*
 	A[0] = 9;
 	A[1] = 0;
 	A[2] = 8;
@@ -78,6 +78,16 @@ static void test_lu_1()
 	A[6] = 7;
 	A[7] = 6;
 	A[8] = 3;
+	*/
+	A[0] = 1;
+	A[1] = 7;
+	A[2] = 0;
+	A[3] = 8;
+	A[4] = 8;
+	A[5] = 6;
+	A[6] = 0;
+	A[7] = 9;
+	A[8] = 1;
 
 	copyMatrix(X, A);
 	printf("test lu\n");
@@ -86,10 +96,10 @@ static void test_lu_1()
 	printMat("U=",A);
 	printMat("L=",L);
 	printMat("P=", P);
-	multiply0(C, L, A, N, N, N);
-	//multiply0(P, C, A, N, N, N);
-	printMat("L*U=",C);
-	printDiffent("A=L*U",X,C);
+	multiply0(C, P, L, N, N, N);
+	multiply0(P, C, A, N, N, N);
+	printMat("L*U=",P);
+	printDiffent("A=L*U",X,P);
 	freeMatrix(A);
 	freeMatrix(P);
 	freeMatrix(L);
