@@ -82,6 +82,19 @@ static void multiplyL(real * L, int n, int i, int j, real d)
 	}
 }
 
+static void printMat(const char * s, real * A,int N)
+{
+	int i, j;
+	if (s)
+		printf("%s\n", s);
+	for (i = 0; i<N; i++){
+		for (j = 0; j<N; j++){
+			printf("%f ", A[i*N + j]);
+		}
+		printf("\n");
+	}
+}
+
 /*
  * 进行lu分解，将U存入A中，将L存入到L中
  *
@@ -92,7 +105,7 @@ int lu(real * A,real * P,real * L,int n)
 	real mr,v,d;
 	identity(L,n);
 	identity(P, n);
-	for(i=0;i<n-1;i++){
+	for(i=0;i<n-1;i++){//column
 		m=absMaxLeading(A,n,i,i);
 		if (m != i){
 			xchangeRaw(A, n, i, m);
@@ -104,13 +117,22 @@ int lu(real * A,real * P,real * L,int n)
 		for(j=i+1;j<n;j++){
 			v = A[j*n+i];
 			if(v!=0){
+				printMat("L:", L, n);
+				printMat("U:", A, n);
 				d = -v/mr;
 				decol(A,n,i,j,d);
 				A[j*n+i]=0;
-				multiplyL(L, n, j, i, -d);
+				multiplyL(L, n, j, i, d);
+				printMat("L'->", L, n);
+				printMat("U'->", A, n);
+				real * X = (real*)malloc(n*n*sizeof(real));
+				multiply0(X, L, A, n, n, n);
+				printMat("L*U->", X,n);
+				free(X);
 			}
 		}
 	}
+	transpose(P, n);
 	return 1;
 }
 

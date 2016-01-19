@@ -48,6 +48,11 @@ static real * makeRandMatrix()
 {
 	real * A = makeMatrix();
 	random_matrix(A,N);
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < N; j++){
+			A[i*N + j] = (int)(A[i*N + j]*10);
+		}
+	}
 	return A;
 }
 
@@ -64,6 +69,16 @@ static void test_lu_1()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
+	A[0] = 9;
+	A[1] = 0;
+	A[2] = 8;
+	A[3] = 2;
+	A[4] = 3;
+	A[5] = 6;
+	A[6] = 7;
+	A[7] = 6;
+	A[8] = 3;
+
 	copyMatrix(X, A);
 	printf("test lu\n");
 	printMat("A=",A);
@@ -72,9 +87,9 @@ static void test_lu_1()
 	printMat("L=",L);
 	printMat("P=", P);
 	multiply0(C, L, A, N, N, N);
-	multiply0(A, P, C, N, N, N);
-	printMat("L*U=",A);
-	printDiffent("A=L*U",X,A);
+	//multiply0(P, C, A, N, N, N);
+	printMat("L*U=",C);
+	printDiffent("A=L*U",X,C);
 	freeMatrix(A);
 	freeMatrix(P);
 	freeMatrix(L);
