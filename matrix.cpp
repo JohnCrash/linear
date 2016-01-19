@@ -1,4 +1,6 @@
 #include "linear.h"
+#include <stdlib.h>
+#include <time.h>
 
 void multiply0(real *A, const real *B, const real *C, int p, int q, int r)
 {
@@ -60,4 +62,27 @@ void multiply2(real *A, const real *B, const real *C, int p, int q, int r)
             (*a) = sum; 
         }
     }
+}
+
+void readom_init()
+{
+	srand(time(0));
+}
+
+void random_matrix(real * A,int n)
+{
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			A[i*n+j]=(real)rand()/(real)RAND_MAX;
+		}
+	}
+}
+
+void multiplyC(real * A,real c,int n)
+{
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			A[i*n+j]*=c;
+		}
+	}
 }

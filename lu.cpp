@@ -195,6 +195,38 @@ int crout_lu(real * A,real * L,int n)
 	return 1;
 }
 
+int crout_plu(real * A,real * P,real * L,int n)
+{
+	int m,i,j;
+	real mr,v;
+	identity(L,n);
+	identity(P, n);
+	for(i=0;i<n;i++){
+		m=absMaxLeading(A,n,i,i);
+		if(m!=i){
+			xchangeRaw(A,n,i,m);
+			xchangeRaw(P, n, i, m);
+		}
+		mr = A[i*n+i];
+		if(mr==0)
+			return 0;
+		L[i*n + i] = mr;
+		A[i*n+i] = 1;
+		for(j=i+1;j<n;j++){
+			A[i*n+j]/=mr;
+		}
+		for(j=i+1;j<n;j++){
+			v = A[j*n + i];
+			if(v!=0){
+				decol(A,n,i,j,-v);
+				A[j*n+i]=0;
+				multiplyL(L, n, j, i, v);
+			}
+		}
+	}
+	return 1;	
+}
+
 /* 求下三角矩阵的逆矩阵 */
 static void inverse_low_triangle(real * L, int n)
 {
