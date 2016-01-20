@@ -342,12 +342,18 @@ int inverse0(real * A,real * B,int n)
 		if(mr==0)
 			return 0;
 		A[i*n+i] = 1;
+		printf("[%d]",i);
+		printMat("A:",A,n);
 		for(j=i+1;j<n;j++){
 			A[i*n+j]/=mr;
 		}
+		printf("[%d]",i);
+		printMat("B:",A,n);
 		for(j=0;j<n;j++){
 			B[i*n+j]/=mr;
 		}
+		printMat("result A:",A,n);
+		printMat("result B:",B,n);
 		for(j=i+1;j<n;j++){
 			v = A[j*n + i];
 			if(v!=0){
@@ -360,6 +366,8 @@ int inverse0(real * A,real * B,int n)
 			}
 		}
 	}
+	printMat("(A)",A,n);
+	printMat("(B)",B,n);
 	/* 消上三角，经过上面crout方法处理后A对角线都为1 */
 	for(i=n-1;i>0;i--){
 		for(j=i;j>=0;j--){
