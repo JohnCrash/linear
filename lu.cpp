@@ -375,7 +375,10 @@ int inverse0(real * A,real * B,int n)
 		}
 	}
 	transpose(P,n);
-	/* 乘交换矩阵恢复位置 */
+	/* 乘交换矩阵恢复位置
+	 * 求A的逆矩阵A'，首先将A进行变换B=P'A，通过增广矩阵计算出B'
+	 * B'=(P'A)'=PA' ,B'P'=PA'P' , B'P' = A'
+	 */
 	memcpy(A,B,n*n*sizeof(real));
 	multiply0(B,A,P,n,n,n);
 	free(P);
