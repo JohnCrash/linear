@@ -79,6 +79,7 @@ static void test_lu_1()
 	A[7] = 6;
 	A[8] = 3;
 	*/
+	/*
 	A[0] = 1;
 	A[1] = 7;
 	A[2] = 0;
@@ -88,7 +89,7 @@ static void test_lu_1()
 	A[6] = 0;
 	A[7] = 9;
 	A[8] = 1;
-
+	*/
 	copyMatrix(X, A);
 	printf("test lu\n");
 	printMat("A=",A);
@@ -149,13 +150,16 @@ static void test_inverse_low_triangle()
 	identity(X, N);
 	printf("test inverse_low_triangle\n");
 	clearUpperTriangle(A,N);
+	for (int i = 0; i < N; i++)
+		A[i*N + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
 	inverse_low_triangle(A,N);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, A, B, N, N, N);
 	printMat("A*A'=",C);	
-	printDiffent("A*A'=I", X, C);
+	printMat("X=", X);
+	printDiffent("A*A'=I",X, C);
 	freeMatrix(A);
 	freeMatrix(B);
 	freeMatrix(C);	
@@ -172,6 +176,8 @@ static void test_inverse_upper_triangle()
 	identity(X, N);
 	printf("test inverse_upper_triangle\n");
 	clearLowerTriangle(A,N);
+	for (int i = 0; i < N; i++)
+		A[i*N + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
 	inverse_upper_triangle(A,N);
@@ -295,7 +301,6 @@ int main(int argn,const char *argv[])
 {
 	readom_init();
 	test_lu_1();
-	/*
 	test_pldu_1();
 	test_inverse_low_triangle();
 	test_inverse_upper_triangle();
@@ -303,7 +308,6 @@ int main(int argn,const char *argv[])
 	test_inverse_diagonal();
 	test_inverse_1();
 	test_crout_lu();
-	*/
 	return 0;
 }
 

@@ -101,20 +101,21 @@ static void sortPovit(real * A,real * P,int n)
 	int m;
 	for (int i = 0; i < n; i++){
 		m = absMaxLeading(A, n, i, i);
-		if (m != i){
+		if (m != i&&m!=-1){
 			xchangeRaw(A, n, i, m);
 			if (P)
 				xchangeRaw(P, n, i, m);
 		}
 	}
 }
+
 /*
  * 进行lu分解，将U存入A中，将L存入到L中
  *
  */
 int lu(real * A,real * P,real * L,int n)
 {
-	int m,i,j;
+	int i,j;
 	real mr,v,d;
 	identity(L,n);
 	identity(P, n);
@@ -144,7 +145,7 @@ int lu(real * A,real * P,real * L,int n)
  */
 int pldu(real * A, real * P,real * D,real * L, int n)
 {
-	int m, i, j;
+	int i, j;
 	real mr, v, d;
 	identity(L, n);
 	identity(P, n);
@@ -180,10 +181,10 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 /* crout algothim */
 int crout_lu(real * A,real * L,int n)
 {
-	int m,i,j;
+	int i,j;
 	real mr,v;
 	identity(L,n);
-	sortPovit(A, NULL, n);
+//	sortPovit(A, NULL, n);
 	for(i=0;i<n;i++){
 		mr = A[i*n+i];
 		if(mr==0)
@@ -207,7 +208,7 @@ int crout_lu(real * A,real * L,int n)
 
 int crout_plu(real * A,real * P,real * L,int n)
 {
-	int m,i,j;
+	int i,j;
 	real mr,v;
 	identity(L,n);
 	identity(P, n);
@@ -234,7 +235,7 @@ int crout_plu(real * A,real * P,real * L,int n)
 	return 1;	
 }
 
-/* 求下三角矩阵的逆矩阵 */
+/* 求下三角矩阵的逆矩阵，算法要求对角线为1 */
 void inverse_low_triangle(real * L, int n)
 {
 	real * A, *B,*C;
@@ -266,7 +267,7 @@ void inverse_low_triangle(real * L, int n)
 	free(C);
 }
 
-/* 求上三角逆矩阵 */
+/* 求上三角逆矩阵，算法要求对角线为1 */
 void inverse_upper_triangle(real * L, int n)
 {
 	transpose(L, n);
