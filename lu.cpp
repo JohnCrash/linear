@@ -65,7 +65,7 @@ int absMaxLeading(real * A,int n,int raw,int col)
 	return maxcol;
 }
 
-/* 消元，将低i行对应元素乘以d加到j上。 */
+/* 消元，将第i行对应元素乘以d加到j上。仅仅做i右边的 */
 static void decol(real * A,int n,int i,int j,real d)
 {
 	int k;
@@ -111,7 +111,6 @@ static void sortPovit(real * A,real * P,int n)
 
 /*
  * 进行lu分解，将U存入A中，将L存入到L中
- *
  */
 int lu(real * A,real * P,real * L,int n)
 {
@@ -292,7 +291,7 @@ void inverse_diagonal(real * D, int n)
  * A的逆矩阵，A=P*L*D*U就是上面pldu分解的结果。
  * 最后将结果放入到P矩阵中。
  */
-void inverse(real * P, real * L, real * D, real * U, int n)
+int inverse(real * P, real * L, real * D, real * U, int n)
 {
 	real * T;
 
@@ -313,4 +312,70 @@ void inverse(real * P, real * L, real * D, real * U, int n)
 	multiply0(T, U, P, n, n, n);
 	memcpy(P, T, n*n*sizeof(real));
 	free(T);
+	return 0;
+}
+
+/*
+ *计算A的逆矩阵，将结果放入到B中 
+ *将AB组成增广矩阵，将A部分通过初等变换转化为单位矩阵I。
+ *这时候B即为A的逆矩阵 inverse0该方法比inverse速度快
+*/
+int inverse0(real * A,real * B,int n)
+{
+	int m,i,j,k;
+	real mr,v;	
+	real * P = (real *)malloc(n*n*sizeof(real));
+	identity(B, n);
+
+	/* 对行进行交换，确保主元位置是绝对值最大的。*/
+	for (int i = 0; i < n; i++){
+		m = absMaxLeading(A, n, i, i);
+		if (m != i&&m!=-1){
+			xchangeRaw(A, n, i, m);
+			xchangeRaw(P, n, i, m);
+			xchangeRaw(B, n, i, m);
+		}
+	}
+	/* 使用crout法消下三角 */
+	for(i=0;i<n;i++){
+		mr = A[i*n+i];
+		if(mr==0)
+			return 0;
+		A[i*n+i] = 1;
+		for(j=i+1;j<n;j++){
+			A[i*n+j]/=mr;
+		}
+		for(j=0;j<n;j++){
+			B[i*n+j]/=mr;
+		}
+		for(j=i+1;j<n;j++){
+			v = A[j*n + i];
+			if(v!=0){
+				decol(A,n,i,j,-v);
+				A[j*n+i]=0;
+				/* 将第i行乘v减第j行 */
+				for(k=0;k<n;k++){
+					B[j*n+k] -= B[i*n+k]*v;
+				}
+			}
+		}
+	}
+	/* 消上三角，经过上面crout方法处理后A对角线都为1 */
+	for(i=n-1;i>0;i--){
+		for(j=i;j>=0;j--){
+			/* 
+			 *消除A[j][i]，主元A[i][i]=1，A[j][i]-=row(i)*A[j][i] 
+			 *考虑到A的主元为1，且j行除了主元其他全是0
+			 *因此可以不对A进行任何计算了
+			 */
+			v = A[j*n+i];
+			for(k=0;k<n;k++){
+				B[j*n+k] -= B[i*n+k]*v;
+			}			
+		}
+	}
+	/* 乘交换矩阵恢复位置 */
+	memcpy(A,B,n*n*sizeof(real));
+	multiply0(B,P,A,n,n,n);
+	free(P);
 }

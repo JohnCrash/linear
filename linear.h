@@ -23,7 +23,7 @@ int lu(real * A,real * P,real * L,int n);
 int pldu(real * A, real * P, real * D, real * L, int n);
 int crout_lu(real * A,real * L,int n);
 int crout_plu(real * A,real * P,real * L,int n);
-void inverse(real * P, real * L, real * D, real * U, int n);
+int inverse(real * P, real * L, real * D, real * U, int n);
 
 void clearUpperTriangle(real * A, int n); 
 void clearLowerTriangle(real * A,int n);
@@ -41,5 +41,6 @@ void inverse_low_triangle(real * L, int n);
 void inverse_upper_triangle(real * L, int n);
 void inverse_pivoting(real * L, int n);
 void inverse_diagonal(real * D, int n);
+int inverse0(real * A,real * B,int n);
 
 #endif

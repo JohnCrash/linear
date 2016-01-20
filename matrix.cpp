@@ -66,7 +66,7 @@ void multiply2(real *A, const real *B, const real *C, int p, int q, int r)
 
 void readom_init()
 {
-	srand(time(0));
+	srand((unsigned int)time(0));
 }
 
 void random_matrix(real * A,int n)
