@@ -374,12 +374,10 @@ int inverse0(real * A,real * B,int n)
 			}			
 		}
 	}
-	printMat("P=",P,n);
 	transpose(P,n);
-	printMat("P'=",P,n);
 	/* 乘交换矩阵恢复位置 */
 	memcpy(A,B,n*n*sizeof(real));
-	multiply0(B,P,A,n,n,n);
+	multiply0(B,A,P,n,n,n);
 	free(P);
 	return 0;
 }
