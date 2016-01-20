@@ -1,5 +1,6 @@
 lib_LTLIBRARIES=liblinear.la
-liblinear_la_SOURCES=lu.c misc.cpp
+liblinear_la_SOURCES=lu.cpp misc.cpp matrix.cpp
+liblinear_ladir=linear
 liblinear_la_HEADERS=linear.h misc.h
 liblinear_la_LDFLAGS=-no-undefined -avoid-version
 
