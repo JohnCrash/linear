@@ -1,0 +1,4 @@
+config.h
+config.log
+autom4te.cache/
+config.status
