@@ -326,14 +326,13 @@ int inverse0(real * A,real * B,int n)
 	real mr,v;	
 	real * P = (real *)malloc(n*n*sizeof(real));
 	identity(B, n);
-
+	identity(P,n);
 	/* 对行进行交换，确保主元位置是绝对值最大的。*/
 	for (int i = 0; i < n; i++){
 		m = absMaxLeading(A, n, i, i);
 		if (m != i&&m!=-1){
 			xchangeRaw(A, n, i, m);
 			xchangeRaw(P, n, i, m);
-			xchangeRaw(B, n, i, m);
 		}
 	}
 	/* 使用crout法消下三角 */
@@ -342,18 +341,12 @@ int inverse0(real * A,real * B,int n)
 		if(mr==0)
 			return 0;
 		A[i*n+i] = 1;
-		printf("[%d]",i);
-		printMat("A:",A,n);
 		for(j=i+1;j<n;j++){
 			A[i*n+j]/=mr;
 		}
-		printf("[%d]",i);
-		printMat("B:",A,n);
 		for(j=0;j<n;j++){
 			B[i*n+j]/=mr;
 		}
-		printMat("result A:",A,n);
-		printMat("result B:",B,n);
 		for(j=i+1;j<n;j++){
 			v = A[j*n + i];
 			if(v!=0){
@@ -366,24 +359,27 @@ int inverse0(real * A,real * B,int n)
 			}
 		}
 	}
-	printMat("(A)",A,n);
-	printMat("(B)",B,n);
 	/* 消上三角，经过上面crout方法处理后A对角线都为1 */
 	for(i=n-1;i>0;i--){
-		for(j=i;j>=0;j--){
+		for(j=i-1;j>=0;j--){
 			/* 
 			 *消除A[j][i]，主元A[i][i]=1，A[j][i]-=row(i)*A[j][i] 
 			 *考虑到A的主元为1，且j行除了主元其他全是0
 			 *因此可以不对A进行任何计算了
 			 */
 			v = A[j*n+i];
+			A[j*n+i] = 0;
 			for(k=0;k<n;k++){
 				B[j*n+k] -= B[i*n+k]*v;
 			}			
 		}
 	}
+	printMat("P=",P,n);
+	transpose(P,n);
+	printMat("P'=",P,n);
 	/* 乘交换矩阵恢复位置 */
 	memcpy(A,B,n*n*sizeof(real));
 	multiply0(B,P,A,n,n,n);
 	free(P);
+	return 0;
 }
