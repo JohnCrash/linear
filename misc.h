@@ -6,7 +6,7 @@
 #include <memory.h>
 
 #define N 3
-void printDiffent(char * s,real * A, real *B);
+void printDiffent(const char * s,real * A, real *B);
 void printMat(const char * s,real * A);
 void copyMatrix(real * des,real * src);
 real * makeMatrix();

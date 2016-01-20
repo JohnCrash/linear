@@ -1,7 +1,7 @@
 #include "linear.h"
 #include "misc.h"
 
-void printDiffent(char * s,real * A, real *B)
+void printDiffent(const char * s,real * A, real *B)
 {
 	real v = 0;
 	for (int i = 0; i < N; i++){
