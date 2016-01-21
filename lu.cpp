@@ -207,6 +207,55 @@ int crout_lu(real * A,real * L,int n)
 	return 1;
 }
 
+int crout_lup(real * A,real * L,real * P,int n)
+{
+	int i,j,m;
+	real mr,v;
+	identity(L,n);
+	identity(P, n);
+	int *a,* b,count;
+	count = 0;
+	a = (int*)malloc(n*n*sizeof(int));
+	b = (int*)malloc(n*n*sizeof(int));
+	//sortPovit(A,P, n);
+	for(i=0;i<n;i++){
+		m = absMaxLeading(A, n, i, i);
+		if (m != i&&m!=-1){
+			xchangeRaw(A, n, i, m);
+			//xchangeRaw(P, n, i, m);
+			a[count] = i;
+			b[count] = m;
+			count++;
+		}
+		mr = A[i*n+i];
+		if (FTEQ(mr,0)){
+			free(a);
+			free(b);
+			return 0;
+		}
+		L[i*n + i] = mr;
+		A[i*n+i] = 1;
+		for(j=i+1;j<n;j++){
+			A[i*n+j]/=mr;
+		}
+		for(j=i+1;j<n;j++){
+			v = A[j*n + i];
+			if(v!=0){
+				decol(A,n,i,j,-v);
+				A[j*n+i]=0;
+				multiplyL(L, n, j, i, v);
+			}
+		}
+	}
+	for(i=0;i<count;i++){
+		xchangeRaw(P, n, a[count-i-1], b[count-i-1]);
+	}
+	//transpose(P, n);
+	free(a);
+	free(b);
+	return 1;	
+}
+
 int crout_plu(real * A,real * P,real * L,int n)
 {
 	int i,j;
