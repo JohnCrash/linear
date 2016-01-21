@@ -119,9 +119,10 @@ int lu(real * A,real * P,real * L,int n)
 	identity(L,n);
 	identity(P, n);
 	sortPovit(A, P, n);
+	transpose(P, n);
 	for(i=0;i<n-1;i++){//column
 		mr = A[i*n+i];
-		if(mr==0)
+		if (FTEQ(mr,0))
 			return 0;
 		for(j=i+1;j<n;j++){
 			v = A[j*n+i];
@@ -133,7 +134,7 @@ int lu(real * A,real * P,real * L,int n)
 			}
 		}
 	}
-	transpose(P, n);
+	
 	return 1;
 }
 
@@ -150,9 +151,10 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 	identity(P, n);
 	identity(D, n);
 	sortPovit(A, P, n);
+	transpose(P, n);
 	for (i = 0; i<n - 1; i++){
 		mr = A[i*n + i];
-		if (mr == 0)
+		if (FTEQ(mr,0))
 			return 0;
 		for (j = i + 1; j<n; j++){
 			v = A[j*n + i];
@@ -173,7 +175,7 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 		}
 		D[i*n + i] = mr;
 	}
-	transpose(P, n);
+	
 	return 1;
 }
 
@@ -186,7 +188,7 @@ int crout_lu(real * A,real * L,int n)
 //	sortPovit(A, NULL, n);
 	for(i=0;i<n;i++){
 		mr = A[i*n+i];
-		if(mr==0)
+		if (FTEQ(mr,0))
 			return 0;
 		L[i*n + i] = mr;
 		A[i*n+i] = 1;
@@ -212,9 +214,10 @@ int crout_plu(real * A,real * P,real * L,int n)
 	identity(L,n);
 	identity(P, n);
 	sortPovit(A, P, n);
+	transpose(P, n);
 	for(i=0;i<n;i++){
 		mr = A[i*n+i];
-		if(mr==0)
+		if (FTEQ(mr,0))
 			return 0;
 		L[i*n + i] = mr;
 		A[i*n+i] = 1;
@@ -230,7 +233,7 @@ int crout_plu(real * A,real * P,real * L,int n)
 			}
 		}
 	}
-	transpose(P, n);
+	
 	return 1;	
 }
 
@@ -327,6 +330,7 @@ int inverse0(real * A,real * B,int n)
 	real * P = (real *)malloc(n*n*sizeof(real));
 	identity(B, n);
 	identity(P,n);
+	
 	/* 对行进行交换，确保主元位置是绝对值最大的。*/
 	for (int i = 0; i < n; i++){
 		m = absMaxLeading(A, n, i, i);
@@ -335,10 +339,11 @@ int inverse0(real * A,real * B,int n)
 			xchangeRaw(P, n, i, m);
 		}
 	}
+	transpose(P,n);
 	/* 使用crout法消下三角 */
 	for(i=0;i<n;i++){
 		mr = A[i*n+i];
-		if(mr==0)
+		if (FTEQ(mr,0))
 			return 0;
 		A[i*n+i] = 1;
 		for(j=i+1;j<n;j++){
@@ -374,7 +379,7 @@ int inverse0(real * A,real * B,int n)
 			}			
 		}
 	}
-	transpose(P,n);
+	
 	/* 乘交换矩阵恢复位置
 	 * 求A的逆矩阵A'，首先将A进行变换B=P'A，通过增广矩阵计算出B'
 	 * B'=(P'A)'=PA' ,B'P'=PA'P' , B'P' = A'

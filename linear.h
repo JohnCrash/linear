@@ -6,12 +6,17 @@
 #if defined(dSINGLE)
 #define REAL(x) (x##f)
 typedef float real;
+#define FTACC 0.01f
 #else
 #define REAL(x) (x)
-typedef double real;	
+typedef double real;
+#define FTACC 0.000001
 #endif
 
 #define fabs(x) ((x)>0?(x):-(x))
+#define FTEQ(x,y) (fabs(x-y)>FTACC/100?0:1)
+
+typedef long long int64;
 
 void zero(real * A,int n);
 void identity(real * A,int n);

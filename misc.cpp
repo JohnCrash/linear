@@ -20,8 +20,8 @@ int printDiffent(const char * s,real * A, real *B)
 		}
 	}
 	if(!_disablePrint)
-	printf("%s --> %s\n", s, v>0.001 ? "failed" : "passed");
-	return v>0.001?0:1;
+	printf("%s --> %s\n", s, v>FTACC ? "failed" : "passed");
+	return v>FTACC?0:1;
 }
 
 void printMat(const char * s,real * A)
