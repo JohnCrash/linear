@@ -25,6 +25,7 @@ void test_inverse0()
 
 int main(int argn, char *argv[])
 {
+	readom_init();
 	test_inverse0();
 	return 0;
 }

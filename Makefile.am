@@ -6,7 +6,9 @@ liblinear_la_LDFLAGS=-no-undefined -avoid-version
 
 test_lu_LDADD=liblinear.la
 test_inverse_LDADD=liblinear.la
+test_LDADD=liblinear.la
 
-bin_PROGRAMS=test_lu test_inverse
+bin_PROGRAMS=test_lu test_inverse test
 test_lu_SOURCES=test_lu.cpp
 test_inverse_SOURCES=test_inverse.cpp
+test_SOURCES=test.cpp

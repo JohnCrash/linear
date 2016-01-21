@@ -1,7 +1,14 @@
 #include "linear.h"
 #include "misc.h"
 
-void printDiffent(const char * s,real * A, real *B)
+int _disablePrint = 0;
+
+void disablePrint(int b)
+{
+	_disablePrint = b;
+}
+
+int printDiffent(const char * s,real * A, real *B)
 {
 	real v = 0;
 	for (int i = 0; i < N; i++){
@@ -12,19 +19,23 @@ void printDiffent(const char * s,real * A, real *B)
 			}
 		}
 	}
+	if(!_disablePrint)
 	printf("%s --> %s\n", s, v>0.001 ? "failed" : "passed");
+	return v>0.001?0:1;
 }
 
 void printMat(const char * s,real * A)
 {
-	int i, j;
-	if(s)
-		printf("%s\n",s);
-	for (i = 0; i<N; i++){
-		for (j = 0; j<N; j++){
-			printf("%f ", A[i*N + j]);
+	if(!_disablePrint){
+		int i, j;
+		if(s)
+			printf("%s\n",s);
+		for (i = 0; i<N; i++){
+			for (j = 0; j<N; j++){
+				printf("%f ", A[i*N + j]);
+			}
+			printf("\n");
 		}
-		printf("\n");
 	}
 }
 
@@ -55,3 +66,23 @@ void freeMatrix(real * A)
 {
 	free(A);
 }
+
+#if defined(WIN32)||defined(_WIN32)
+#include <windows.h>
+double getClock()
+{
+	double t;
+	t = (double)GetTickCount();
+	return t/1000.0;
+}
+#else
+#include <sys/time.h>
+double getClock()
+{
+	double t;
+	timeval tv;
+	gettimeofday(&tv,NULL);
+	t  = (double)tv.tv_sec+(double)(tv.tv_usec)/1000000.0;
+	return t;
+}	
+#endif

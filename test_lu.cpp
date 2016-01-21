@@ -142,14 +142,16 @@ static void test_inverse_pivoting()
 	printf("test inverse_pivoting\n");
 	identity(A, N);
 	for(int i=0;i<N;i++){
-		int m = (int)(N*(real)rand()/(real)RAND_MAX);
-		xchangeRaw(A,N,i,m);
+		int m = (int)((N-1)*((real)rand()/(real)RAND_MAX));
+		if(i!=m && m>=0 && m<N){
+			xchangeRaw(A,N,i,m);
+		}
 	}
 	copyMatrix(B, A);
 	printMat("A=",A);
-	inverse_pivoting(A, 3);
+	inverse_pivoting(A, N);
 	printMat("inverse=",A);
-	multiply0(C, B, A, 3, 3, 3);
+	multiply0(C, B, A, N, N, N);
 	printMat("A*A'=",C);
 	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);

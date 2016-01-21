@@ -3,6 +3,19 @@
 #include <memory.h>
 #include <stdlib.h>
 
+static void printMat(const char * s, real * A,int n)
+{
+	int i, j;
+	if (s)
+		printf("%s [%d]\n", s,n);
+	for (i = 0; i<n; i++){
+		for (j = 0; j<n; j++){
+			printf("%f ", A[i*n + j]);
+		}
+		printf("\n");
+	}
+}
+
 void zero(real * A,int n,int m)
 {
 	real *a,*aa;
@@ -39,8 +52,8 @@ void xchangeRaw(real * A,int n,int i,int j)
 	int x;
 	real temp;
 	real *a,*b;
-	a = A+i*n;
-	b = A+j*n;
+	a = &A[i*n];
+	b = &A[j*n];
 	for(x=0;x<n;x++){
 		temp = a[x];
 		a[x]=b[x];
@@ -79,19 +92,6 @@ static void multiplyL(real * L, int n, int i, int j, real d)
 {
 	for (int k = i; k < n; k++){
 		L[k*n + j] += d*L[k*n+i];
-	}
-}
-
-static void printMat(const char * s, real * A,int N)
-{
-	int i, j;
-	if (s)
-		printf("%s\n", s);
-	for (i = 0; i<N; i++){
-		for (j = 0; j<N; j++){
-			printf("%f ", A[i*N + j]);
-		}
-		printf("\n");
 	}
 }
 
@@ -368,7 +368,7 @@ int inverse0(real * A,real * B,int n)
 			 *因此可以不对A进行任何计算了
 			 */
 			v = A[j*n+i];
-			A[j*n+i] = 0;
+			//A[j*n+i] = 0;
 			for(k=0;k<n;k++){
 				B[j*n+k] -= B[i*n+k]*v;
 			}			
