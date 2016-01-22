@@ -39,6 +39,41 @@ void printMat(const char * s,real * A)
 	}
 }
 
+//打印三个并列的矩阵[P][A][B]
+void printMat3(real * P,real * A,real *B,int n)
+{
+	if(_disablePrint)
+		return;
+	real * X;
+	real * S;
+	X = (real *)malloc(n*n*sizeof(real));
+	S = (real *)malloc(n*n*sizeof(real));
+	multiply0(X,P,A,n,n,n);
+	multiply0(S,X,B,n,n,n);
+
+	for(int i=0;i<n;i++){
+		printf("[%d][",i);
+		for(int j=0;j<n;j++){
+			printf("%.2f ",P[i*n+j]);
+		}		
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",A[i*n+j]);
+		}
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",B[i*n+j]);
+		}
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",S[i*n+j]);
+		}		
+		printf("]\n");
+	}
+	free(X);
+	free(S);
+}
+
 void copyMatrix(real * des,real * src)
 {
 	memcpy(des,src,N*N*sizeof(real));

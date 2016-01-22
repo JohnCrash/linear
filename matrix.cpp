@@ -69,6 +69,11 @@ void readom_init()
 	srand((unsigned int)time(0));
 }
 
+real randomReal()
+{
+	return rand()/(real)RAND_MAX;
+}
+
 void random_matrix(real * A,int n)
 {
 	for(int i=0;i<n;i++){

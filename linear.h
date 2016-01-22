@@ -18,16 +18,39 @@ typedef double real;
 
 typedef long long int64;
 
+/* 零矩阵 */
 void zero(real * A,int n);
+
+/* 单位矩阵 */
 void identity(real * A,int n);
 
 void readom_init();
 void random_matrix(real * A,int n);
 
+/*
+ * 进行lu分解，将U存入A中，将L存入到L中
+ */
 int lu(real * A,real * P,real * L,int n);
-int pldu(real * A, real * P, real * D, real * L, int n);
+
+/*
+ * crout algothim 
+ * http://www.physics.utah.edu/~detar/phys6720/handouts/crout.txt
+ * 将n*n矩阵A分解为LU,返回U被写入到A中
+  * 成功返回1，失败返回0
+ */
 int crout_lu(real * A,real * L,int n);
+
+/*
+ * A=PLU,其中P为一个交换矩阵,返回U被写入到A中
+ * 成功返回1，失败返回0
+ */
 int crout_plu(real * A,real * P,real * L,int n);
+
+/*
+ * 试验阶段
+ * A的逆矩阵，A=P*L*D*U就是上面pldu分解的结果。
+ * 最后将结果放入到P矩阵中。
+ */
 int inverse0(real * P, real * L, real * D, real * U, int n);
 
 void clearUpperTriangle(real * A, int n); 
@@ -37,15 +60,36 @@ void multiplyC(real * A,real c,int n);
 void xchangeRaw(real * A,int n,int i,int j);
 int absMaxLeading(real * A,int n,int raw,int col);
 
+/* 
+ * 矩阵乘法运算
+ * multiply0 : A=B*C （B是一个p*q矩阵，C是q*r矩阵
+ * multiply1 : A=B*C' C'是C的转置矩阵
+ * multiply1 : A=B'*C
+ */
 void multiply0(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply1(real *A, const real *B, const real *C, int p, int q, int r);
 void multiply2(real *A, const real *B, const real *C, int p, int q, int r);
 
+/* 转置矩阵 */
 void transpose(real * A,int n);
 void inverse_low_triangle(real * L, int n);
 void inverse_upper_triangle(real * L, int n);
 void inverse_pivoting(real * L, int n);
 void inverse_diagonal(real * D, int n);
+
+/*
+ *计算A的逆矩阵，将结果放入到B中 
+ *将AB组成增广矩阵，将A部分通过初等变换转化为单位矩阵I。
+ *这时候B即为A的逆矩阵 inverse该方法比inverse0速度快
+*/
 int inverse(real * A,real * B,int n);
 
+/*
+ * 解方程Ax=b,不能解返回0，成功返回1
+ */
+ int solve_lu(real * L,real * U,real * b,real *x,int n);
+ int solve_plu(real * P,real * L,real * U,real * b,real *x,int n);
+ int solve_low_triangle(real * L,real * b,real *x,int n);
+ int solve_upper_triangle(real *L,real * b,real *x,int n);
+ 
 #endif

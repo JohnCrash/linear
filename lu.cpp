@@ -1,54 +1,5 @@
 #include "linear.h"
-#include <stdio.h>
-#include <memory.h>
-#include <stdlib.h>
-
-//打印矩阵[A]
-static void printMat(const char * s, real * A,int n)
-{
-	int i, j;
-	if (s)
-		printf("%s [%d]\n", s,n);
-	for (i = 0; i<n; i++){
-		for (j = 0; j<n; j++){
-			printf("%f ", A[i*n + j]);
-		}
-		printf("\n");
-	}
-}
-
-//打印三个并列的矩阵[P][A][B]
-static void printM(real * P,real * A,real *B,int n)
-{
-	real * X;
-	real * S;
-	X = (real *)malloc(n*n*sizeof(real));
-	S = (real *)malloc(n*n*sizeof(real));
-	multiply0(X,P,A,n,n,n);
-	multiply0(S,X,B,n,n,n);
-
-	for(int i=0;i<n;i++){
-		printf("[%d][",i);
-		for(int j=0;j<n;j++){
-			printf("%.2f ",P[i*n+j]);
-		}		
-		printf("][");
-		for(int j=0;j<n;j++){
-			printf("%.2f ",A[i*n+j]);
-		}
-		printf("][");
-		for(int j=0;j<n;j++){
-			printf("%.2f ",B[i*n+j]);
-		}
-		printf("][");
-		for(int j=0;j<n;j++){
-			printf("%.2f ",S[i*n+j]);
-		}		
-		printf("]\n");
-	}
-	free(X);
-	free(S);
-}
+#include "misc.h"
 
 void zero(real * A,int n,int m)
 {
@@ -196,54 +147,6 @@ int lu(real * A,real * P,real * L,int n)
 		}
 	}
 	
-	transpose(P, n);
-	return 1;
-}
-
-/* 
- * 进行lu分解，将U存入A中，将L存入到L中。P是交换矩阵。
- * D是一个对角线矩阵，D就是为了使U的对角线都是1。
- * A = P*L*D*U
- */
-int pldu(real * A, real * P,real * D,real * L, int n)
-{
-	int i, j,m;
-	real mr, v, d;
-	identity(L, n);
-	identity(P, n);
-	identity(D, n);
-
-	for (i = 0; i<n - 1; i++){
-		m = absMaxLeading(A, n, i, i);
-		if (m != i&&m!=-1){
-			xchangeRaw(A, n, i, m);
-			xchangeRawLowerTriangle(L,n,i,m);
-			xchangeRaw(P, n, i, m);
-		}		
-		mr = A[i*n + i];
-		if (FTEQ(mr,0)){
-			transpose(P, n);
-			return 0;
-		}
-		for (j = i + 1; j<n; j++){
-			v = A[j*n + i];
-			if (v != 0){
-				d = v/mr;
-				decol(A, n, i, j, -d);
-				A[j*n + i] = 0;
-				multiplyL(L, n, j, i, d);
-			}
-		}
-	}
-	/* 处理U的对角线 */
-	for (i = 0; i < n; i++){
-		mr = A[i*n + i];
-		A[i*n + i] = 1;
-		for (j = i + 1; j < n; j++){
-			A[i*n + j] /= mr;
-		}
-		D[i*n + i] = mr;
-	}
 	transpose(P, n);
 	return 1;
 }

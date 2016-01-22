@@ -48,38 +48,6 @@ static void test_lu_1()
 	freeMatrix(X);
 }
 
-static void test_pldu_1()
-{
-	real * A = makeRandMatrix();
-	real * L = makeMatrix(); 
-	real * C = makeMatrix();
-	real * P = makeMatrix();
-	real * D = makeMatrix();
-	real * T = makeMatrix();
-	real * X = makeMatrix();
-
-	copyMatrix(X, A);
-	printf("test pldu\n");
-	printMat("A=",A);
-	pldu(A, P,D,L, N);
-	printMat("P=",P);
-	printMat("D=",D);
-	printMat("U=",A);
-	printMat("L=",L);
-	multiply0(C, P, L, N, N, N);
-	multiply0(T, C, D, N, N, N);
-	multiply0(C, T, A, N, N, N);
-	printMat("P*L*D*U=",C);
-	printDiffent("A=P*L*D*U", X, C);
-	freeMatrix(A);
-	freeMatrix(L);
-	freeMatrix(C);
-	freeMatrix(P);
-	freeMatrix(D);
-	freeMatrix(T);	
-	freeMatrix(X);
-}
-
 static void test_inverse_low_triangle()
 {
 	real * A = makeRandMatrix();
@@ -184,6 +152,7 @@ static void test_inverse_diagonal()
 	freeMatrix(X);
 }
 
+/*
 static void test_inverse_1()
 {
 	real * A = makeRandMatrix();
@@ -216,6 +185,7 @@ static void test_inverse_1()
 	freeMatrix(T);
 	freeMatrix(X);
 }
+*/
 
 static void test_crout_lu()
 {
@@ -243,12 +213,11 @@ int main(int argn,const char *argv[])
 {
 	readom_init();
 	test_lu_1();
-	test_pldu_1();
 	test_inverse_low_triangle();
 	test_inverse_upper_triangle();
 	test_inverse_pivoting();
 	test_inverse_diagonal();
-	test_inverse_1();
+	//test_inverse_1();
 	test_crout_lu();
 	return 0;
 }
