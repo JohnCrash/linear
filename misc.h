@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#define N 5
+#define N 3
 
 void disablePrint(int b);
 int printDiffent(const char * s,real * A, real *B);
+int printDiffent1(const char * s,real * b,real *x);
 void printMat(const char * s,real * A);
 void printMat3(real * P,real * A,real *B,int n);
 
