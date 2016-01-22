@@ -207,30 +207,37 @@ int crout_lu(real * A,real * L,int n)
 	return 1;
 }
 
+static void printM(real * A,real *B,int n)
+{
+	for(int i=0;i<n;i++){
+		printf("[%d][",i);
+		for(int j=0;j<n;j++){
+			printf("%f ",A[i*n+j]);
+		}
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%f ",B[i*n+j]);
+		}
+		printf("]\n");
+	}
+}
+
 int crout_lup(real * A,real * L,real * P,int n)
 {
 	int i,j,m;
 	real mr,v;
 	identity(L,n);
 	identity(P, n);
-	int *a,* b,count;
-	count = 0;
-	a = (int*)malloc(n*n*sizeof(int));
-	b = (int*)malloc(n*n*sizeof(int));
-	//sortPovit(A,P, n);
+
 	for(i=0;i<n;i++){
 		m = absMaxLeading(A, n, i, i);
 		if (m != i&&m!=-1){
 			xchangeRaw(A, n, i, m);
-			//xchangeRaw(P, n, i, m);
-			a[count] = i;
-			b[count] = m;
-			count++;
+			xchangeRaw(L, n, i, m);
+			xchangeRaw(P, n, i, m);
 		}
 		mr = A[i*n+i];
 		if (FTEQ(mr,0)){
-			free(a);
-			free(b);
 			return 0;
 		}
 		L[i*n + i] = mr;
@@ -247,12 +254,7 @@ int crout_lup(real * A,real * L,real * P,int n)
 			}
 		}
 	}
-	for(i=0;i<count;i++){
-		xchangeRaw(P, n, a[count-i-1], b[count-i-1]);
-	}
 	//transpose(P, n);
-	free(a);
-	free(b);
 	return 1;	
 }
 
