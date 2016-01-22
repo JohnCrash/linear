@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <stdlib.h>
 
+//打印矩阵[A]
 static void printMat(const char * s, real * A,int n)
 {
 	int i, j;
@@ -14,6 +15,39 @@ static void printMat(const char * s, real * A,int n)
 		}
 		printf("\n");
 	}
+}
+
+//打印三个并列的矩阵[P][A][B]
+static void printM(real * P,real * A,real *B,int n)
+{
+	real * X;
+	real * S;
+	X = (real *)malloc(n*n*sizeof(real));
+	S = (real *)malloc(n*n*sizeof(real));
+	multiply0(X,P,A,n,n,n);
+	multiply0(S,X,B,n,n,n);
+
+	for(int i=0;i<n;i++){
+		printf("[%d][",i);
+		for(int j=0;j<n;j++){
+			printf("%.2f ",P[i*n+j]);
+		}		
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",A[i*n+j]);
+		}
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",B[i*n+j]);
+		}
+		printf("][");
+		for(int j=0;j<n;j++){
+			printf("%.2f ",S[i*n+j]);
+		}		
+		printf("]\n");
+	}
+	free(X);
+	free(S);
 }
 
 void zero(real * A,int n,int m)
@@ -55,6 +89,26 @@ void xchangeRaw(real * A,int n,int i,int j)
 	a = &A[i*n];
 	b = &A[j*n];
 	for(x=0;x<n;x++){
+		temp = a[x];
+		a[x]=b[x];
+		b[x] = temp;
+	}
+}
+
+/* 
+ * A是一个下三角矩阵，交互i和j行上的在i列左侧的元素 注意：j>i
+ * [a 0 0]						[a 0 0]
+ * [b 1 0] 比如交互1,2行	[c 1 0]
+ * [c 0 1]						[b 0 1]
+ */
+void xchangeRawLowerTriangle(real * A,int n,int i,int j)
+{
+	int x;
+	real temp;
+	real *a,*b;
+	a = &A[i*n];
+	b = &A[j*n];
+	for(x=0;x<i;x++){
 		temp = a[x];
 		a[x]=b[x];
 		b[x] = temp;
@@ -114,16 +168,23 @@ static void sortPovit(real * A,real * P,int n)
  */
 int lu(real * A,real * P,real * L,int n)
 {
-	int i,j;
+	int i,j,m;
 	real mr,v,d;
 	identity(L,n);
 	identity(P, n);
-	sortPovit(A, P, n);
-	transpose(P, n);
-	for(i=0;i<n-1;i++){//column
+	
+	for(i=0;i<n-1;i++){
+		m = absMaxLeading(A, n, i, i);
+		if (m != i&&m!=-1){
+			xchangeRaw(A, n, i, m);
+			xchangeRawLowerTriangle(L,n,i,m);
+			xchangeRaw(P, n, i, m);
+		}	
 		mr = A[i*n+i];
-		if (FTEQ(mr,0))
+		if (FTEQ(mr,0)){
+			transpose(P, n);
 			return 0;
+		}
 		for(j=i+1;j<n;j++){
 			v = A[j*n+i];
 			if(v!=0){
@@ -135,6 +196,7 @@ int lu(real * A,real * P,real * L,int n)
 		}
 	}
 	
+	transpose(P, n);
 	return 1;
 }
 
@@ -145,17 +207,24 @@ int lu(real * A,real * P,real * L,int n)
  */
 int pldu(real * A, real * P,real * D,real * L, int n)
 {
-	int i, j;
+	int i, j,m;
 	real mr, v, d;
 	identity(L, n);
 	identity(P, n);
 	identity(D, n);
-	sortPovit(A, P, n);
-	transpose(P, n);
+
 	for (i = 0; i<n - 1; i++){
+		m = absMaxLeading(A, n, i, i);
+		if (m != i&&m!=-1){
+			xchangeRaw(A, n, i, m);
+			xchangeRawLowerTriangle(L,n,i,m);
+			xchangeRaw(P, n, i, m);
+		}		
 		mr = A[i*n + i];
-		if (FTEQ(mr,0))
+		if (FTEQ(mr,0)){
+			transpose(P, n);
 			return 0;
+		}
 		for (j = i + 1; j<n; j++){
 			v = A[j*n + i];
 			if (v != 0){
@@ -175,21 +244,26 @@ int pldu(real * A, real * P,real * D,real * L, int n)
 		}
 		D[i*n + i] = mr;
 	}
-	
+	transpose(P, n);
 	return 1;
 }
 
-/* crout algothim */
+/*
+ * crout algothim 
+ * http://www.physics.utah.edu/~detar/phys6720/handouts/crout.txt
+ * 将n*n矩阵A分解为LU,返回U被写入到A中
+  * 成功返回1，失败返回0
+ */
 int crout_lu(real * A,real * L,int n)
 {
 	int i,j;
 	real mr,v;
 	identity(L,n);
-//	sortPovit(A, NULL, n);
 	for(i=0;i<n;i++){
 		mr = A[i*n+i];
 		if (FTEQ(mr,0))
 			return 0;
+		/* 使第i行的主元为1 */
 		L[i*n + i] = mr;
 		A[i*n+i] = 1;
 		for(j=i+1;j<n;j++){
@@ -198,6 +272,7 @@ int crout_lu(real * A,real * L,int n)
 		for(j=i+1;j<n;j++){
 			v = A[j*n + i];
 			if(v!=0){
+				/* 消元操作，同时施加到L与U上 */
 				decol(A,n,i,j,-v);
 				A[j*n+i]=0;
 				multiplyL(L, n, j, i, v);
@@ -207,22 +282,11 @@ int crout_lu(real * A,real * L,int n)
 	return 1;
 }
 
-static void printM(real * A,real *B,int n)
-{
-	for(int i=0;i<n;i++){
-		printf("[%d][",i);
-		for(int j=0;j<n;j++){
-			printf("%f ",A[i*n+j]);
-		}
-		printf("][");
-		for(int j=0;j<n;j++){
-			printf("%f ",B[i*n+j]);
-		}
-		printf("]\n");
-	}
-}
-
-int crout_lup(real * A,real * L,real * P,int n)
+/*
+ * A=PLU,其中P为一个交换矩阵,返回U被写入到A中
+ * 成功返回1，失败返回0
+ */
+int crout_plu(real * A,real * P,real * L,int n)
 {
 	int i,j,m;
 	real mr,v;
@@ -233,13 +297,20 @@ int crout_lup(real * A,real * L,real * P,int n)
 		m = absMaxLeading(A, n, i, i);
 		if (m != i&&m!=-1){
 			xchangeRaw(A, n, i, m);
-			xchangeRaw(L, n, i, m);
+			/* 
+			 * 为什么不能使用 xchangeRaw(L, n, i, m); ?
+			 * 参见xchangeRawLowerTriangle的说明
+			 */
+			xchangeRawLowerTriangle(L,n,i,m);
 			xchangeRaw(P, n, i, m);
 		}
 		mr = A[i*n+i];
 		if (FTEQ(mr,0)){
+			/* 确保失败的时候也保证等式成立 */
+			transpose(P, n);
 			return 0;
 		}
+		/* 使第i行的主元为1 */
 		L[i*n + i] = mr;
 		A[i*n+i] = 1;
 		for(j=i+1;j<n;j++){
@@ -248,43 +319,22 @@ int crout_lup(real * A,real * L,real * P,int n)
 		for(j=i+1;j<n;j++){
 			v = A[j*n + i];
 			if(v!=0){
+				/* 消元操作，同时施加到L与U上 */
 				decol(A,n,i,j,-v);
 				A[j*n+i]=0;
 				multiplyL(L, n, j, i, v);
 			}
 		}
 	}
-	//transpose(P, n);
-	return 1;	
-}
-
-int crout_plu(real * A,real * P,real * L,int n)
-{
-	int i,j;
-	real mr,v;
-	identity(L,n);
-	identity(P, n);
-	sortPovit(A, P, n);
+	/*
+	 * 为什么要加转置操作？
+	 * 首先矩阵A1 = P1A ,P1 是第一次交换操作，这时候P=P1
+	 * 而A1是第一个用来进行消元的矩阵,依次进行。
+	 * A2 = P2A1 = P2P1A ，同时P=P2P1 (在前一个P的基础上做P2)操作
+	 * 最后有An = LU = Pn...P2P1A ,同时P=Pn...P2P1
+	 * 因为我们需要一个P(外部的)，似的A = PLU 这样P=P‘（逆矩阵）
+	 */
 	transpose(P, n);
-	for(i=0;i<n;i++){
-		mr = A[i*n+i];
-		if (FTEQ(mr,0))
-			return 0;
-		L[i*n + i] = mr;
-		A[i*n+i] = 1;
-		for(j=i+1;j<n;j++){
-			A[i*n+j]/=mr;
-		}
-		for(j=i+1;j<n;j++){
-			v = A[j*n + i];
-			if(v!=0){
-				decol(A,n,i,j,-v);
-				A[j*n+i]=0;
-				multiplyL(L, n, j, i, v);
-			}
-		}
-	}
-	
 	return 1;	
 }
 
@@ -342,10 +392,11 @@ void inverse_diagonal(real * D, int n)
 }
 
 /*
+ * 试验阶段
  * A的逆矩阵，A=P*L*D*U就是上面pldu分解的结果。
  * 最后将结果放入到P矩阵中。
  */
-int inverse(real * P, real * L, real * D, real * U, int n)
+int inverse0(real * P, real * L, real * D, real * U, int n)
 {
 	real * T;
 
@@ -372,9 +423,9 @@ int inverse(real * P, real * L, real * D, real * U, int n)
 /*
  *计算A的逆矩阵，将结果放入到B中 
  *将AB组成增广矩阵，将A部分通过初等变换转化为单位矩阵I。
- *这时候B即为A的逆矩阵 inverse0该方法比inverse速度快
+ *这时候B即为A的逆矩阵 inverse该方法比inverse0速度快
 */
-int inverse0(real * A,real * B,int n)
+int inverse(real * A,real * B,int n)
 {
 	int m,i,j,k;
 	real mr,v;	
@@ -382,17 +433,14 @@ int inverse0(real * A,real * B,int n)
 	identity(B, n);
 	identity(P,n);
 	
-	/* 对行进行交换，确保主元位置是绝对值最大的。*/
-	for (int i = 0; i < n; i++){
+	/* 使用crout法消下三角 */
+	for(i=0;i<n;i++){
 		m = absMaxLeading(A, n, i, i);
 		if (m != i&&m!=-1){
 			xchangeRaw(A, n, i, m);
+			xchangeRawLowerTriangle(B,n,i,m);
 			xchangeRaw(P, n, i, m);
-		}
-	}
-	transpose(P,n);
-	/* 使用crout法消下三角 */
-	for(i=0;i<n;i++){
+		}		
 		mr = A[i*n+i];
 		if (FTEQ(mr,0))
 			return 0;
@@ -430,7 +478,7 @@ int inverse0(real * A,real * B,int n)
 			}			
 		}
 	}
-	
+	//transpose(P,n);
 	/* 乘交换矩阵恢复位置
 	 * 求A的逆矩阵A'，首先将A进行变换B=P'A，通过增广矩阵计算出B'
 	 * B'=(P'A)'=PA' ,B'P'=PA'P' , B'P' = A'

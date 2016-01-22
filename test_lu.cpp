@@ -203,7 +203,7 @@ static void test_inverse_1()
 	printMat("D=",D);
 	printMat("U=",A);
 	printMat("L=",L);
-	inverse(P, L, D, A, N);
+	inverse0(P, L, D, A, N);
 	printMat("inverse=",P);
 	multiply0(C, T, P, N, N, N);
 	printMat("A*A'=",C);
