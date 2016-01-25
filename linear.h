@@ -46,6 +46,8 @@ int crout_lu(real * A,real * L,int n);
  */
 int crout_plu(real * A,real * P,real * L,int n);
 
+int cholesky(real * A,real *L,int n);
+
 /*
  * 试验阶段
  * A的逆矩阵，A=P*L*D*U就是上面pldu分解的结果。

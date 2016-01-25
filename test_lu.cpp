@@ -209,6 +209,32 @@ static void test_crout_lu()
 	freeMatrix(X);
 }
 
+static void test_cholesky()
+{
+	real * A = makeRandMatrix();
+	real * L = makeMatrix();
+	real * C = makeMatrix();
+	real * X = makeMatrix();
+
+	clearUpperTriangle(A,N);
+	copyMatrix(X, A);
+	printMat("X=",X);
+	copyMatrix(C, A);
+	transpose(C,N);
+	multiply0(L,A,C,N,N,N);
+	copyMatrix(A,L);
+	printf("test test_cholesky\n");
+	printMat("A=",A);
+	cholesky(A, L, N);
+	clearUpperTriangle(L,N);
+	printMat("L=",L);
+	printDiffent("L", X, L);
+	freeMatrix(A);
+	freeMatrix(L);
+	freeMatrix(C);
+	freeMatrix(X);	
+}
+
 int main(int argn,const char *argv[])
 {
 	readom_init();
@@ -219,6 +245,7 @@ int main(int argn,const char *argv[])
 	test_inverse_diagonal();
 	//test_inverse_1();
 	test_crout_lu();
+	test_cholesky();
 	return 0;
 }
 

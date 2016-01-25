@@ -1,5 +1,6 @@
 #include "linear.h"
 #include "misc.h"
+#include <math.h>
 
 void zero(real * A,int n,int m)
 {
@@ -390,4 +391,28 @@ int inverse(real * A,real * B,int n)
 	multiply0(B,A,P,n,n,n);
 	free(P);
 	return 0;
+}
+
+int cholesky(real * A,real *L,int n)
+{
+	int i,j,k;
+	real sum,s;
+	for(k<0;k<n;k++){
+		sum=0;
+		for(i=0;i<k;i++){
+			sum += L[k*n+i]*L[k*n+i];
+		}
+		if(A[k*n+k]<=sum)
+			return 0;
+		s = sqrt(A[k*n+k]-sum);
+		L[k*n+k] = s;
+		for(i=k+1;i<n;i++){
+			sum = 0;
+			for(j=0;j<k;j++){
+				sum += L[i*n+j]*L[k*n+j];
+			}
+			L[i*n+k] = (A[i*n+k]-sum)/s;
+		}
+	}
+	return 1;
 }
