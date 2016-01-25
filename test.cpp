@@ -12,6 +12,12 @@ static int test_lu_1()
 	copyMatrix(X, A);
 	printMat("A=",A);
 	int r = lu(A,P, L, N);
+	if(!r && N<5 ){
+		printf("lu failed\n");
+		disablePrint(0);
+		printMat3(X,L,A,N);
+		disablePrint(1);
+	}
 	printMat("U=",A);
 	printMat("L=",L);
 	printMat("P=", P);
@@ -26,7 +32,7 @@ static int test_lu_1()
 	freeMatrix(X);
 	return r?ret:-1;
 }
-
+/*
 static int test_pldu_1()
 {
 	real * A = makeRandMatrix();
@@ -58,7 +64,7 @@ static int test_pldu_1()
 	freeMatrix(X);
 	return r?ret:-1;
 }
-
+*/
 static int test_inverse_low_triangle()
 {
 	real * A = makeRandMatrix();
@@ -162,7 +168,7 @@ static int test_inverse_diagonal()
 	freeMatrix(X);
 	return ret;
 }
-
+/*
 static int test_inverse_1()
 {
 	real * A = makeRandMatrix();
@@ -181,7 +187,7 @@ static int test_inverse_1()
 	printMat("D=",D);
 	printMat("U=",A);
 	printMat("L=",L);
-	int r = inverse(P, L, D, A, N);
+	int r = inverse0(P, L, D, A, N);
 	printMat("inverse=",P);
 	multiply0(C, T, P, N, N, N);
 	printMat("A*A'=",C);
@@ -195,6 +201,7 @@ static int test_inverse_1()
 	freeMatrix(X);
 	return r?ret:-1;
 }
+*/
 
 static int test_crout_lu()
 {
@@ -206,6 +213,12 @@ static int test_crout_lu()
 	copyMatrix(X, A);
 	printMat("A=",A);
 	int r = crout_lu(A, L, N);
+	if(!r && N<5 ){
+		printf("crout_lu failed\n");
+		disablePrint(0);
+		printMat3(X,L,A,N);
+		disablePrint(1);
+	}	
 	printMat("U=",A);
 	printMat("L=",L);
 	multiply0(C, L, A, N, N, N);
@@ -218,7 +231,7 @@ static int test_crout_lu()
 	return r?ret:-1;
 }
 
-static int test_crout_lup()
+static int test_crout_plu()
 {
 	real * A = makeRandMatrix();
 	real * L = makeMatrix();
@@ -228,7 +241,13 @@ static int test_crout_lup()
 
 	copyMatrix(X, A);
 	printMat("A=",A);
-	int r = crout_lup(A, L,P, N);
+	int r = crout_plu(A, P,L, N);
+	if(!r && N<5 ){
+		printf("crout_plu failed\n");
+		disablePrint(0);
+		printMat3(X,L,A,N);
+		disablePrint(1);
+	}	
 	printMat("U=",A);
 	printMat("L=",L);
 	printMat("P=",P);
@@ -298,14 +317,15 @@ int main(int argn,const char *argv[])
 	disablePrint(1);
 	readom_init();
 	test("lu",test_lu_1);
-	test("pldu",test_pldu_1);
+	//test("pldu",test_pldu_1);
 	test("inverse_low_triangle",test_inverse_low_triangle);
 	test("inverse_upper_triangle",test_inverse_upper_triangle);
 	test("inverse_pivoting",test_inverse_pivoting);
 	test("inverse_diagonal",test_inverse_diagonal);
-	test("inverse",test_inverse_1);
-	test("crout_lu",test_crout_lu);
-	test("test_crout_lup",test_crout_lup);
+	//test("inverse",test_inverse_1);
+	//因为不交互行，因此有些能分解也不能进行正常分解
+	//test("crout_lu",test_crout_lu);
+	test("test_crout_plu",test_crout_plu);
 	//test_p();
 	return 0;
 }
