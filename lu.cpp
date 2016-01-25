@@ -157,6 +157,7 @@ int lu(real * A,real * P,real * L,int n)
  * http://www.physics.utah.edu/~detar/phys6720/handouts/crout.txt
  * 将n*n矩阵A分解为LU,返回U被写入到A中
   * 成功返回1，失败返回0
+  * 下面的算法并不交互行，如果一旦主元为0将停止分解
  */
 int crout_lu(real * A,real * L,int n)
 {
@@ -393,6 +394,10 @@ int inverse(real * A,real * B,int n)
 	return 0;
 }
 
+/*
+ * cholesky分解，A=L*L'，L'表示L的转置矩阵，另L是一个n*n下三角矩阵
+ * 已知A求L
+ */
 int cholesky(real * A,real *L,int n)
 {
 	int i,j,k;
