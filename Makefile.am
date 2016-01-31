@@ -9,7 +9,8 @@ test_inverse_LDADD=liblinear.la
 test_LDADD=liblinear.la
 test_solve_LDADD=liblinear.la
 
-bin_PROGRAMS=test_lu test_inverse test_solve test
+bin_PROGRAMS=test_lu test_inverse test_solve test test_euler
+test_euler_SOURCES=test_euler.cpp
 test_solve_SOURCES=test_solve.cpp
 test_lu_SOURCES=test_lu.cpp
 test_inverse_SOURCES=test_inverse.cpp
