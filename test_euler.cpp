@@ -67,6 +67,23 @@ real func_2(real t,real A,FormulaParamter s)
 }
 
 /*
+ * y'=-x/y
+ */
+real func_3(real t,real A,FormulaParamter s)
+{
+	switch(s){
+		case DERIVATIVE:
+			return -t/A;
+		case SOLVE:
+			return sqrt(2*A-t*t);
+		case INITIAL:
+			return (A*A+t*t)/2;
+	}
+	//assert(0,"error func_0_solve FormulaParamter");
+	return 0;
+}
+
+/*
  * Euler method solve difference equation
  * 使用起点的斜率做计算
  */
@@ -83,9 +100,44 @@ real eulerStep(OdeFormula f,real t0,real x0,real step)
  */
 real midpointStep(OdeFormula f,real t0,real x0,real step)
 {
-	return x0+(f(t0,x0,DERIVATIVE)+f(t0+step,x0+f(t0,x0,DERIVATIVE)*step,DERIVATIVE))*step/2;
+	//dx = f(t0,x0)*step
+	//fmid=(f(t0,x0)+f(t0+step,x0+dx))/2
+	//x0+step*fmid
+	real fmid,dx;
+	dx=f(t0,x0,DERIVATIVE)*step;
+	fmid=(f(t0,x0,DERIVATIVE)+f(t0+step,x0+dx,DERIVATIVE))/2;
+	return x0+step*fmid;
 }
 
+/*
+ * 测试不同的方法,David Baraff的Differential Equation Basics A.pdf
+ * 中提到的中点法，和中点法基本一样，精度在O3
+ */
+real midpointStep2(OdeFormula f,real t0,real x0,real step)
+{
+	//dx = step*f(t0,x0)
+	//fmid=f((x0+dx)/2,(t0+step)/2) ，我认为这个公式是错误的
+	//应该写成fmid=f(x0+dx/2,t0+step/2)
+	//x0+h*fmid
+	real fmid,dx;
+	dx = step*f(t0,x0,DERIVATIVE);
+	fmid = f(t0+step/2,x0+dx/2,DERIVATIVE); 
+	return x0+step*fmid;
+}
+
+/*
+ * Runge-Kutta
+ * 精度在O5
+ */
+real testStep(OdeFormula f,real t0,real x0,real step)
+{
+	real k1,k2,k3,k4;
+	k1 = step*f(t0,x0,DERIVATIVE); //欧拉法
+	k2 = step*f(t0+step/2,x0+k1/2,DERIVATIVE); //中点法
+	k3 = step*f(t0+step/2,x0+k2/2,DERIVATIVE);
+	k4 = step*f(t0+step,x0+k3,DERIVATIVE);
+	return x0+k1/6+k2/3+k3/3+k4/6;
+}
 /*
  * 打印通过欧拉法
  */
@@ -143,18 +195,19 @@ void midpointPrint(OdeFormula f,real t0,real x0,real step,int n)
  */
 void comparePrint(OdeFormula f,real t0,real x0,real step,int n)
 {
-	real t,x,h,mx,sx,A;
+	real t,x,h,mx,sx,A,tx;
 	t = t0;
-	sx = mx=x = x0;
+	tx = sx = mx=x = x0;
 	h = step;	
 	A = f(t,x,INITIAL);
-	printf("变量\t|欧拉法\t误差\t|中点法\t误差\t误差比\t|公式法|\n");
+	printf("变量\t|欧拉法\t误差\t|中点法\t误差\t误差比\t|测试\t误差|公式法|\n");
 	for(int i=0;i<n;i++){
 		x = eulerStep(f,t,x,h);
 		mx = midpointStep(f,t,mx,h);
+		tx = testStep(f,t,tx,h);
 		t+=h;
 		sx = f(t,A,SOLVE);
-		printf("%.4f\t|%.4f\t%.4f\t|%.4f\t%.4f\t%.4f\t|%.4f|\n",t,x,sx-x,mx,mx-sx,fabs(mx-sx)/fabs(sx-x),sx);
+		printf("%.4f\t|%.4f\t%.4f\t|%.4f\t%.4f\t%.4f\t|%.4f\t%.7f|%.4f|\n",t,x,sx-x,mx,mx-sx,fabs(mx-sx)/fabs(sx-x),tx,tx-sx,sx);
 	}		
 }
 //x'=1+x , x(0)=1
@@ -175,7 +228,9 @@ void test_2()
 	printf("y'=y+x,y(0)=1\n");
 	comparePrint(func_1,0,1,0.1,10);		
 	printf("y'=y sin(x),y(0)=1\n");
-	comparePrint(func_2,0,1.0/M_E,0.1,10);			
+	comparePrint(func_2,-1,1.0/M_E,0.3,10);		
+	printf("y'=-x/y,y(0)=1\n");
+	comparePrint(func_3,-1,2.0,0.3,10);	
 }
 
 int main(int argn,char *argv[])
