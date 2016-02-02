@@ -13,7 +13,7 @@ make
 ###crout LU方法
 crout方法比标准的LU分解要快一倍左右。
 ###Cholesky分解
-[算法](http://mathfaculty.fullerton.edu/mathews/n2003/CholeskyMod.html)
+[算法描述](http://mathfaculty.fullerton.edu/mathews/n2003/CholeskyMod.html)</br>
 [算法](http://www.netlib.org/utk/papers/factor/node9.html)
 ###解逆矩阵
 ###解线性方程Ax=b
