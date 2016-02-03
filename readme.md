@@ -21,3 +21,5 @@ crout方法比标准的LU分解要快一倍左右。
 ###欧拉法数值解
 ###中点法数值解
 ###Runge-Kutta法数据值解
+###质数筛选算法
+[Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes)
