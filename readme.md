@@ -23,3 +23,7 @@ crout方法比标准的LU分解要快一倍左右。
 ###Runge-Kutta法数据值解
 ###质数筛选算法
 [Sieve of Eratosthenes](https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes)
+###Gauss-Seidel迭代法解Ax=b
+[Gauss–Seidel method](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method)
+###Jacobi迭代法解Ax=b
+[Jacobi method](https://en.wikipedia.org/wiki/Jacobi_method#Description)

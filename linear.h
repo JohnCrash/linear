@@ -93,5 +93,13 @@ int inverse(real * A,real * B,int n);
  int solve_plu(real * P,real * L,real * U,real * b,real *x,int n);
  int solve_low_triangle(real * L,real * b,real *x,int n);
  int solve_upper_triangle(real *L,real * b,real *x,int n);
+ /*
+  * 使用Gauss-Seidel迭代法解Ax=b的近似解
+  */
+ int solve_gauss_seidel(real * A,real * b,real * x,int n,int c);
+ /*
+  * 使用jacobi迭代法解Ax=b的近似解，收敛速度比Gauss-Seidel法慢
+  */
+ int solve_jacobi(real * A,real * b,real * x,int n,int c);
  
 #endif
