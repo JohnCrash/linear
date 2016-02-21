@@ -74,8 +74,8 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 			for(j=0;j<n;j++){
 				d += (A[i*n+j]*x[j]);
 			}
-			d -= b[i];
-			x[i] = d;
+			x[i] = d-b[i];
+			//x[i] = b[i]-d;
 		}
 		printX(x,n);
 		for(i=0;i<n;i++){
