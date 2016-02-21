@@ -26,6 +26,8 @@ void identity(real * A,int n);
 
 void readom_init();
 void random_matrix(real * A,int n);
+void random_vector(real * V,int n);
+real randomReal();
 
 /*
  * 进行lu分解，将U存入A中，将L存入到L中

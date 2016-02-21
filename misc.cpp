@@ -46,11 +46,23 @@ void printMat(const char * s,real * A)
 			printf("%s\n",s);
 		for (i = 0; i<N; i++){
 			for (j = 0; j<N; j++){
-				printf("%f ", A[i*N + j]);
+				printf("%.4f\t", A[i*N + j]);
 			}
 			printf("\n");
 		}
 	}
+}
+
+void printVec(const char * s,real *v)
+{
+	if(_disablePrint)
+		return;
+	if(s)
+		printf("%s\n",s);	
+	for(int i=0;i<N;i++){
+		printf("%.4f\t",v[i]);
+	}
+	printf("\n");
 }
 
 //打印三个并列的矩阵[P][A][B]
@@ -109,6 +121,43 @@ real * makeRandMatrix()
 		}
 	}
 	return A;
+}
+
+real * makeRandVec()
+{
+	real * V = (real *)malloc(N*sizeof(real));
+	random_vector(V,N);
+	for(int i = 0; i < N; i++){
+		V[i] = (int)(V[i]*10);
+	}
+	return V;
+}
+
+real randNegative()
+{
+	return (randomReal()>0.5?1.0:-1.0);
+}
+
+real * makeRandMatrix2()
+{
+	real * A = makeMatrix();
+	random_matrix(A,N);
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < N; j++){
+			A[i*N + j] = (int)(A[i*N + j]*10)*randNegative();
+		}
+	}
+	return A;
+}
+
+real * makeRandVec2()
+{
+	real * V = (real *)malloc(N*sizeof(real));
+	random_vector(V,N);
+	for(int i = 0; i < N; i++){
+		V[i] = (int)(V[i]*10)*randNegative();
+	}
+	return V;
 }
 
 void freeMatrix(real * A)

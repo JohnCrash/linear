@@ -83,6 +83,13 @@ void random_matrix(real * A,int n)
 	}
 }
 
+void random_vector(real * V,int n)
+{
+	for(int i=0;i<n;i++){
+		V[i]=(real)rand()/(real)RAND_MAX;
+	}	
+}
+
 void multiplyC(real * A,real c,int n)
 {
 	for(int i=0;i<n;i++){
