@@ -1,4 +1,3 @@
-AM_CFLAGS=-std=c++11
 lib_LTLIBRARIES=liblinear.la
 liblinear_la_SOURCES=lu.cpp misc.cpp matrix.cpp solve.cpp lcp_pgs.cpp
 liblinear_ladir=linear

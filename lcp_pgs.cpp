@@ -16,6 +16,68 @@ static void printX(real * x,int n)
 	printf("\n");	
 }
 
+static void printCol(real s,int j,int n)
+{
+	if(j==0){
+		if(s>=0)
+			printf("| %.2f\t",s);
+		else
+			printf("|%.2f\t",s);
+	}else if(j==n-1){
+		if(s>=0)
+			printf(" %.2f\t|",s);
+		else
+			printf("%.2f\t|",s);
+	}else{
+		if(s>=0)
+			printf(" %.2f\t",s);	
+		else
+			printf("%.2f\t",s);	
+	}
+}
+
+static void printGussSolve2(real * A,real *b,int n)
+{
+	real  x[4][2];
+	int c = 0;
+	x[c][0] = 0; //[0]
+	x[c][1] = 0; //[0]
+	c++;
+	if(A[0*n+0]!=0){
+		x[c][0] = -b[0]/A[0*n+0];//[1]
+		x[c][1] = 0;//[0]
+		c++;
+	}
+	if(A[1*n+1]!=0){
+		x[c][0] = 0;//[0]
+		x[c][1] = -b[1]/A[1*n+1];//[1]	
+		c++;
+	}
+	real d = A[0*n+0]*A[1*n+1]-A[0*n+1]*A[1*n+0];
+	if(d!=0){
+		x[3][0] = (b[1]*A[0*n+1]-b[0]*A[1*n+1])/d;//[1]
+		x[3][1] = (b[0]*A[1*n+0]-b[1]*A[0*n+0])/d;//[1]
+		c++;
+	}
+	for(int j=0;j<n;j++){
+		real y[2];
+		
+		for(int i=0;i<c;i++){
+			y[0] = A[0*n+0]*x[i][0]+A[0*n+1]*x[i][1]+b[0];
+			y[1] = A[1*n+0]*x[i][0]+A[1*n+1]*x[i][1]+b[1];
+			if(x[i][j]>0)
+				printf("[ %.2f,\t",x[i][j]);
+			else
+				printf("[%.2f,\t",x[i][j]);			
+			if(y[j]>0)
+				printf(" %.2f]",y[j]);
+			else
+				printf("%.2f]",y[j]);			
+		}
+		printf("\n");
+	}
+}
+
 /*
  *使用Gauss-Seidel迭代法解LCP
  * x'(Ax+b)=0 x'表示x转置
@@ -27,16 +89,23 @@ static void printX(real * x,int n)
 int lcp_pgs(real * A,real *b,real *x,int n)
 {
 	int i,j,k;
-	real d,z,c,e;
+	real d,z,c;
 	real * y = (real *)malloc(n*sizeof(real));
+	real * AA = (real *)malloc(n*n*sizeof(real));
+	real * bb = (real *)malloc(n*sizeof(real));
+	memcpy(AA,A,n*n*sizeof(real));
+	memcpy(bb,b,n*sizeof(real));
+	
 	/*
-	 * A = M+N ,M=daig(A),N=tril(A,-1)+triu(A,1)
+	 * A = M-N ,M=daig(daig(A)),N=-(tril(A,-1)+triu(A,1))
 	 * 直接将A=M'N,b=M'b
 	 */
 	for(i=0;i<n;i++){
 		d = A[i*n+i];
 		if(d==0){
 			free(y);
+			free(AA);
+			free(bb);
 			return 0;
 		}
 		b[i] /= d;
@@ -44,18 +113,29 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 			if(i==j){
 				A[i*n+j] = 0;
 			}else{
-				A[i*n+j]/=d;
+				A[i*n+j]/=-d;
 			}
 		}
 	}
 	/*
 	 * 开始迭代
 	 */
-	 printf("========================\n");
-	  printMat("solve lcp A=",A);
-	  printVec("lcp b=",b);
-	 printVec("lcp x=",x);
-	 printf("---------------------------------------------\n");
+	printf("------------------------------------------------\n");
+	printf("|\tA\t|b\t|\tM'N\t|M'b\t|\n");
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			printCol(AA[i*n+j],j,n);
+		}
+		printCol(bb[i],n-1,n);
+		for(j=0;j<n;j++){
+			printCol(A[i*n+j],j,n);
+		}		
+		printCol(b[i],n-1,n);
+		printf("\n");
+	}
+	printf("------------------------------------------------\n");
+	if(n==2)
+		printGussSolve2(AA,bb,n);
 	k = 0;
 	while(true){
 		printf("pgs[%d]:",k);
@@ -67,34 +147,34 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 		 * 因为x>=0是解的条件
 		 */
 		c = 0;
-		e = 0;
-		memcpy(y,x,n*sizeof(real));
+		//memcpy(y,x,n*sizeof(real));
 		for(i=0;i<n;i++){
 			d = 0;
 			for(j=0;j<n;j++){
 				d += (A[i*n+j]*x[j]);
 			}
-			x[i] = d-b[i];
-			//x[i] = b[i]-d;
+			y[i] = d-b[i];
+			//y[i] = b[i]-d;
 		}
-		printX(x,n);
+		printX(y,n);
 		for(i=0;i<n;i++){
-			x[i] = max(0,x[i]);
+			y[i] = max(0,y[i]);
 			c = max(c,abs(x[i]-y[i]));
-			if(x[i]<0)
-				e+=x[i];
+			x[i] = y[i];
 		}		
 		/*
 		 * 判断收敛
 		 */
-		if(e>=0 && c<0.01){
+		if(k>10&&c<0.01){
 			printf("pgs[%d]:",k);
 			printX(x,n);			
 			printf("---------------------------------------------\n");
-			printf("pgs k=%d,e=%f,c=%f\n",k,e,c);
+			printf("pgs k=%d,c=%f\n",k,c);
 			printX(x,n);
 			printf("---------------------------------------------\n");
 			free(y);
+			free(AA);
+			free(bb);				
 			return k+1;
 		}
 		/*
@@ -105,5 +185,7 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 		k++;
 	}
 	free(y);
+	free(AA);
+	free(bb);
 	return 0;
 }

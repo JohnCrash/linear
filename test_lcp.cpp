@@ -23,10 +23,6 @@ bool check_lcp_result(real * A,real *b,real *x,int n)
 
 static void test_pgs()
 {
-	/*
-	 * 2,4
-	 */
-	srand(4);
 	real * A = makeRandMatrix2();
 	real * b = makeRandVec2();
 	real * x = makeRandVec2();
@@ -58,6 +54,15 @@ static void test_pgs()
 
 int main(int argn,char * argv[])
 {
+	if(argn>=1){
+		/*
+		 * 2,4
+		 */
+		 int s = atoi(argv[1]);
+		 printf("random seed : %d\n",s);
+		srand(s);
+	}
+		
 	test_pgs();
 	return 0;
 }
