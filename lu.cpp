@@ -391,7 +391,7 @@ int inverse(real * A,real * B,int n)
 	memcpy(A,B,n*n*sizeof(real));
 	multiply0(B,A,P,n,n,n);
 	free(P);
-	return 0;
+	return 1;
 }
 
 /*

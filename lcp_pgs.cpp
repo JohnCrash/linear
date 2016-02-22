@@ -97,9 +97,10 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 	memcpy(bb,b,n*sizeof(real));
 	
 	/*
-	 * A = M-N ,M=daig(daig(A)),N=-(tril(A,-1)+triu(A,1))
+	 * (1) A = M-N ,M=daig(daig(A)),N=-(tril(A,-1)+triu(A,1))
 	 * 直接将A=M'N,b=M'b
 	 */
+	 /*
 	for(i=0;i<n;i++){
 		d = A[i*n+i];
 		if(d==0){
@@ -116,7 +117,40 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 				A[i*n+j]/=-d;
 			}
 		}
+	}*/
+	/*
+	 * (2) A = M-N ,M=daig(daig(A))+trilA,-1),N=-triu(A,1)
+	 * 直接将A=M'N,b=M'b	
+	 */
+	real * M = (real*)malloc(n*n*sizeof(real));
+	real * NN = (real*)malloc(n*n*sizeof(real));
+	real * invM = (real*)malloc(n*n*sizeof(real));
+	real * v = (real*)malloc(n*sizeof(real));
+	memset(M,0,n*n*sizeof(real));
+	memset(NN,0,n*n*sizeof(real));
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			if(i>=j)
+				M[i*n+j] = A[i*n+j];
+			else
+				NN[i*n+j] = -A[i*n+j];
+		}
 	}
+	
+	inverse(M,invM,n);
+	
+	multiply0(A,invM,NN,n,n,n);
+	multiply0(v,invM,b,n,n,1);
+	memcpy(b,v,n*sizeof(real));
+	printf("1\n");
+	free(v);
+	printf("2\n");
+	free(invM);
+	printf("3\n");
+	free(M);
+	printf("4\n");
+	free(NN);
+	printf("5\n");
 	/*
 	 * 开始迭代
 	 */
