@@ -27,3 +27,7 @@ crout方法比标准的LU分解要快一倍左右。
 [Gauss–Seidel method](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method)
 ###Jacobi迭代法解Ax=b
 [Jacobi method](https://en.wikipedia.org/wiki/Jacobi_method#Description)
+###线性互补问题(Linear Complementarity Probliem,LCP)
+通过穷举得到全部解，因为程序很慢只能用来作为验证其他算法的佐证。</br>
+The Projected Gauss-Seidel Method 该方法只在正定阵和主元占优矩阵收敛。
+
