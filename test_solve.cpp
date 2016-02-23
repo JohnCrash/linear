@@ -127,9 +127,9 @@ void test_gauss_seidel()
 	printf("=======================\nx=\n");
 	printC(x,4);	
 	for(int j=0;j<5;j++){
-		//solve_gauss_seidel(A,b,x,4,1);
-		solve_jacobi(A,b,x,4,1);
-		printM(A,4);
+		solve_gauss_seidel(A,b,x,4,1);
+		//solve_jacobi(A,b,x,4,1);
+		//printM(A,4);
 		printf("=======================\nx=\n");
 		printC(x,4);
 	}

@@ -123,6 +123,16 @@ real * makeRandMatrix()
 	return A;
 }
 
+real * makeRandSPDMatrix()
+{
+	real * B = makeMatrix();
+	real * A = makeRandMatrix();
+	random_matrix(A,N);
+	multiply0(B,A,A,N,N,N);
+	free(A);
+	return B;
+}
+
 real * makeRandVec()
 {
 	real * V = (real *)malloc(N*sizeof(real));

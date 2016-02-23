@@ -107,6 +107,8 @@ int solve_upper_triangle(real *U,real * b,real *x,int n)
  
 /*
  * Gauss-Seidel迭代法解方程近似解
+ * Gauss-Seidel迭代成立的条件是:
+ * A是一个对称正定矩阵或者A是一个严格主元占优的
  * https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method
  * c 是迭代次数
  * x 迭代的初始变量

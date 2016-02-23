@@ -80,11 +80,14 @@ static void printGussSolve2(real * A,real *b,int n)
 
 /*
  *使用Gauss-Seidel迭代法解LCP
+ * Gauss-Seidel迭代成立的条件是:
+ * A是一个对称正定矩阵或者A是一个严格主元占优的
  * x'(Ax+b)=0 x'表示x转置
  * x>=0 and Ax+b>=0
  * x是迭代初始值
  * 解法不停的迭代下面公式直到x(k+1)收敛
  * max(0,(M'(Nx(k)-b))) = x(k+1) ,M'是M的逆，x(k)第k次迭代
+ *下面使用的是Kenny Erleben的PGS
  */
 int lcp_pgs(real * A,real *b,real *x,int n)
 {
@@ -98,9 +101,9 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 	
 	/*
 	 * (1) A = M-N ,M=daig(daig(A)),N=-(tril(A,-1)+triu(A,1))
+	 * (2) A = M-N ,M=daig(daig(A))+trilA,-1),N=-triu(A,1) Kenny Erleben的方法
 	 * 直接将A=M'N,b=M'b
 	 */
-	 /*
 	for(i=0;i<n;i++){
 		d = A[i*n+i];
 		if(d==0){
@@ -117,40 +120,7 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 				A[i*n+j]/=-d;
 			}
 		}
-	}*/
-	/*
-	 * (2) A = M-N ,M=daig(daig(A))+trilA,-1),N=-triu(A,1)
-	 * 直接将A=M'N,b=M'b	
-	 */
-	real * M = (real*)malloc(n*n*sizeof(real));
-	real * NN = (real*)malloc(n*n*sizeof(real));
-	real * invM = (real*)malloc(n*n*sizeof(real));
-	real * v = (real*)malloc(n*sizeof(real));
-	memset(M,0,n*n*sizeof(real));
-	memset(NN,0,n*n*sizeof(real));
-	for(i=0;i<n;i++){
-		for(j=0;j<n;j++){
-			if(i>=j)
-				M[i*n+j] = A[i*n+j];
-			else
-				NN[i*n+j] = -A[i*n+j];
-		}
 	}
-	
-	inverse(M,invM,n);
-	
-	multiply0(A,invM,NN,n,n,n);
-	multiply0(v,invM,b,n,n,1);
-	memcpy(b,v,n*sizeof(real));
-	printf("1\n");
-	free(v);
-	printf("2\n");
-	free(invM);
-	printf("3\n");
-	free(M);
-	printf("4\n");
-	free(NN);
-	printf("5\n");
 	/*
 	 * 开始迭代
 	 */
@@ -177,7 +147,6 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 		/*
 		 * c是abs(x[k]-x[k+1]),中最大的那个
 		 * 如果c越来越小，并且低于一个值就认为收敛。
-		 * e是所有x中负数的和，如果e>=0表示在正常范围
 		 * 因为x>=0是解的条件
 		 */
 		c = 0;
@@ -199,7 +168,7 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 		/*
 		 * 判断收敛
 		 */
-		if(k>10&&c<0.01){
+		if(c<0.01){
 			printf("pgs[%d]:",k);
 			printX(x,n);			
 			printf("---------------------------------------------\n");
@@ -222,4 +191,27 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 	free(AA);
 	free(bb);
 	return 0;
+}
+
+int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax)
+{
+  int i, j;
+  real delta;
+	if(n==2)
+		printGussSolve2(A,b,n);
+  // Gauss-Seidel Solver
+  for (int k = 0; k < kMax; ++k)
+  {
+    for (i = 0; i < n; ++i)
+    {
+      delta = 0.0f;
+
+      for (j = 0;   j < i; ++j) delta += A[i*n+j]*x[j];
+      for (j = i+1; j < n; ++j) delta += A[i*n+j]*x[j];
+
+      x[i] = (b[i] - delta) / A[i*n+i];
+    }
+  }
+
+  return 1;
 }

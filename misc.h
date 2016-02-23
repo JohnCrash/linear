@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#define N 2
+#define N 6
 
 void disablePrint(int b);
 int printDiffent(const char * s,real * A, real *B);
@@ -25,6 +25,8 @@ real randNegative();
 real * makeRandMatrix2();
 real * makeRandVec2();
 real randomReal();
+
+real * makeRandSPDMatrix();
 
 void freeMatrix(real * A);
 
