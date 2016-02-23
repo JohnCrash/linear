@@ -124,6 +124,7 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 	/*
 	 * 开始迭代
 	 */
+	 /*
 	printf("------------------------------------------------\n");
 	printf("|\tA\t|b\t|\tM'N\t|M'b\t|\n");
 	for(i=0;i<n;i++){
@@ -140,10 +141,11 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 	printf("------------------------------------------------\n");
 	if(n==2)
 		printGussSolve2(AA,bb,n);
+	*/
 	k = 0;
 	while(true){
-		printf("pgs[%d]:",k);
-		printX(x,n);
+	//	printf("pgs[%d]:",k);
+	//	printX(x,n);
 		/*
 		 * c是abs(x[k]-x[k+1]),中最大的那个
 		 * 如果c越来越小，并且低于一个值就认为收敛。
@@ -159,7 +161,7 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 			y[i] = d-b[i];
 			//y[i] = b[i]-d;
 		}
-		printX(y,n);
+		//printX(y,n);
 		for(i=0;i<n;i++){
 			y[i] = max(0,y[i]);
 			c = max(c,abs(x[i]-y[i]));
@@ -169,12 +171,13 @@ int lcp_pgs(real * A,real *b,real *x,int n)
 		 * 判断收敛
 		 */
 		if(c<0.01){
-			printf("pgs[%d]:",k);
+		/*	printf("pgs[%d]:",k);
 			printX(x,n);			
 			printf("---------------------------------------------\n");
 			printf("pgs k=%d,c=%f\n",k,c);
 			printX(x,n);
 			printf("---------------------------------------------\n");
+			*/
 			free(y);
 			free(AA);
 			free(bb);				

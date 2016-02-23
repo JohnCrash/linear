@@ -21,6 +21,19 @@ bool check_lcp_result(real * A,real *b,real *x,int n)
 	free(y);
 }
 
+void printLCPVx(std::vector<real *>& vx)
+{
+	for(auto i=vx.begin();i!=vx.end();++i){
+		printf("[%d]\t",i-vx.begin());
+		for(int j =0;j<2*N;j++){
+			if(j==N)
+				printf("|");
+			printf("%.2f ",(*i)[j]);
+		}
+		printf("\n");
+	}	
+}
+
 static void test_pgs()
 {
 	real * A = makeRandSPDMatrix();
@@ -29,6 +42,7 @@ static void test_pgs()
 	real * xx = makeRandVec2();
 	real * AA = makeMatrix();
 	real * bb = makeRandVec2();
+	std::vector<real *> vx;
 	copyMatrix(AA,A);
 	memcpy(bb,b,N*sizeof(real));
 	//memset(x,0,sizeof(real)*N);
@@ -39,7 +53,9 @@ static void test_pgs()
 	printMat("solve lcp A=",A);
 	printVec("lcp b=",b);
 	printVec("lcp x=",x);
-	int result = lcp_pgs(A,b,x,N);
+	int result = lcp(A,b,vx,N);	
+	printLCPVx(vx);
+	result = lcp_pgs(A,b,x,N);
 	//int result = Solve_GaussSeidel(A,b,x,N,15);
 	//for(int i =0;i<N;i++)
 	//	b[i] = -b[i];
@@ -57,6 +73,7 @@ static void test_pgs()
 	freeMatrix(x);
 	freeMatrix(AA);
 	freeMatrix(bb);
+	freeLcpSolve(vx);
 }
 
 int main(int argn,char * argv[])

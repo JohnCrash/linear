@@ -2,6 +2,7 @@
 #include "lcp.h"
 #include <stdlib.h>
 #include <memory.h>
+#include <stdio.h>
 
 /*
  * 将方阵src的第i行变负复制到des的第j行
@@ -25,6 +26,20 @@ static void copyIdentity(real *des,int j,int i,int n)
 			des[k*n+j] = 0;
 	}
 }
+
+static void printMat(const char * s,real * A,int N)
+{
+	int i, j;
+	if(s)
+		printf("%s\n",s);
+	for (i = 0; i<N; i++){
+		for (j = 0; j<N; j++){
+			printf("%.4f\t", A[i*N + j]);
+		}
+		printf("\n");
+	}
+}
+
 /*
  * N是一个互补集合，其中N[i]=0表示对于的x[i]=0 或者N[i]=1表示对应的x[i]>=0
  */
@@ -38,17 +53,31 @@ static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int 
 			copyIdentity(M,j,i,n);
 		}
 	}
+//	printMat("M=",M,n);
 	if( crout_plu(M,P,L,n) ){
 		if( solve_plu(P,L,M,b,x,n) ){
+//			printf("solve:");
 			for(i=0;i<n;i++){
-				if(x[i]<0)
+//				printf("%.2f ",x[i]);
+				if(x[i]<0){
+//					printf("\n");
 					return 0;
+				}
 				x[n+i] = N[i];
 			}
+//			printf("\n");
 			return 1;
 		}
 	}
 	return 0;
+}
+
+static void printN(int *N,int n)
+{
+	for(int i=0;i<n;i++){
+		printf("%d ",N[i]);
+	}
+	printf("\n");
 }
 
 /*
@@ -65,16 +94,19 @@ int lcp(real *A,real *b,std::vector<real *>& xs,int n)
 	real * M = (real *)malloc(n*n*sizeof(real));
 	real * P = (real *)malloc(n*n*sizeof(real));
 	real * L = (real *)malloc(n*n*sizeof(real));
+	real * bb = (real *)malloc(n*sizeof(real));
 	real * x = NULL;
 	memset(N,0,n);
 	do{
 		if(!x)
 			x = (real*)malloc(2*n*sizeof(real));
+	//	printN(N,n);
+		memcpy(bb,b,n*sizeof(real));
 		/*
 		 * 求解已知互补条件N的方程,M,P,L是中间变量防止多次分配
 		 * x返回解,如果有解并且x>=0,y>=0返回1
 		 */
-		if( doSolveN(A,b,N,M,P,L,x,n) ){
+		if( doSolveN(A,bb,N,M,P,L,x,n) ){
 			xs.push_back(x);
 			x = NULL;
 		}
@@ -94,6 +126,7 @@ int lcp(real *A,real *b,std::vector<real *>& xs,int n)
 	free(M);
 	free(P);
 	free(L);
+	free(bb);
 	return 0;
 }
 
