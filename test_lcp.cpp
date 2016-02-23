@@ -55,7 +55,7 @@ static void test_pgs()
 	printVec("lcp x=",x);
 	int result = lcp(A,b,vx,N);	
 	printLCPVx(vx);
-	result = lcp_pgs(A,b,x,N);
+	result = lcp_pgs(A,b,x,N,15,0.01);
 	//int result = Solve_GaussSeidel(A,b,x,N,15);
 	//for(int i =0;i<N;i++)
 	//	b[i] = -b[i];
