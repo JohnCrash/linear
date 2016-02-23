@@ -1,6 +1,6 @@
 AM_CXXFLAGS=-std=c++11
 lib_LTLIBRARIES=liblinear.la
-liblinear_la_SOURCES=lu.cpp misc.cpp matrix.cpp solve.cpp lcp_pgs.cpp lcp.cpp
+liblinear_la_SOURCES=lu.cpp misc.cpp matrix.cpp solve.cpp lcp_pgs.cpp lcp.cpp lcp_lemke.cpp
 liblinear_ladir=linear
 liblinear_la_HEADERS=linear.h misc.h
 liblinear_la_LDFLAGS=-no-undefined -avoid-version
