@@ -5,9 +5,6 @@
 #include <memory.h>
 #include "misc.h"
 
-#define max(a,b) (a>b?a:b)
-#define abs(a) ((a)>0?(a):-(a))
-
 static void printX(real * x,int n)
 {
 	for(int i=0;i<n;i++){
@@ -142,8 +139,8 @@ int lcp_pgs2(real * A,real *b,real *x,int n)
 		}
 		//printX(y,n);
 		for(i=0;i<n;i++){
-			y[i] = max(0,y[i]);
-			c = max(c,abs(x[i]-y[i]));
+			y[i] = fmax(0,y[i]);
+			c = fmax(c,fabs(x[i]-y[i]));
 			x[i] = y[i];
 		}		
 		/*
@@ -215,8 +212,8 @@ int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc)
 			for(j=0;j<n;j++){
 				d += (A[i*n+j]*x[j]);
 			}
-			z = max(0,d-b[i]);
-			c = max(c,abs(x[i]-z));
+			z = fmax(0,d-b[i]);
+			c = fmax(c,fabs(x[i]-z));
 			x[i] = z;
 		}
 		/*

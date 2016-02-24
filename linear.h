@@ -7,12 +7,26 @@
 #define REAL(x) (x##f)
 typedef float real;
 #define FTACC 0.01f
+	#ifndef FLT_MIN
+	#define FLT_MIN 1.1754943508222875e-38
+	#endif
+	#ifndef FLT_MAX
+	#define FLT_MAX 3.4028234663852886e+38
+	#endif	
 #else
 #define REAL(x) (x)
 typedef double real;
 #define FTACC 0.000001
+	#ifndef FLT_MIN
+	#define FLT_MIN 2.2250738585072014e-308
+	#endif
+	#ifndef FLT_MAX
+	#define FLT_MAX 1.7976931348623157e+308
+	#endif	
 #endif
 
+#define fmax(a,b) ((a)>(b)?(a):(b))
+#define fmin(a,b) ((a)<(b)?(a):(b))
 #define fabs(x) ((x)>0?(x):-(x))
 #define FTEQ(x,y) (fabs(x-y)>FTACC/100?0:1)
 
