@@ -215,21 +215,16 @@ int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc)
 			for(j=0;j<n;j++){
 				d += (A[i*n+j]*x[j]);
 			}
-			z = d-b[i];
+			z = max(0,d-b[i]);
 			c = max(c,abs(x[i]-z));
-			x[i] = max(0,z);
+			x[i] = z;
 		}
 		/*
 		 * 判断收敛
 		 */
-		if(c<acc){			
-			return k+1;
-		}
-		/*
-		 * 判断发散,暂时不知道如何实现
-		 */
+		if(c<acc)break;
 	}while(k++<nMax);
-	return 0;
+	return k;
 }
 
 int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax)

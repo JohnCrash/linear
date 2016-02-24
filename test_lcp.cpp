@@ -1,15 +1,18 @@
 #include "lcp.h"
 #include "misc.h"
 
-bool check_lcp_result(real * A,real *b,real *x,int n)
+void check_lcp_result(real * A,real *b,real *x,int n)
 {
 	int i;
+	bool p = true;
 	real * y = (real*)malloc(n*sizeof(real));
 	multiply0(y,A,x,n,n,1);
 	for(i =0;i<n;i++){
 		y[i] += b[i];
+		if( abs(y[i]*x[i])>0.01 )
+			p = false;
 	}
-	printf("ceck lcp result:\nx=");
+	printf("ceck lcp_pgs result: %s \nx=",p?"pass":"fail");
 	for(i=0;i<n;i++){
 		printf("%.4f\t",x[i]);
 	}
@@ -46,28 +49,25 @@ static void test_pgs()
 	copyMatrix(AA,A);
 	memcpy(bb,b,N*sizeof(real));
 	//memset(x,0,sizeof(real)*N);
-	memcpy(x,b,N*sizeof(real));
+	memset(x,0,N*sizeof(real));
 	//memcpy(xx,b,N*sizeof(real));
 	memset(xx,0,sizeof(real)*N);
 	
+	printf("--------------------------------------------------------\n");
 	printMat("solve lcp A=",A);
 	printVec("lcp b=",b);
-	printVec("lcp x=",x);
-	int result = lcp(A,b,vx,N);	
+	printf("--------------------------------------------------------\n");
+	int result1 = lcp(A,b,vx,N);	
+	int result2 = lcp_pgs(A,b,x,N,15,0.001);
+	int result3 = Solve_GaussSeidel(AA,bb,xx,N,15);
+	printf("lcp solve:\n");
+	printf("--------------------------------------------------------\n");
 	printLCPVx(vx);
-	result = lcp_pgs(A,b,x,N,15,0.01);
-	//int result = Solve_GaussSeidel(A,b,x,N,15);
-	//for(int i =0;i<N;i++)
-	//	b[i] = -b[i];
-	//solve_gauss_seidel(A,b,xx,N,15);
-	printf("lcp solve %s (%d)\n",result?"true":"false",result);
-	printVec("lcp solve ",x);
-	printVec("gs solve ",xx);
-	printMat("solve lcp AA=",AA);
-	printVec("lcp bb=",bb);
-	printVec("lcp x=",x);
-
+	printf("lcp_pgs solve %s (%d)\n",result2?"true":"false",result2);
+	printVec("lcp_pgs=",x);
 	check_lcp_result(AA,bb,x,N);
+	printVec("gs solve :",xx);
+
 	freeMatrix(A);
 	freeMatrix(b);
 	freeMatrix(x);
