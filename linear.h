@@ -111,6 +111,7 @@ int inverse(real * A,real * B,int n);
  int solve_upper_triangle(real *L,real * b,real *x,int n);
  /*
   * 使用Gauss-Seidel迭代法解Ax=b的近似解
+  * Gauss-Seidel迭代收敛条件是A为正定矩阵或者是主元占优矩阵
   */
  int solve_gauss_seidel(real * A,real * b,real * x,int n,int c);
  /*
