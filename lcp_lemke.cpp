@@ -1,9 +1,13 @@
  #include "linear.h"
  #include "lcp.h"
+ #include <stdlib.h>
+ #include <memory.h>
+ #include <stdio.h>
  
+ #define SKIP(n) (2*(n)+1)
 static void sub_line(real * M,int i,int j,int n)
 {
-	 int k,skip = 2*n+2;
+	 int k,skip = SKIP(n);
 	 int src,des;
 	 des = i*skip;
 	 src = j*skip;
@@ -14,7 +18,7 @@ static void sub_line(real * M,int i,int j,int n)
  
 static void add_line(real * M,int i,int j,int n)
 {
-	 int k,skip = 2*n+2;
+	 int k,skip = SKIP(n);
 	 int src,des;
 	 des = i*skip;
 	 src = j*skip;
@@ -25,7 +29,7 @@ static void add_line(real * M,int i,int j,int n)
  
 static void multiply_line(real * M,real d,int i,int n)
  {
-	 int k,skip = 2*n+2;
+	 int k,skip = SKIP(n);
 	 int des;
 	 des = i*skip;
 	 for(k=0;k<skip;k++){
@@ -35,10 +39,19 @@ static void multiply_line(real * M,real d,int i,int n)
  
  static void negative_line(real * M,int j,int n)
  {
-	 int i,skip = 2*n+2;
+	 int i,skip = SKIP(n);
 	 int k = j*skip;
 	 for(i=0;i<skip;i++){
 		 M[k+i] = -M[k+i];
+	 }
+ }
+ 
+ static void elimination(real *M,int eli,int row,int col,int n)
+ {
+	 int i,skip = SKIP(n);
+	 real d = M[eli*skip+col];
+	 for(i=0;i<skip;i++){
+		 M[eli*skip+i] -= d*M[row*skip+i];
 	 }
  }
  
@@ -46,7 +59,7 @@ static void multiply_line(real * M,real d,int i,int n)
  {
 	 int i,j;
 	 real d,r;
-	 int skip = 2*n+2;
+	 int skip = SKIP(n);
 	 d = 0;
 	 j = -1;
 	 for(i=0;i<n;i++){
@@ -68,40 +81,46 @@ static void multiply_line(real * M,real d,int i,int n)
 	 return 0;
  }
  
- static int argmin_element(real * M,int n,int * prow,int *pcol)
+ static int argmin_element(real * M,int *N,int n,int * prow,int *pcol)
  {
-	 int i,j,k,s,skip = 2*n+2;
+	 int i,j,k,s,skip = SKIP(n);
 	 real line_max,ratios,d;
 
-	 ratios = FLT_MAX
+	 k = s = -1;
+	 ratios = FLT_MAX;
 	 for(i=0;i<n;i++){
-		 line_max = -FLT_MAX;
-		 for(j=0;j<skip-1;j++){
-			 if( M[i*skip+j] > line_max ){
-				 k = j;
-				 line_max = M[i*skip+j];
+		 if( N[i]==-1 ){
+			 line_max = -FLT_MAX;
+			 for(j=0;j<skip-1;j++){
+				 if( N[j%n]==-1&&M[i*skip+j] > line_max ){
+					 k = j;
+					 line_max = M[i*skip+j];
+				 }
+			 }
+			 if(line_max>0){
+				d = M[i*skip+skip-1]/line_max;
+				if( d < ratios ){
+					ratios = d;
+					s = i;
+				}
+			 }else{
+				return 0;
 			 }
 		 }
-		 if(line_max!=0){
-			d = M[i*skip+skip-1]/line_max;
-			if( d < ratios ){
-				ratios = d;
-				s = i;
-			}
-		 }else{
-			return 0;
-		 }
 	 }
-	 *prow=s;
-	 *col = k;
-	 return 1;
+	 if(k!=-1&&s!=-1){
+		 *prow=s;
+		 *pcol = k;
+		 return 1;
+	 }else return 0;
  }
  
  int solve_lemke(real * M,real * x,int n)
  {
-	 int i,j,skip;
+	 int i,j,k,skip;
 	 real d;
-	 skip = 2*n+2;
+	 int * N;
+	 skip = SKIP(n);
 	 if(!positive_b(M,n)){
 		 for(i=0;i<n;i++){
 			 x[i] = 0;
@@ -109,12 +128,33 @@ static void multiply_line(real * M,real d,int i,int n)
 		 }
 		 return 1;
 	 }
-	 
-	 if( argmin_element(M,n,&i,&j) ){
-		 d = M[i*skip+j];
-		 if( d != 0 )
-			multiply_line(M,1/d,i,n);
+	 N = (int *)malloc(n*sizeof(int));
+	 for(i=0;i<n;i++)N[i]=-1;
+	 for(i=0;i<n;i++){
+		 int row,col;
+		 if( argmin_element(M,N,n,&row,&col) ){
+			N[row] = col;
+			d = 1.0/M[row*skip+col];
+			multiply_line(M,d,i,n);
+			for(k=0;k<n;k++){
+				if(k!=row&&M[k*skip+col]!=0){
+					elimination(M,k,row,col,n);
+				}
+			}
+		 }else goto failexit;
 	 }
+	 for(i=0;i<n;i++){
+		 if(N[i]==-1||M[i*skip+skip-1]<0){
+			 goto failexit;
+		 }
+	 }
+	 memset(x,0,2*n*sizeof(real));
+	 for(i=0;i<n;i++){
+		x[N[i]] = M[i*skip+skip-1];
+	 }
+	 return 1;
+failexit:
+	 free(N);
 	 return 0;
  }
  
@@ -124,7 +164,7 @@ static void multiply_line(real * M,real d,int i,int n)
  int lcp_lemke(real * A,real *b,real *x,int n)
  {
 	int i,j,k,skip;
-	skip = 2*n+2;
+	skip = SKIP(n);
 	real * M = (real *)malloc(n*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-M,-1,b] 增广矩阵
@@ -138,8 +178,7 @@ static void multiply_line(real * M,real d,int i,int n)
 				M[k+j] = 1;
 			M[k+n+j] = -A[i*n+j];
 		}
-		M[k+2*n] = -1;
-		M[k+2*n+1] = b;
+		M[k+skip-1] = b[i];
 	}
 	k = solve_lemke(M,x,n);
 	free(M);
