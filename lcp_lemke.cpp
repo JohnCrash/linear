@@ -164,7 +164,7 @@ static void multiply_line(real * M,real d,int i,int n)
 	 N = (int *)malloc(n*sizeof(int));
 	 for(i=0;i<n;i++)N[i]=-1;
 	 i = 0;
-	 while(i<=n){
+	 while(i<n){
 		 int row,col;
 		 printM(M,N,n);
 		 if( argmin_element(M,N,n,&row,&col) ){

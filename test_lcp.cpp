@@ -98,7 +98,7 @@ static void test_lemke()
 	std::vector<real *> vx;
 	copyMatrix(A,exaples_m);
 	for(int i =0;i<N;i++)
-		x[i] = exaples_q[i];
+		b[i] = exaples_q[i];
 	copyMatrix(AA,A);
 	memcpy(bb,b,N*sizeof(real));
 	//memset(x,0,sizeof(real)*N);
