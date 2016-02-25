@@ -5,6 +5,31 @@
  #include <stdio.h>
  
  #define SKIP(n) (2*(n)+1)
+ 
+ static void printM(real * M,int * N,int n)
+ {
+	 int skip = SKIP(n);
+	 printf("-----------------------------------------------------------------\n");
+	 for(int i=0;i<n;i++){
+		 if(N){
+			 if(N[i]!=-1)
+				printf("[%d]",N[i]);
+			else
+				printf("[X]");
+		 }
+		for(int j=0;j<skip;j++){
+			real d = M[i*skip+j];
+			if(d>0)
+				printf(" %.2f ",d);
+			else if(d<0)
+				printf("%.2f ",d);
+			else
+				printf(" 0.00 ");
+		 }
+		 printf("\n");
+	 }
+ }
+ 
 static void sub_line(real * M,int i,int j,int n)
 {
 	 int k,skip = SKIP(n);
@@ -81,19 +106,26 @@ static void multiply_line(real * M,real d,int i,int n)
 	 return 0;
  }
  
+ static bool isused(int *N,int j,int n)
+ {
+	 for(int i=0;i<n;i++){
+		 if( N[i]!=-1 && N[i]%n==j%n )return true;
+	 }
+	 return false;
+ }
+ 
  static int argmin_element(real * M,int *N,int n,int * prow,int *pcol)
  {
-	 int i,j,k,s,skip = SKIP(n);
+	 int i,j,k,s,r,skip = SKIP(n);
 	 real line_max,ratios,d;
-
-	 k = s = -1;
 	 ratios = FLT_MAX;
+	 k = s = -1;
 	 for(i=0;i<n;i++){
 		 if( N[i]==-1 ){
 			 line_max = -FLT_MAX;
 			 for(j=0;j<skip-1;j++){
-				 if( N[j%n]==-1&&M[i*skip+j] > line_max ){
-					 k = j;
+				 if( M[i*skip+j] > line_max&&!isused(N,j,n) ){
+					 r = j;
 					 line_max = M[i*skip+j];
 				 }
 			 }
@@ -102,9 +134,8 @@ static void multiply_line(real * M,real d,int i,int n)
 				if( d < ratios ){
 					ratios = d;
 					s = i;
+					k = r;
 				}
-			 }else{
-				return 0;
 			 }
 		 }
 	 }
@@ -121,30 +152,41 @@ static void multiply_line(real * M,real d,int i,int n)
 	 real d;
 	 int * N;
 	 skip = SKIP(n);
+	 printM(M,NULL,n);
+	 printf("positive_b\n");
 	 if(!positive_b(M,n)){
 		 for(i=0;i<n;i++){
 			 x[i] = 0;
-			 x[n+i] = M[i*skip+skip-1+i];
+			 x[n+i] = M[i*skip+skip-1];
 		 }
 		 return 1;
 	 }
 	 N = (int *)malloc(n*sizeof(int));
 	 for(i=0;i<n;i++)N[i]=-1;
-	 for(i=0;i<n;i++){
+	 i = 0;
+	 while(i<=n){
 		 int row,col;
+		 printM(M,N,n);
 		 if( argmin_element(M,N,n,&row,&col) ){
 			N[row] = col;
 			d = 1.0/M[row*skip+col];
-			multiply_line(M,d,i,n);
+			printf("argmin_element[%d,%d]\n",row,col);
+			multiply_line(M,d,row,n);
+			printM(M,N,n);
 			for(k=0;k<n;k++){
 				if(k!=row&&M[k*skip+col]!=0){
 					elimination(M,k,row,col,n);
 				}
 			}
-		 }else goto failexit;
+			i++;
+		 }else{
+			 printf("argmin stop loop\n");
+			 goto failexit;
+		 }
 	 }
 	 for(i=0;i<n;i++){
 		 if(N[i]==-1||M[i*skip+skip-1]<0){
+			 printf("q<0 stop loop\n");
 			 goto failexit;
 		 }
 	 }

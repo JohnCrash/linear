@@ -76,6 +76,58 @@ static void test_pgs()
 	freeLcpSolve(vx);
 }
 
+static real exaples_m[]= {
+	1,-1,-1,-1,
+	-1,1,-1,-1,
+	1,1,2,0,
+	1,1,0,2
+};
+
+static real exaples_q[] = {
+	3,5,-9,-5,
+};
+
+static void test_lemke()
+{
+	real * A = makeRandSPDMatrix();
+	real * b = makeRandVec2();
+	real * x = (real *)malloc(2*N*sizeof(real));
+	real * xx = (real *)malloc(2*N*sizeof(real));
+	real * AA = makeMatrix();
+	real * bb = makeRandVec2();
+	std::vector<real *> vx;
+	copyMatrix(A,exaples_m);
+	for(int i =0;i<N;i++)
+		x[i] = exaples_q[i];
+	copyMatrix(AA,A);
+	memcpy(bb,b,N*sizeof(real));
+	//memset(x,0,sizeof(real)*N);
+	memset(x,0,N*sizeof(real));
+	//memcpy(xx,b,N*sizeof(real));
+	memset(xx,0,sizeof(real)*N);	
+	
+	printf("--------------------------------------------------------\n");
+	printMat("solve lcp A=",A);
+	printVec("lcp b=",b);
+	printf("--------------------------------------------------------\n");
+	int result1 = lcp(A,b,vx,N);	
+	int result2 = lcp_lemke(A,b,x,N);
+	
+	printf("lcp solve:\n");
+	printf("--------------------------------------------------------\n");
+	printLCPVx(vx);
+	printf("lcp_lemke solve %s (%d)\n",result2?"true":"false",result2);
+	printVec("lcp_lemke=",x);
+	check_lcp_result(AA,bb,x,N);
+	
+	freeMatrix(A);
+	freeMatrix(b);
+	freeMatrix(x);
+	freeMatrix(AA);
+	freeMatrix(bb);	
+	freeLcpSolve(vx);	
+}
+
 int main(int argn,char * argv[])
 {
 	if(argn>=1){
@@ -87,6 +139,7 @@ int main(int argn,char * argv[])
 		srand(s);
 	}
 		
-	test_pgs();
+	//test_pgs();
+	test_lemke();
 	return 0;
 }

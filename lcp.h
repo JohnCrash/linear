@@ -19,5 +19,7 @@ int freeLcpSolve(std::vector<real *>& xs);
  */
 int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc);
 int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax);
-
+ 
+int lcp_lemke(real * A,real *b,real *x,int n);
+ 
 #endif
