@@ -184,6 +184,7 @@ static void multiply_line(real * M,real d,int i,int n)
 			 goto failexit;
 		 }
 	 }
+printM(M,N,n);	 
 	 for(i=0;i<n;i++){
 		 if(N[i]==-1||M[i*skip+skip-1]<0){
 			 printf("q<0 stop loop\n");
@@ -192,7 +193,11 @@ static void multiply_line(real * M,real d,int i,int n)
 	 }
 	 memset(x,0,2*n*sizeof(real));
 	 for(i=0;i<n;i++){
-		x[N[i]] = M[i*skip+skip-1];
+		if( N[i] < n ){
+			x[n+N[i]] = M[i*skip+skip-1];
+		}else{
+			x[N[i]-n] = M[i*skip+skip-1];
+		}
 	 }
 	 return 1;
 failexit:

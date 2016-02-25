@@ -87,18 +87,28 @@ static real exaples_q[] = {
 	3,5,-9,-5,
 };
 
+static real exaples_m2[]= {
+	2,-1,3,
+	-1,10,2,
+	-3,-2,0
+};
+
+static real exaples_q2[] = {
+	-1,-10,6
+};
+
 static void test_lemke()
 {
-	real * A = makeRandSPDMatrix();
+	real * A = makeRandMatrix();
 	real * b = makeRandVec2();
 	real * x = (real *)malloc(2*N*sizeof(real));
 	real * xx = (real *)malloc(2*N*sizeof(real));
 	real * AA = makeMatrix();
 	real * bb = makeRandVec2();
 	std::vector<real *> vx;
-	copyMatrix(A,exaples_m);
+	copyMatrix(A,exaples_m2);
 	for(int i =0;i<N;i++)
-		b[i] = exaples_q[i];
+		b[i] = exaples_q2[i];
 	copyMatrix(AA,A);
 	memcpy(bb,b,N*sizeof(real));
 	//memset(x,0,sizeof(real)*N);
