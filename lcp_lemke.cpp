@@ -4,7 +4,7 @@
  #include <memory.h>
  #include <stdio.h>
  
- #define SKIP(n) (2*(n)+1)
+ #define SKIP(n) (2*(n)+2)
  
  static void printM(real * M,int * N,int n)
  {
@@ -80,7 +80,22 @@ static void multiply_line(real * M,real d,int i,int n)
 	 }
  }
  
- static int positive_b(real * M,int n)
+static void pivot(real *M,int *N,int n,int row,int col)
+{
+	int skip = SKIP(n);
+	real d = 1.0/M[row*skip+col];
+	N[row] = col;
+	printf("pivot[%d,%d]\n",row,col);
+	printM(M,N,n);	
+	multiply_line(M,d,row,n);
+	for(int k=0;k<n;k++){
+		if(k!=row&&M[k*skip+col]!=0){
+			elimination(M,k,row,col,n);
+		}
+	}
+}
+
+ static int init_probrem(real * M,int *N,int n,int *enter)
  {
 	 int i,j;
 	 real d,r;
@@ -95,118 +110,88 @@ static void multiply_line(real * M,real d,int i,int n)
 		 }
 	 }
 	 if(j!=-1){
-		 for(i=0;i<n;i++){
-			 if(i!=j){
-				 sub_line(M,i,j,n);
-			 }
-		 }
-		 negative_line(M,j,n);
+		 *enter = N[j];
+		 pivot(M,N,n,j,2*n);
 		 return 1;
 	 }
 	 return 0;
  }
- 
- static bool isused(int *N,int j,int n)
- {
-	 for(int i=0;i<n;i++){
-		 if( N[i]!=-1 && N[i]%n==j%n )return true;
-	 }
-	 return false;
- }
- 
- static int argmin_element(real * M,int *N,int n,int * prow,int *pcol)
- {
-	 int i,j,k,s,r,skip = SKIP(n);
-	 real line_max,ratios,d;
-	 ratios = FLT_MAX;
-	 k = s = -1;
-	 for(i=0;i<n;i++){
-		 if( N[i]==-1 ){
-			 line_max = -FLT_MAX;
-			 for(j=0;j<skip-1;j++){
-				 if( M[i*skip+j] > line_max&&!isused(N,j,n) ){
-					 r = j;
-					 line_max = M[i*skip+j];
-				 }
-			 }
-			 if(line_max>0){
-				d = M[i*skip+skip-1]/line_max;
-				if( d < ratios ){
-					ratios = d;
-					s = i;
-					k = r;
-				}
-			 }
-		 }
-	 }
-	 if(k!=-1&&s!=-1){
-		 *prow=s;
-		 *pcol = k;
-		 return 1;
-	 }else return 0;
- }
- 
- int solve_lemke(real * M,real * x,int n)
- {
-	 int i,j,k,skip;
-	 real d;
-	 int * N;
-	 skip = SKIP(n);
-	 printM(M,NULL,n);
-	 printf("positive_b\n");
-	 if(!positive_b(M,n)){
-		 for(i=0;i<n;i++){
-			 x[i] = 0;
-			 x[n+i] = M[i*skip+skip-1];
-		 }
-		 return 1;
-	 }
-	 N = (int *)malloc(n*sizeof(int));
-	 for(i=0;i<n;i++)N[i]=-1;
-	 i = 0;
-	 while(i<n){
-		 int row,col;
-		 printM(M,N,n);
-		 if( argmin_element(M,N,n,&row,&col) ){
-			N[row] = col;
-			d = 1.0/M[row*skip+col];
-			printf("argmin_element[%d,%d]\n",row,col);
-			multiply_line(M,d,row,n);
-			printM(M,N,n);
-			for(k=0;k<n;k++){
-				if(k!=row&&M[k*skip+col]!=0){
-					elimination(M,k,row,col,n);
-				}
+
+static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol)
+{
+	int i,j,k,skip = SKIP(n);
+	real ratios,d,r;
+	ratios = FLT_MAX;
+	j = -1;
+	k = *enter;
+	printf("argmin_element enter=%d\n",k);
+	printM(M,N,n);
+	if(k==2*n)return 0;
+	for(i=0;i<n;i++){
+		d = M[i*skip+n+k];
+		if(d>0){
+			r = M[i*skip+skip-1]/d;
+			if(r<ratios){
+				j = i;
+				ratios = r;
 			}
-			i++;
-		 }else{
-			 printf("argmin stop loop\n");
-			 goto failexit;
-		 }
-	 }
-printM(M,N,n);	 
-	 for(i=0;i<n;i++){
-		 if(N[i]==-1||M[i*skip+skip-1]<0){
-			 printf("q<0 stop loop\n");
-			 goto failexit;
-		 }
-	 }
-	 memset(x,0,2*n*sizeof(real));
-	 for(i=0;i<n;i++){
-		if( N[i] < n ){
-			x[n+N[i]] = M[i*skip+skip-1];
-		}else{
-			x[N[i]-n] = M[i*skip+skip-1];
 		}
-	 }
-	 return 1;
-failexit:
-	 free(N);
-	 return 0;
- }
+	}
+	if(j!=-1){
+		*prow = j;
+		*pcol = n+k;
+		*enter = N[j];
+		printf("argmin_element return row=%d,col=%d,ratios=%.2f,enter=%d\n",
+		j,k,ratios,N[j]);
+		return 1;
+	}else return 0;
+}
+
+/*
+ *
+ */
+static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
+{
+	int skip = SKIP(n);
+	real d;
+	int result = 1;
+	memset(x,0,2*n*sizeof(real));
+	
+	for(int i=0;i<n;i++){
+		d = M[i*skip+skip-1];
+		if(N[i]<n){
+			x[n+N[i]] = d; //获取y
+		}else if(N[i]<2*n){
+			x[N[i]-n] = d; //获取x
+		}else{
+			result = 0; //未将辅助变量2*n消去，lemke算法没有成功完成
+		}
+		if(d<0)result = 0; //q中还存在小于0的值，算法没有成功
+	}
+	free(N);
+	return result;
+} 
+
+int solve_lemke(real * M,real * x,int n)
+{
+	int i,enter,skip;
+	int * N = (int *)malloc(n*sizeof(int));
+	skip = SKIP(n);
+	for(i=0;i<n;i++)N[i]=i;
+	printM(M,N,n);
+	printf("init_probrem\n");
+	if(init_probrem(M,N,n,&enter)){
+		int row,col;
+		printM(M,N,n);
+		while( argmin_element(M,N,n,&enter,&row,&col) ){
+			pivot(M,N,n,row,col);
+		}
+	}	 
+	return check_get_result_and_free_N(M,N,x,n);
+}
  
  /*
-  * 1,2,3,4
+  *
   */
  int lcp_lemke(real * A,real *b,real *x,int n)
  {
@@ -225,6 +210,7 @@ failexit:
 				M[k+j] = 1;
 			M[k+n+j] = -A[i*n+j];
 		}
+		M[k+skip-2] = -1;
 		M[k+skip-1] = b[i];
 	}
 	k = solve_lemke(M,x,n);

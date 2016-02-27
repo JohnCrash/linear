@@ -106,9 +106,9 @@ static void test_lemke()
 	real * AA = makeMatrix();
 	real * bb = makeRandVec2();
 	std::vector<real *> vx;
-	copyMatrix(A,exaples_m2);
-	for(int i =0;i<N;i++)
-		b[i] = exaples_q2[i];
+//	copyMatrix(A,exaples_m2);
+//	for(int i =0;i<N;i++)
+//		b[i] = exaples_q2[i];
 	copyMatrix(AA,A);
 	memcpy(bb,b,N*sizeof(real));
 	//memset(x,0,sizeof(real)*N);
