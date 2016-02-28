@@ -71,6 +71,9 @@ static void multiply_line(real * M,real d,int i,int n)
 	 }
  }
  
+ /*
+  * row,col为主元，(eli,col)是要消为0的元素。
+  */
  static void elimination(real *M,int eli,int row,int col,int n)
  {
 	 int i,skip = SKIP(n);
@@ -80,6 +83,11 @@ static void multiply_line(real * M,real d,int i,int n)
 	 }
  }
  
+ /*
+  * pivot将row,col对应的元素作为主元，将col列的其他元素消为0
+  * 同时将该行的基置为col(N[row] = col)
+  * 条件pivot前(row,col)对应的元素不能为0
+  */
 static void pivot(real *M,int *N,int n,int row,int col)
 {
 	int skip = SKIP(n);
@@ -95,6 +103,11 @@ static void pivot(real *M,int *N,int n,int row,int col)
 	}
 }
 
+/*
+ * 初始化步骤
+ * 1.如果b都>=0则直接返回0，solve_lemke会调用check_get_result_and_free_N获取解
+ * 2.在b列中找到最负的数
+ */
  static int init_probrem(real * M,int *N,int n,int *enter)
  {
 	 int i,j;
@@ -117,6 +130,10 @@ static void pivot(real *M,int *N,int n,int row,int col)
 	 return 0;
  }
 
+ /*
+  * enter是进基列索引，将在进基列中搜索ratios最小的行。
+  * 然后确定下一个进基列。
+  */
 static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol)
 {
 	int i,j,k,skip = SKIP(n);
@@ -148,7 +165,8 @@ static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol)
 }
 
 /*
- *
+ * 检查结果如果有小于0的则失败，如果基列中还存在辅助列也失败。
+ * 如果成功根据基变量将结果取出。同时释放N
  */
 static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
 {
@@ -172,6 +190,9 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
 	return result;
 } 
 
+/*
+ * lemke求解器
+ */
 int solve_lemke(real * M,real * x,int n)
 {
 	int i,enter,skip;
@@ -191,7 +212,12 @@ int solve_lemke(real * M,real * x,int n)
 }
  
  /*
-  *
+  * 使用povit法求解线性互补问题
+  * y = Ax+b
+  * yx'>=0,x>=0,y>=0 其中x'表示x的转置,A是一个nxn矩阵
+  * 构造一个增广矩阵
+  * [ I][y]	
+  * [-A][x] = b 	
   */
  int lcp_lemke(real * A,real *b,real *x,int n)
  {
@@ -199,7 +225,7 @@ int solve_lemke(real * M,real * x,int n)
 	skip = SKIP(n);
 	real * M = (real *)malloc(n*skip*sizeof(real));
 	/* 
-	 * 构造一个 [I,-M,-1,b] 增广矩阵
+	 * 构造一个 [I,-M,-1,b] 增广矩阵,-1是辅助变量
 	 */
 	for(i=0;i<n;i++){
 		k = i*skip;
