@@ -23,9 +23,32 @@ static int pivot(real *M,int row,int col,int n)
 	return 1;
 }
 
+static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
+{
+	int i,row,result,skip;
+	skip = SKIP(n);
+	memset(x,0,2*n*sizeof(real));
+	result = 1;
+	for(i=0;i<skip;i++){
+		row = i%n;
+		if(base[i]){
+			real d = M[row*skip+skip-1];
+			if(i<n){
+				x[i+n] = d;
+			}else{
+				x[i-n] = d;
+			}
+			if( d < 0 )
+				result = 0;
+		}
+	}
+	free(base);
+	return result;
+}
+
 static int sovle_principalPivot(real * M,real * x,int n)
 {
-	int i,row,skip,result;
+	int i,row,skip;
 	bool infea;
 	int *base = (int *)malloc(2*n*sizeof(int));
 	skip = SKIP(n);
@@ -60,25 +83,9 @@ static int sovle_principalPivot(real * M,real * x,int n)
 			}		
 		}
 	}while(infea);
-	
-	result = 1;
-	memset(x,0,2*n*sizeof(real));
-	for(i=0;i<skip;i++){
-		row = i%n;
-		if(base[i]){
-			real d = M[row*skip+skip-1];
-			if(i<n){
-				x[i+n] = d;
-			}else{
-				x[i-n] = d;
-			}
-			if( d < 0 )
-				result = 0;
-		}
-	}
-	
-	free(base);
-	return result;
+
+	printM(M,NULL,n,skip);
+	return check_get_result_and_free_base(M,base,x,n);
 }
 
 int lcp_pivot( real *A,real *b,real *x,int n)
