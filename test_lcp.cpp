@@ -138,6 +138,47 @@ static void test_lemke()
 	freeLcpSolve(vx);	
 }
 
+static void test_pivot()
+{
+	real * A = makeRandMatrix();
+	real * b = makeRandVec2();
+	real * x = (real *)malloc(2*N*sizeof(real));
+	real * xx = (real *)malloc(2*N*sizeof(real));
+	real * AA = makeMatrix();
+	real * bb = makeRandVec2();
+	std::vector<real *> vx;
+//	copyMatrix(A,exaples_m2);
+//	for(int i =0;i<N;i++)
+//		b[i] = exaples_q2[i];
+	copyMatrix(AA,A);
+	memcpy(bb,b,N*sizeof(real));
+	//memset(x,0,sizeof(real)*N);
+	memset(x,0,N*sizeof(real));
+	//memcpy(xx,b,N*sizeof(real));
+	memset(xx,0,sizeof(real)*N);	
+	
+	printf("--------------------------------------------------------\n");
+	printMat("solve lcp A=",A);
+	printVec("lcp b=",b);
+	printf("--------------------------------------------------------\n");
+	int result1 = lcp(A,b,vx,N);	
+	int result2 = lcp_pivot(A,b,x,N);
+	
+	printf("lcp solve:\n");
+	printf("--------------------------------------------------------\n");
+	printLCPVx(vx);
+	printf("lcp_pivot solve %s (%d)\n",result2?"true":"false",result2);
+	printVec("lcp_pivot=",x);
+	check_lcp_result(AA,bb,x,N);
+	
+	freeMatrix(A);
+	freeMatrix(b);
+	freeMatrix(x);
+	freeMatrix(AA);
+	freeMatrix(bb);	
+	freeLcpSolve(vx);	
+}
+
 int main(int argn,char * argv[])
 {
 	if(argn>=1){
@@ -150,6 +191,7 @@ int main(int argn,char * argv[])
 	}
 		
 	//test_pgs();
-	test_lemke();
+	//test_lemke();
+	test_pivot();
 	return 0;
 }

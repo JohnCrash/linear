@@ -20,6 +20,14 @@ int freeLcpSolve(std::vector<real *>& xs);
 int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc);
 int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax);
  
+void sub_line(real * M,int i,int j,int n,int skip);
+void add_line(real * M,int i,int j,int n,int skip);
+void multiply_line(real * M,real d,int i,int n,int skip);
+void negative_line(real * M,int j,int n,int skip);
+void elimination(real *M,int eli,int row,int col,int n,int skip);
+int lcp_pivot( real *A,real *b,real *x,int n);
+
 int lcp_lemke(real * A,real *b,real *x,int n);
- 
+
+void printM(real * M,int * N,int n,int skip);
 #endif
