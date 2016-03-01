@@ -69,6 +69,7 @@ static int sovle_principalPivot(real * M,real * x,int n)
 			}
 		}
 		if( row != prev ){
+			prev = row;
 			if( M[row*skip+row] != 1){
 				base[row] = 1;
 				base[row+n] = 0;
