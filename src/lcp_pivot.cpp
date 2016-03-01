@@ -46,10 +46,21 @@ static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
 	return result;
 }
 
+static int last_negative(real * M,int n,int skip)
+{
+	for(int i=n-1;i>=0;i--){
+		if(M[i*skip+skip-1] < 0 ){
+			printM(M,NULL,n,skip);
+			printf("last_negative row = %d\n",i);			
+			return i;
+		}
+	}
+	return -1;
+}
+
 static int sovle_principalPivot(real * M,real * x,int n)
 {
 	int i,row,prev,skip;
-	bool infea;
 	int *base = (int *)malloc(2*n*sizeof(int));
 	skip = SKIP(n);
 	for(i=0;i<n;i++){
@@ -57,35 +68,22 @@ static int sovle_principalPivot(real * M,real * x,int n)
 		base[n+i] = 0;
 	}
 	prev = -1;
-	do{
-		infea = false;
-		row = prev;
-		for(i=n-1;i>=0;i--){
-			if( M[i*skip+skip-1] < 0 ){
-				row = i;
-				printM(M,NULL,n,skip);
-				printf("principal row = %d\n",row);
+	while( (row=last_negative(M,n,skip)) != prev && row!=-1 ){
+		prev = row;
+		if( M[row*skip+row] != 1){
+			base[row] = 1;
+			base[row+n] = 0;
+			if(!pivot(M,row,row,n))
 				break;
-			}
-		}
-		if( row != prev ){
-			prev = row;
-			if( M[row*skip+row] != 1){
-				base[row] = 1;
-				base[row+n] = 0;
-				if(!pivot(M,row,row,n))
-					break;
-				infea = true;
-			}else if( M[row*skip+row+n] != 1 ){
-				base[row] = 0;
-				base[row+n] = 1;
-				if(!pivot(M,row,row+n,n))
-					break;
-				infea = true;
-			}		
-		}
-	}while(infea);
+		}else if( M[row*skip+row+n] != 1 ){
+			base[row] = 0;
+			base[row+n] = 1;
+			if(!pivot(M,row,row+n,n))
+				break;
+		}		
+	}
 
+	printf("final result:\n");
 	printM(M,NULL,n,skip);
 	return check_get_result_and_free_base(M,base,x,n);
 }
