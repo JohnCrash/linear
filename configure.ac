@@ -2,8 +2,8 @@ AC_PREREQ([2.69])
 AC_INIT([linear], [0.1], [xxxxx@sina.com])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
-AC_CONFIG_SRCDIR([linear.h])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([src/linear.h])
+AC_CONFIG_HEADERS([src/config.h])
 AM_PROG_AR
 
 LT_PREREQ([2.4.0])
@@ -24,5 +24,5 @@ AC_CHECK_HEADERS([memory.h stdlib.h])
 # Checks for library functions.
 AC_FUNC_MALLOC
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

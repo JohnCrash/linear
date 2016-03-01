@@ -48,7 +48,7 @@ static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
 
 static int sovle_principalPivot(real * M,real * x,int n)
 {
-	int i,row,skip;
+	int i,row,prev,skip;
 	bool infea;
 	int *base = (int *)malloc(2*n*sizeof(int));
 	skip = SKIP(n);
@@ -56,9 +56,10 @@ static int sovle_principalPivot(real * M,real * x,int n)
 		base[i] = 1;
 		base[n+i] = 0;
 	}
+	prev = -1;
 	do{
 		infea = false;
-		row = -1;
+		row = prev;
 		for(i=n-1;i>=0;i--){
 			if( M[i*skip+skip-1] < 0 ){
 				row = i;
@@ -67,7 +68,7 @@ static int sovle_principalPivot(real * M,real * x,int n)
 				break;
 			}
 		}
-		if( row >= 0 ){
+		if( row != prev ){
 			if( M[row*skip+row] != 1){
 				base[row] = 1;
 				base[row+n] = 0;
