@@ -211,12 +211,15 @@ int solve_lemke(real * M,real * x,int n)
 }
  
  /*
-  * 使用povit法求解线性互补问题
+  * 使用lemke法求解线性互补问题
   * y = Ax+b
   * yx'>=0,x>=0,y>=0 其中x'表示x的转置,A是一个nxn矩阵
   * 构造一个增广矩阵
   * [ I][y]	
   * [-A][x] = b 	
+  * 如果矩阵A是下面的一种，lemke可以用于求解LCP
+  * A是copositive plus matrix,
+  * 
   */
  int lcp_lemke(real * A,real *b,real *x,int n)
  {

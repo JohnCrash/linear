@@ -88,6 +88,11 @@ static int sovle_principalPivot(real * M,real * x,int n)
 	return check_get_result_and_free_base(M,base,x,n);
 }
 
+/*
+ * 算法可行条件是A是P-matrix
+ *(主子式都大于0，主子式principal minor，子式minor是选择一个元素i,j
+ * 去掉i行和j列剩下的矩阵的行列式的值，主子式是i=j)
+ */
 int lcp_pivot( real *A,real *b,real *x,int n)
 {
 	int i,j,k,skip;
