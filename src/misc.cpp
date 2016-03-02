@@ -133,6 +133,35 @@ real * makeRandSPDMatrix()
 	return B;
 }
 
+real * makeRandMatrixN(int n)
+{
+	real * A = makeMatrix();
+	random_matrix(A,n);
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			A[i*n + j] = (int)(A[i*n + j]*10);
+		}
+	}
+	return A;
+}
+
+real * makeRandSPDMatrixNUB(int nub)
+{
+	real * B = makeRandMatrix();
+	real * A = makeRandMatrixN(N-nub);
+	real * C = makeRandMatrixN(N-nub);
+	random_matrix(A,N-nub);
+	multiply0(C,A,A,N-nub,N-nub,N-nub);
+	for(int i=nub;i<N;i++){
+		for(int j=nub;j<N;j++){
+			B[i*N+j] = C[(i-nub)*N+j-nub];
+		}
+	}
+	free(A);
+	free(C);
+	return B;
+}
+
 real * makeRandVec()
 {
 	real * V = (real *)malloc(N*sizeof(real));

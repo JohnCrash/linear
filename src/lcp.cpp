@@ -53,19 +53,14 @@ static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int 
 			copyIdentity(M,j,i,n);
 		}
 	}
-//	printMat("M=",M,n);
 	if( crout_plu(M,P,L,n) ){
 		if( solve_plu(P,L,M,b,x,n) ){
-//			printf("solve:");
 			for(i=0;i<n;i++){
-//				printf("%.2f ",x[i]);
 				if(x[i]<0){
-//					printf("\n");
 					return 0;
 				}
 				x[n+i] = N[i];
 			}
-//			printf("\n");
 			return 1;
 		}
 	}
