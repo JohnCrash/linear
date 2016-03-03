@@ -105,8 +105,18 @@ int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
  */
 int lcp_pivot( real *A,real *b,real *x,int n)
 {
+	int skip;
+	real * M = mallocPivotMatrix( A,b,n,0,&skip );
+	int result = lcp_pivotBlock(M,x,n,0,skip);
+	free(M);
+	return result;	
+}
+
+real *mallocPivotMatrix(real * A,real *b,int n,int m,int *pskip)
+{
 	int i,j,k,skip;
 	skip = 2*n+1;
+	*pskip = skip;
 	real * M = (real *)malloc((n+m)*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-A,b] 增广矩阵
@@ -135,7 +145,5 @@ int lcp_pivot( real *A,real *b,real *x,int n)
 		}
 		M[k+skip-1] = b[n+i];
 	}
-	k = lcp_pivotBlock(M,x,n,0,skip);
-	free(M);
-	return k;	
+	return M;
 }

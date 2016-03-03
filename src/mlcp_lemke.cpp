@@ -43,7 +43,7 @@
  * 出来的基和x nub 区组成nxn方阵。
  * 当把M转化为这样以后，y的base区和x的base区转化为一个标准线性互补问题
  */
-int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc)
+int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 {
 	int i,j,skip;
 	int * P;

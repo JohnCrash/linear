@@ -224,8 +224,18 @@ int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
   */
  int lcp_lemke(real * A,real *b,real *x,int n)
  {
+	int skip;
+	real * M = mallocLemkeMatrix(A,b,n,0,&skip);
+	int result = lcp_lemkeBlock(M,x,n,0,skip);
+	free(M);
+	return result;
+ }
+ 
+ real *mallocLemkeMatrix(real * A,real *b,int n,int m,int *pskip)
+ {
 	int i,j,k,skip;
 	skip = 2*n+2;
+	*pskip = skip;
 	real * M = (real *)malloc(n*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-M,-1,b] 增广矩阵,-1是辅助变量
@@ -242,7 +252,5 @@ int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 		M[k+skip-2] = -1;
 		M[k+skip-1] = b[i];
 	}
-	k = lcp_lemkeBlock(M,x,n,0,skip);
-	free(M);
-	return k;
+	return M;
  }

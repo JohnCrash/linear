@@ -68,6 +68,7 @@ void elimination(real *M,int eli,int row,int col,int n,int skip);
  * 函数成功返回1，失败返回0
  */
 int lcp_pivot( real *A,real *b,real *x,int n);
+real *mallocPivotMatrix(real * A,real *b,int n,int m,int *pskip);
 /*
  * 使用lemke method求解LCP
  * y=Ax+b,y'x=0,x>=0,y>=0
@@ -76,6 +77,7 @@ int lcp_pivot( real *A,real *b,real *x,int n);
  * 函数成功返回1，失败返回0 
  */
 int lcp_lemke(real * A,real *b,real *x,int n);
+real *mallocLemkeMatrix(real * A,real *b,int n,int m,int *pskip);
 
 /*
  * 将问题放入到一个统一的矩阵M中，进行运算。
