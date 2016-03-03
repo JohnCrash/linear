@@ -8,9 +8,8 @@
   * 对A的左上角(nub)x(nub)的区域进行消元处理，将该区块处理成单元矩阵
   * 
   */
- static int pivotNub(real *A,real *b,int *P,int nub,int n)
+ static int pivotNub(real *A,int *P,int nub,int n,int skip)
  {
-	int skip = n;
 	int i,j;
 	for(i=0;i<nub;i++){
 		if( A[i*skip+i] == 0 )return 0; //FIXBUG,使用交换行来解决
@@ -33,7 +32,7 @@
  * 也就是y base区和x base区互补选择n-nub个列与x nub区组成最终的求解矩阵
  * 先将M弄成下面的样式
  * |			y				|			x				|d|b|
- * |	nub	|	base	|	nub	|	base	|d|b|
+ * |	nub	|	base		|	nub	|	base		|d|b|
  * |			|0			0	|1			|				|
  * |			|0			0	|		1	|				|
  * |			|1			0	|			|				|
@@ -47,7 +46,7 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc)
 	int i,j,skip;
 	int * P;
 	int result = 0;
-
+	
 	if(nub<0||nub>n)return result;
 	P = (int *)malloc(nub*sizeof(int));
 	/*
@@ -56,16 +55,36 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc)
 	 */
 	for(i = 0;i<nub;i++)
 		P[i] = i;
-	if( pivotNub(A,b,P,nub,n) ){
+	real * M = (real*)malloc(n*(n+1)*sizeof(real));
+	skip = n+1;
+	
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			M[i*skip+j] = -A[i*n+j];
+		}
+		M[i*skip+skip-1] = b[i];
+	}
+	if( pivotNub(M,P,nub,n,skip) ){
+		printf("pivotNub\n");
+		printM(M,NULL,n,skip);
 		real *AA = (real *)malloc((n-nub)*(n-nub)*sizeof(real));
 		real * bb = (real *)malloc((n-nub)*sizeof(real));
 		real * xx = (real *)malloc(2*(n-nub)*sizeof(real));
+		int skip2 = n-nub;
+		for(i=nub;i<n;i++){
+			for(j=nub;j<n;j++){
+				AA[(i-nub)*skip2+j-nub] = -M[i*skip+j];
+			}
+			bb[i-nub] = M[i*skip+skip-1];
+		}
 		result = lcpfunc(AA,bb,xx,n-nub);
+		printf("lcp\n");
+		printM(M,NULL,n,skip);
 		/*
 		 * 收集解
 		 */
 		for(i=0;i<nub;i++){
-			x[i] = b[i]; //nub区x
+			x[i] = M[i*skip+skip-1]; //nub区x
 			x[n+i] = 0; //nub区y
 		}
 		for(i=0;i<n-nub;i++){
@@ -76,6 +95,7 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc)
 		free(bb);
 		free(AA);
 	}
+	free(M);
 	free(P);
 	return result;
 }

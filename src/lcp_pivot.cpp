@@ -1,11 +1,14 @@
- #include "linear.h"
+#include "linear.h"
 #include "lcp.h"
- #include <stdlib.h>
- #include <memory.h>
- #include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <stdio.h>
  
 #define SKIP(n) (2*(n)+1)
  
+ /*
+  *
+  */
 static int pivot(real *M,int row,int col,int n)
 {
 	int i,skip;
@@ -23,6 +26,9 @@ static int pivot(real *M,int row,int col,int n)
 	return 1;
 }
 
+/*
+ *
+ */
 static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
 {
 	int i,row,result,skip;
@@ -46,6 +52,9 @@ static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
 	return result;
 }
 
+/*
+ *
+ */
 static int last_negative(real * M,int n,int skip)
 {
 	for(int i=n-1;i>=0;i--){
@@ -58,7 +67,10 @@ static int last_negative(real * M,int n,int skip)
 	return -1;
 }
 
-static int sovle_principalPivot(real * M,real * x,int n)
+/*
+ *
+ */
+static int sovle_principalPivot(real * M,real * x,int n,int m)
 {
 	int i,row,prev,skip;
 	int *base = (int *)malloc(2*n*sizeof(int));
@@ -73,12 +85,12 @@ static int sovle_principalPivot(real * M,real * x,int n)
 		if( M[row*skip+row] != 1){
 			base[row] = 1;
 			base[row+n] = 0;
-			if(!pivot(M,row,row,n))
+			if(!pivot(M,row,row,n,m))
 				break;
 		}else if( M[row*skip+row+n] != 1 ){
 			base[row] = 0;
 			base[row+n] = 1;
-			if(!pivot(M,row,row+n,n))
+			if(!pivot(M,row,row+n,n,m))
 				break;
 		}		
 	}
@@ -88,18 +100,26 @@ static int sovle_principalPivot(real * M,real * x,int n)
 	return check_get_result_and_free_base(M,base,x,n);
 }
 
+int lcp_pivot( real *A,real *b,real *x,int n)
+{
+	return lcp_pivot2(A,b,x,n,0);
+}
+
 /*
  * 算法可行条件是A是P-matrix
  *(主子式都大于0，主子式principal minor，子式minor是选择一个元素i,j
  * 去掉i行和j列剩下的矩阵的行列式的值，主子式是i=j)
+ * 表示在A矩阵下面还有m行，在进行消元处理的时候参与变换
+ * 而b元素下面还有m个元素,也在消元处理的时候参与变换
+ * 将m引入主要配接mlcp的求解
  */
-int lcp_pivot( real *A,real *b,real *x,int n)
+int lcp_pivot2( real *A,real *b,real *x,int n,int m)
 {
 	int i,j,k,skip;
 	skip = SKIP(n);
-	real * M = (real *)malloc(n*skip*sizeof(real));
+	real * M = (real *)malloc((n+m)*skip*sizeof(real));
 	/* 
-	 * 构造一个 [I,-M,b] 增广矩阵
+	 * 构造一个 [I,-A,b] 增广矩阵
 	 */
 	for(i=0;i<n;i++){
 		k = i*skip;
@@ -112,7 +132,20 @@ int lcp_pivot( real *A,real *b,real *x,int n)
 		}
 		M[k+skip-1] = b[i];
 	}
-	k = sovle_principalPivot(M,x,n);
+	/*
+	 * 将附加行复制到M中去
+	 */
+	for(i=0;i<m;i++){
+		k = (i+n)*skip;
+		for(j=0;j<n;j++){
+			if(j<n)
+				M[k+j] = 0;
+			else
+				M[k+n+j] = -A[(n+i)*n+j];
+		}
+		M[k+skip-1] = b[n+i];
+	}
+	k = sovle_principalPivot(M,x,n,m);
 	free(M);
 	return k;	
 }
