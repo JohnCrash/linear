@@ -4,8 +4,6 @@
  #include <memory.h>
  #include <stdio.h>
  
- #define SKIP(n) (2*(n)+2)
- 
 void printM(real * M,int * N,int n,int skip)
  {
 	 printf("-----------------------------------------------------------------\n");
@@ -87,17 +85,24 @@ void multiply_line(real * M,real d,int i,int n,int skip)
   * 同时将该行的基置为col(N[row] = col)
   * 条件pivot前(row,col)对应的元素不能为0
   */
-static void pivot(real *M,int *N,int n,int row,int col)
+static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
 {
-	int skip = SKIP(n);
+	int k;
 	real d = 1.0/M[row*skip+col];
 	N[row] = col;
 	printf("pivot[%d,%d]\n",row,col);
 	printM(M,N,n,skip);	
 	multiply_line(M,d,row,n,skip);
-	for(int k=0;k<n;k++){
+	for(k=0;k<n;k++){
 		if(k!=row&&M[k*skip+col]!=0){
 			elimination(M,k,row,col,n,skip);
+		}
+	}
+	if(m>0){
+		for(k=0;k<m;k++){
+			if(k!=row&&M[(n+k)*skip+col]!=0){
+				elimination(M,n+k,row,col,n,skip);
+			}			
 		}
 	}
 }
@@ -107,11 +112,10 @@ static void pivot(real *M,int *N,int n,int row,int col)
  * 1.如果b都>=0则直接返回0，solve_lemke会调用check_get_result_and_free_N获取解
  * 2.在b列中找到最负的数
  */
- static int init_probrem(real * M,int *N,int n,int *enter)
+ static int init_probrem(real * M,int *N,int n,int *enter,int skip)
  {
 	 int i,j;
 	 real d,r;
-	 int skip = SKIP(n);
 	 d = 0;
 	 j = -1;
 	 for(i=0;i<n;i++){
@@ -133,7 +137,7 @@ static void pivot(real *M,int *N,int n,int row,int col)
   * enter是进基列索引，将在进基列中搜索ratios最小的行。
   * 然后确定下一个进基列。
   */
-static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol)
+static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol,int skip)
 {
 	int i,j,k,skip = SKIP(n);
 	real ratios,d,r;
@@ -167,9 +171,8 @@ static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol)
  * 检查结果如果有小于0的则失败，如果基列中还存在辅助列也失败。
  * 如果成功根据基变量将结果取出。同时释放N
  */
-static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
+static int check_get_result_and_free_N(real *M,int * N,real * x,int n,int skip)
 {
-	int skip = SKIP(n);
 	real d;
 	int result = 1;
 	memset(x,0,2*n*sizeof(real));
@@ -189,10 +192,8 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
 	return result;
 } 
 
-/*
- * lemke求解器
- */
-static int solve_lemke(real * M,real * x,int n)
+
+int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 {
 	int i,enter,skip;
 	int * N = (int *)malloc(n*sizeof(int));
@@ -200,16 +201,16 @@ static int solve_lemke(real * M,real * x,int n)
 	for(i=0;i<n;i++)N[i]=i;
 	printM(M,N,n,skip);
 	printf("init_probrem\n");
-	if(init_probrem(M,N,n,&enter)){
+	if(init_probrem(M,N,n,&enter,skip)){
 		int row,col;
 		printM(M,N,n,skip);
-		while( argmin_element(M,N,n,&enter,&row,&col) ){
-			pivot(M,N,n,row,col);
+		while( argmin_element(M,N,n,&enter,&row,&col,skip) ){
+			pivot(M,N,n,row,col,m,skip);
 		}
 	}	 
-	return check_get_result_and_free_N(M,N,x,n);
+	return check_get_result_and_free_N(M,N,x,n,skip);	
 }
- 
+
  /*
   * 使用lemke法求解线性互补问题
   * y = Ax+b
@@ -224,7 +225,7 @@ static int solve_lemke(real * M,real * x,int n)
  int lcp_lemke(real * A,real *b,real *x,int n)
  {
 	int i,j,k,skip;
-	skip = SKIP(n);
+	skip = 2*n+2;
 	real * M = (real *)malloc(n*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-M,-1,b] 增广矩阵,-1是辅助变量
@@ -241,7 +242,7 @@ static int solve_lemke(real * M,real * x,int n)
 		M[k+skip-2] = -1;
 		M[k+skip-1] = b[i];
 	}
-	k = solve_lemke(M,x,n);
+	k = lcp_lemkeBlock(M,x,n,0,skip);
 	free(M);
 	return k;
  }

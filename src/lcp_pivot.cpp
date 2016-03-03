@@ -4,15 +4,12 @@
 #include <memory.h>
 #include <stdio.h>
  
-#define SKIP(n) (2*(n)+1)
- 
  /*
   *
   */
-static int pivot(real *M,int row,int col,int n)
+static int pivot(real *M,int row,int col,int n,int m,int skip)
 {
-	int i,skip;
-	skip = SKIP(n);
+	int i;
 	real d = M[row*skip+col];
 	printf("pivot[%d,%d]\n",row,col);
 	printM(M,NULL,n,skip);	
@@ -29,10 +26,9 @@ static int pivot(real *M,int row,int col,int n)
 /*
  *
  */
-static int check_get_result_and_free_base(real * M,int *base,real *x,int n)
+static int check_get_result_and_free_base(real * M,int *base,real *x,int n,int skip)
 {
-	int i,row,result,skip;
-	skip = SKIP(n);
+	int i,row,result;
 	memset(x,0,2*n*sizeof(real));
 	result = 1;
 	for(i=0;i<skip;i++){
@@ -70,11 +66,10 @@ static int last_negative(real * M,int n,int skip)
 /*
  *
  */
-static int sovle_principalPivot(real * M,real * x,int n,int m)
+int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
 {
-	int i,row,prev,skip;
+	int i,row,prev;
 	int *base = (int *)malloc(2*n*sizeof(int));
-	skip = SKIP(n);
 	for(i=0;i<n;i++){
 		base[i] = 1;
 		base[n+i] = 0;
@@ -85,24 +80,19 @@ static int sovle_principalPivot(real * M,real * x,int n,int m)
 		if( M[row*skip+row] != 1){
 			base[row] = 1;
 			base[row+n] = 0;
-			if(!pivot(M,row,row,n,m))
+			if(!pivot(M,row,row,n,m,skip))
 				break;
 		}else if( M[row*skip+row+n] != 1 ){
 			base[row] = 0;
 			base[row+n] = 1;
-			if(!pivot(M,row,row+n,n,m))
+			if(!pivot(M,row,row+n,n,m,skip))
 				break;
 		}		
 	}
 
 	printf("final result:\n");
 	printM(M,NULL,n,skip);
-	return check_get_result_and_free_base(M,base,x,n);
-}
-
-int lcp_pivot( real *A,real *b,real *x,int n)
-{
-	return lcp_pivot2(A,b,x,n,0);
+	return check_get_result_and_free_base(M,base,x,n,skip);
 }
 
 /*
@@ -113,10 +103,10 @@ int lcp_pivot( real *A,real *b,real *x,int n)
  * 而b元素下面还有m个元素,也在消元处理的时候参与变换
  * 将m引入主要配接mlcp的求解
  */
-int lcp_pivot2( real *A,real *b,real *x,int n,int m)
+int lcp_pivot( real *A,real *b,real *x,int n)
 {
 	int i,j,k,skip;
-	skip = SKIP(n);
+	skip = 2*n+1;
 	real * M = (real *)malloc((n+m)*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-A,b] 增广矩阵
@@ -145,7 +135,7 @@ int lcp_pivot2( real *A,real *b,real *x,int n,int m)
 		}
 		M[k+skip-1] = b[n+i];
 	}
-	k = sovle_principalPivot(M,x,n,m);
+	k = lcp_pivotBlock(M,x,n,0,skip);
 	free(M);
 	return k;	
 }

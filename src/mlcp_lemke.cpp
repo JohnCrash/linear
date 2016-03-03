@@ -31,14 +31,16 @@
  * x,y的base区中选择n-nub个基列和x的nub区组成方程得到解
  * 也就是y base区和x base区互补选择n-nub个列与x nub区组成最终的求解矩阵
  * 先将M弄成下面的样式
- * |			y				|			x				|d|b|
- * |	nub	|	base		|	nub	|	base		|d|b|
- * |			|0			0	|1			|				|
- * |			|0			0	|		1	|				|
- * |			|1			0	|			|				|
- * |			|	1			|			|				|
- * |			|		1		|			|				|
- * |			|0			1	|			|				|
+ * |	y	 |		x	 |d|b|
+ * |nub	|base|nub	|base|d|b|
+ * |	|	 |0	   0|	 |
+ * |	|	 |0	   0|	 |
+ * |	|	 |1	   0|	 |
+ * |	|	 |	1   |	 |
+ * |	|	 |	 1  |	 |
+ * |	|	 |0	   1|	 |
+ * x base 和 y base 区互补，y nub区因为y=0而被屏蔽了,由x base和y base挑选
+ * 出来的基和x nub 区组成nxn方阵。
  * 当把M转化为这样以后，y的base区和x的base区转化为一个标准线性互补问题
  */
 int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc)
