@@ -34,9 +34,14 @@ void add_line(real * M,int i,int j,int n,int skip);
 void multiply_line(real * M,real d,int i,int n,int skip);
 void negative_line(real * M,int j,int n,int skip);
 void elimination(real *M,int eli,int row,int col,int n,int skip);
+
 int lcp_pivot( real *A,real *b,real *x,int n);
 
 int lcp_lemke(real * A,real *b,real *x,int n);
+
+typedef int ( *lcpSolver)(real *A,real *b,real *x,int n);
+
+int mlcpSolver(real * A,real *b,real *x,int nub,int n,lcpSolver lcpfunc);
 
 void printM(real * M,int * N,int n,int skip);
 #endif

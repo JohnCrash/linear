@@ -192,7 +192,7 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n)
 /*
  * lemke求解器
  */
-int solve_lemke(real * M,real * x,int n)
+static int solve_lemke(real * M,real * x,int n)
 {
 	int i,enter,skip;
 	int * N = (int *)malloc(n*sizeof(int));
