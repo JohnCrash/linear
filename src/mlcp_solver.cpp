@@ -96,10 +96,14 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			}
 			for(i=0;i<nub;i++){
 				for(j=0;j<(n-nub);j++){
-					AA[(i+n-nub)*skip2+j] = -M[i*skip+j];
+					AA[(i+n-nub)*skip2+j] = -M[i*skip+j+nub];
 				}
 				bb[i+n-nub] = M[i*skip+skip-1];
 			}
+			printf("new matrix AA\n");
+			printM(AA,NULL,n,skip2);
+			printf("new matrix bb\n");
+			printM(bb,NULL,n,1);			
 			/* 
 			 *上面的操作,将AA组合成下面的结构AA
 			 *| -D | n-nub行
@@ -110,16 +114,20 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			 */
 			if(solver==LEMKE){
 				MM = mallocLemkeMatrix(AA,bb,n-nub,nub,&skip2);
+				printf("mallocLemkeMatrix MM\n");
+				printM(MM,NULL,n,skip2);
 				result = lcp_lemkeBlock(MM,xx,n-nub,nub,skip2);
 			}else if(solver==PIVOT){
 				MM = mallocPivotMatrix(AA,bb,n-nub,nub,&skip2);
+				printf("mallocPivotMatrix MM\n");
+				printM(MM,NULL,n,skip2);				
 				result = lcp_pivotBlock(MM,xx,n-nub,nub,skip2);			
 			}
 			/*
 			 * 通过上面的lcp求解,xx是n-nub对互补解,skip2是矩阵MM的行距
 			 */
-			printf("lcp\n");
-			printM(M,NULL,n,skip);
+			printf("lcp solve\n");
+			printM(MM,NULL,n,skip2);
 			/*
 			 * 收集解
 			 */

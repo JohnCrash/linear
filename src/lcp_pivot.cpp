@@ -12,7 +12,7 @@ static int pivot(real *M,int row,int col,int n,int m,int skip)
 	int i;
 	real d = M[row*skip+col];
 	printf("pivot[%d,%d]\n",row,col);
-	printM(M,NULL,n,skip);	
+	printM(M,NULL,n+m,skip);	
 	if( d == 0 )return 0;
 	multiply_line(M,1.0/d,row,n,skip);
 	M[row*skip+col] = 1;
@@ -20,6 +20,10 @@ static int pivot(real *M,int row,int col,int n,int m,int skip)
 		if( i != row&&M[i*skip+col]!=0 )
 			elimination(M,i,row,col,n,skip);
 	}
+	for(i=0;i<m;i++){
+		if( M[(n+i)*skip+col]!=0 )
+			elimination(M,n+i,row,col,n,skip);
+	}	
 	return 1;
 }
 
@@ -91,7 +95,7 @@ int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
 	}
 
 	printf("final result:\n");
-	printM(M,NULL,n,skip);
+	printM(M,NULL,n+m,skip);
 	return check_get_result_and_free_base(M,base,x,n,skip);
 }
 
@@ -121,7 +125,7 @@ real *mallocPivotMatrix(real * A,real *b,int n,int m,int *pskip)
 	/* 
 	 * 构造一个 [I,-A,b] 增广矩阵
 	 */
-	for(i=0;i<n;i++){
+	for(i=0;i<(n+m);i++){
 		k = i*skip;
 		for(j=0;j<n;j++){
 			if(i!=j)
@@ -131,19 +135,6 @@ real *mallocPivotMatrix(real * A,real *b,int n,int m,int *pskip)
 			M[k+n+j] = -A[i*n+j];
 		}
 		M[k+skip-1] = b[i];
-	}
-	/*
-	 * 将附加行复制到M中去
-	 */
-	for(i=0;i<m;i++){
-		k = (i+n)*skip;
-		for(j=0;j<n;j++){
-			if(j<n)
-				M[k+j] = 0;
-			else
-				M[k+n+j] = -A[(n+i)*n+j];
-		}
-		M[k+skip-1] = b[n+i];
 	}
 	return M;
 }

@@ -132,7 +132,7 @@ static void test_mlcp_lemke()
 	printf("nub = %d\n",nub);
 	printf("--------------------------------------------------------\n");
 	int result1 = mlcp(A,b,vx,nub,N);	
-	int result2 = mlcpSolver(A,b,x,nub,N,LEMKE);
+	int result2 = mlcpSolver(A,b,x,nub,N,PIVOT);
 	
 	printf("lcp solve:\n");
 	printf("--------------------------------------------------------\n");

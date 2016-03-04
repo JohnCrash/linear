@@ -91,19 +91,17 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
 	real d = 1.0/M[row*skip+col];
 	N[row] = col;
 	printf("pivot[%d,%d]\n",row,col);
-	printM(M,N,n,skip);	
+	printM(M,N,n+m,skip);	
 	multiply_line(M,d,row,n,skip);
 	for(k=0;k<n;k++){
 		if(k!=row&&M[k*skip+col]!=0){
 			elimination(M,k,row,col,n,skip);
 		}
 	}
-	if(m>0){
-		for(k=0;k<m;k++){
-			if(k!=row&&M[(n+k)*skip+col]!=0){
-				elimination(M,n+k,row,col,n,skip);
-			}			
-		}
+	for(k=0;k<m;k++){
+		if(M[(n+k)*skip+col]!=0){
+			elimination(M,n+k,row,col,n,skip);
+		}			
 	}
 }
 
@@ -196,13 +194,13 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n,int skip)
 int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 {
 	int i,enter;
-	int * N = (int *)malloc(n*sizeof(int));
-	for(i=0;i<n;i++)N[i]=i;
-	printM(M,N,n,skip);
+	int * N = (int *)malloc((n+m)*sizeof(int));
+	for(i=0;i<(n+m);i++)N[i]=i;
+	printM(M,N,n+m,skip);
 	printf("init_probrem\n");
 	if(init_probrem(M,N,n,&enter,m,skip)){
 		int row,col;
-		printM(M,N,n,skip);
+		printM(M,N,n+m,skip);
 		while( argmin_element(M,N,n,&enter,&row,&col,skip) ){
 			pivot(M,N,n,row,col,m,skip);
 		}
@@ -235,11 +233,11 @@ int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 	int i,j,k,skip;
 	skip = 2*n+2;
 	*pskip = skip;
-	real * M = (real *)malloc(n*skip*sizeof(real));
+	real * M = (real *)malloc((n+m)*skip*sizeof(real));
 	/* 
 	 * 构造一个 [I,-M,-1,b] 增广矩阵,-1是辅助变量
 	 */
-	for(i=0;i<n;i++){
+	for(i=0;i<(n+m);i++){
 		k = i*skip;
 		for(j=0;j<n;j++){
 			if(i!=j)
