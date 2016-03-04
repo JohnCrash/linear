@@ -23,7 +23,61 @@
 	}
 	return 1;
  }
- 
+
+static int absMaxPrincipalLeading(real * A,int n,int skip,int raw,int col)
+{
+	int i;
+	real v;
+	int maxcol=-1;
+	real mv=0;
+	for(i=raw;i<n;i++){
+		v = fabs(A[i*skip+col]);
+		if(v>mv){
+			maxcol=i;
+			mv=v;
+		}
+	}
+	return maxcol;	
+}
+
+template<typename T> void xchange(T *P,int i,int j)
+{
+	T tmp = P[i];
+	P[i] = P[j];
+	P[j] = tmp;
+	printf("##########xchange##########(%d,%d)\n",i,j);
+}
+
+/*
+ * 对A的左上角(nub)x(nub)的区域进行消元处理，将该区块处理成单元矩阵
+ * 如果主元位置为0进行换行处理
+ */
+static int pivotNub2(real *A,int *P,int nub,int n,int skip)
+{
+	int i,j,m;
+	real mr;
+	for(i=0;i<nub;i++){
+		m = absMaxPrincipalLeading(A,nub,skip,i,i);
+		if(m!=i&&m!=-1){
+			xchangeRaw(A,skip,i,m);
+			xchange(P,i,m);
+		}
+		mr = A[i*skip+i];
+		if(FTEQ(mr,0)){
+			return 0;
+		}
+		real d = 1.0/A[i*skip+i];
+		multiply_line(A,d,i,n,skip);
+		A[i*skip+i] = 1;
+		for(j=0;j<n;j++){
+			if(j!=i&&A[j*skip+i]!=0){
+				elimination(A,j,i,i,n,skip);
+			}
+		}		
+	}
+	return 1;
+}
+
 /*
  * M表示如下(M|y,x|'=0,'表示转置)，nub为自由区。
  * 因为在nub区x=R(任意实数)y=0，因此y的nub区被排除
@@ -65,6 +119,10 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 		}
 		M[i*skip+skip-1] = b[i];
 	}
+	/*
+	 * M矩阵结构
+	 * |-A,b|
+	 */
 	if( pivotNub(M,P,nub,n,skip) ){
 		if(nub<n){
 			/*
@@ -147,13 +205,25 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			free(AA);
 		}else{
 			/*
-			 * 存的线性方程求解,下面收集解
+			 * nub=n纯的线性方程求解,下面收集解
 			 */
 			for(i=0;i<nub;i++){
 				x[i] = M[i*skip+skip-1]; //nub区x
 				x[n+i] = 0;
 			}
+			result = 1;
 		}
+	}
+	/*
+	 * 根据P将x的位置重新换回来
+	 * 因为y区都为0，先借用下这部分空间进行交换
+	 */
+	for(i=0;i<nub;i++){
+		x[n+P[i]] = x[n+i];
+	}
+	for(i=0;i<nub;i++){
+		x[i] = x[n+i];
+		x[n+i] = 0;
 	}
 	free(M);
 	free(P);

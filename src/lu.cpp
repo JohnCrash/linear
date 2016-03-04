@@ -49,9 +49,9 @@ void xchangeRaw(real * A,int n,int i,int j)
 
 /* 
  * A是一个下三角矩阵，交互i和j行上的在i列左侧的元素 注意：j>i
- * [a 0 0]						[a 0 0]
+ * [a 0 0]					[a 0 0]
  * [b 1 0] 比如交互1,2行	[c 1 0]
- * [c 0 1]						[b 0 1]
+ * [c 0 1]					[b 0 1]
  */
 void xchangeRawLowerTriangle(real * A,int n,int i,int j)
 {

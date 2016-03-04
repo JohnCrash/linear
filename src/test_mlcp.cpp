@@ -106,7 +106,7 @@ static real exaples_q2[] = {
 	-1,-10,6
 };
 
-static void test_mlcp_lemke()
+static void test_mlcpSolver()
 {
 	real * A = makeRandMatrix();
 	real * b = makeRandVec2();
@@ -149,15 +149,18 @@ static void test_mlcp_lemke()
 	freeLcpSolve(vx);	
 }
 
-static void test_pivot()
+static void test_sor()
 {
 	real * A = makeRandMatrix();
 	real * b = makeRandVec2();
+	real * lo = makeRandVec2();
+	real * hi = makeRandVec2();
 	real * x = (real *)malloc(2*N*sizeof(real));
 	real * xx = (real *)malloc(2*N*sizeof(real));
 	real * AA = makeMatrix();
 	real * bb = makeRandVec2();
 	std::vector<real *> vx;
+	real w = 0;
 	int nub = randomNub(N);
 //	copyMatrix(A,exaples_m2);
 //	for(int i =0;i<N;i++)
@@ -174,13 +177,14 @@ static void test_pivot()
 	printVec("lcp b=",b);
 	printf("--------------------------------------------------------\n");
 	int result1 = lcp(A,b,vx,N);	
-	int result2 = lcp_pivot(A,b,x,N);
+	mlcp_sor1(A,b,x,hi,lo,w,N,30);
+	int result2 = 1;
 	
 	printf("lcp solve:\n");
 	printf("--------------------------------------------------------\n");
 	printLCPVx(vx);
-	printf("lcp_pivot solve %s (%d)\n",result2?"true":"false",result2);
-	printVec("lcp_pivot=",x);
+	printf("mlcp_sor1 solve %s (%d)\n",result2?"true":"false",result2);
+	printVec("mlcp_sor1=",x);
 	check_mlcp_result(AA,bb,x,nub,N);
 	
 	freeMatrix(A);
@@ -203,7 +207,7 @@ int main(int argn,char * argv[])
 	}
 		
 	//test_mlcp_pgs();
-	test_mlcp_lemke();
-	//test_pivot();
+	test_mlcpSolver();
+	//test_sor();
 	return 0;
 }

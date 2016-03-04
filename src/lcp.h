@@ -37,6 +37,8 @@ int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc);
 int mlcp_pgs(real * A,real *b,real *x,int nub,int n,int nMax,real acc);
 int lcp_pgsAdapter(real * A,real *b,real *x,int n);
 
+void mlcp_sor1(real *A,real *b,real *x,real *hi,real *lo,real w,int n,int k_max);
+
 int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax);
  
  /*
