@@ -112,7 +112,7 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
  * 1.如果b都>=0则直接返回0，solve_lemke会调用check_get_result_and_free_N获取解
  * 2.在b列中找到最负的数
  */
- static int init_probrem(real * M,int *N,int n,int *enter,int skip)
+ static int init_probrem(real * M,int *N,int n,int *enter,int m,int skip)
  {
 	 int i,j;
 	 real d,r;
@@ -127,7 +127,7 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
 	 }
 	 if(j!=-1){
 		 *enter = N[j];
-		 pivot(M,N,n,j,2*n);
+		 pivot(M,N,n,j,2*n,m,skip);
 		 return 1;
 	 }
 	 return 0;
@@ -139,7 +139,7 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
   */
 static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol,int skip)
 {
-	int i,j,k,skip = SKIP(n);
+	int i,j,k;
 	real ratios,d,r;
 	ratios = FLT_MAX;
 	j = -1;
@@ -195,13 +195,12 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n,int skip)
 
 int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 {
-	int i,enter,skip;
+	int i,enter;
 	int * N = (int *)malloc(n*sizeof(int));
-	skip = SKIP(n);
 	for(i=0;i<n;i++)N[i]=i;
 	printM(M,N,n,skip);
 	printf("init_probrem\n");
-	if(init_probrem(M,N,n,&enter,skip)){
+	if(init_probrem(M,N,n,&enter,m,skip)){
 		int row,col;
 		printM(M,N,n,skip);
 		while( argmin_element(M,N,n,&enter,&row,&col,skip) ){
