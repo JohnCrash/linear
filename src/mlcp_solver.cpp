@@ -122,6 +122,8 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 				printf("mallocPivotMatrix MM\n");
 				printM(MM,NULL,n,skip2);				
 				result = lcp_pivotBlock(MM,xx,n-nub,nub,skip2);			
+			}else if(solver==PGS){
+				
 			}
 			/*
 			 * 通过上面的lcp求解,xx是n-nub对互补解,skip2是矩阵MM的行距

@@ -35,6 +35,7 @@ int freeLcpSolve(std::vector<real *>& xs);
  */
 int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc);
 int mlcp_pgs(real * A,real *b,real *x,int nub,int n,int nMax,real acc);
+int lcp_pgsAdapter(real * A,real *b,real *x,int n);
 
 int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax);
  

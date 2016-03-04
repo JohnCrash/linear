@@ -4,7 +4,8 @@ lib_LTLIBRARIES=liblinear.la
 liblinear_la_SOURCES=lu.cpp misc.cpp matrix.cpp \
 solve.cpp lcp_pgs.cpp \
 lcp.cpp lcp_lemke.cpp lcp_pivot.cpp \
-mlcp.cpp mlcp_solver.cpp mlcp_pgs.cpp
+mlcp.cpp mlcp_solver.cpp mlcp_pgs.cpp \
+mlcp_sor.cpp
 
 liblinear_ladir=linear
 liblinear_la_HEADERS=linear.h misc.h lcp.h

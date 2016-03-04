@@ -246,3 +246,11 @@ int Solve_GaussSeidel(real * A, real * b, real *x,int n,int kMax)
 
   return 1;
 }
+
+/*
+ *用来配接mlcpSolver,让lcp_pgs可以使用
+ */
+int lcp_pgsAdapter(real * A,real *b,real *x,int n)
+{
+	return lcp_pgs(A,b,x,n,100,0.01);
+}
