@@ -134,6 +134,7 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
  /*
   * enter是进基列索引，将在进基列中搜索ratios最小的行。
   * 然后确定下一个进基列。
+  *
   */
 static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol,int skip)
 {
@@ -191,6 +192,9 @@ static int check_get_result_and_free_N(real *M,int * N,real * x,int n,int skip)
 } 
 
 
+/*
+ * 
+ */
 int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 {
 	int i,enter;
