@@ -80,8 +80,8 @@ static int pivotNub2(real *A,int *P,int nub,int n,int skip)
 
 /*
  * M表示如下(M|y,x|'=0,'表示转置)，nub为自由区。
- * 因为在nub区x=R(任意实数)y=0，因此y的nub区被排除
- * x,y的base区中选择n-nub个基列和x的nub区组成方程得到解
+ * 因为在nub区x=R(任意实数)y=0，因此y的nub区被排除(互补里面y始终为0)
+ * x,y的base区中选择n-nub个基列和x的nub区组成的方程得到解
  * 也就是y base区和x base区互补选择n-nub个列与x nub区组成最终的求解矩阵
  * 先将M弄成下面的样式
  * |	y	 |	 x	  |d|b|
