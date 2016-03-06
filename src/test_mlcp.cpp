@@ -1,6 +1,81 @@
 #include "lcp.h"
 #include "misc.h"
 
+void initMLCProblem(int n,real **PA,real **pb,real **px,real **py)
+{
+	*PA = (real *)malloc(n*n*sizeof(real));
+	*pb = (real *)malloc(n*sizeof(real));
+	*px = (real *)mallpoc(2*n*sizeof(real));	
+	*py = (real *)mallpoc(2*n*sizeof(real));
+}
+
+void freeMLCPProblem(real *A,real *b,real *x,real *y)
+{
+	free(A);
+	free(b);
+	free(x);
+	free(y);
+}
+
+/*
+ * 构造一个随机的混合互补问题
+ */
+void MLCProblem(int n,real *A,real *b,real *x,int *pnub)
+{
+	*pnub = (int)(randomReal()*(n+1));
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			A[i*n+j] = randomReal();
+		}
+		b[i] = randomReal();
+		x[i] = 0;
+		x[n+i] = 0;
+	}
+}
+
+/*
+ * 校验MLCP的解
+ */
+int verifyMLCP(real *A,real *b,real *x,real *y,int nub,int n)
+{
+	int i;
+	real * y = (real *)malloc(n*sizeof(real);
+	multiply0(y,A,x,n,n,1);
+	for(i=0;i<nub;i++){
+		if(!FTEQ(y[i],0))return 0;
+	}
+	for(i=nub;i<n;i++){
+		if(x[i]<0||y[i]<0)return 0;
+		if(!FTEQ(x[i]*y[i],0))return 0;
+	}
+	return 1;
+}
+
+/*
+ *打印MLCP问题和解
+ */
+void printMLCP(real *A,real *b,real *x,int nub,int n)
+{
+}
+
+/*
+ * 正确性检测
+ */
+void testSovler(MLCPSovler sovler,int n)
+{
+	real *A,*b,*x,*y;
+	int nub;
+  	initMLCProblem(n,&A,&b,&x,&y);
+	for(int i=0;i<100;i++){
+		MLCProblem(n,A,b,x,&nub);
+		mlcpSolver(A,b,x,nub,n,PIVOT);
+		if(verifyMLCP(A,b,x,y,nub,n)){
+			printMLCP(A,b,x,nub,n);
+		}
+	}
+	freeMLCPProblem(A,b,x,y);
+}
+
 void check_mlcp_result(real * A,real *b,real *x,int nub,int n)
 {
 	int i;
