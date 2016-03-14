@@ -63,8 +63,8 @@ static int pivot(real *M,int row,int col,int n,int m,int skip)
 {
 	int i;
 	real d = M[row*skip+col];
-	printf("pivot[%d,%d]\n",row,col);
-	printM(M,NULL,n+m,skip);	
+	//printf("pivot[%d,%d]\n",row,col);
+	//printM(M,NULL,n+m,skip);	
 	if( d == 0 )return 0;
 	multiply_line(M,1.0/d,row,n,skip);
 	M[row*skip+col] = 1;
@@ -119,8 +119,8 @@ static int last_negative(real * M,int n,int skip)
 {
 	for(int i=n-1;i>=0;i--){
 		if(M[i*skip+skip-1] < 0 ){
-			printM(M,NULL,n,skip);
-			printf("last_negative row = %d\n",i);			
+			//printM(M,NULL,n,skip);
+			//printf("last_negative row = %d\n",i);			
 			return i;
 		}
 	}
@@ -141,7 +141,7 @@ static int last_negative(real * M,int n,int skip)
  */
 int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
 {
-	int i,row,prev;
+	int i,row,prev,s;
 	int *base = (int *)malloc(2*n*sizeof(int));
 	/*
 	 * base用来标识基向量
@@ -155,7 +155,11 @@ int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
 		base[n+i] = 0;
 	}
 	prev = -1;
-	while( (row=last_negative(M,n,skip)) != prev && row!=-1 ){
+	s = 0;
+	/*
+	 *FIXBUG: 算法会陷入死循环，目前简单的加一个简单限制s++<2n
+	 */
+	while( (row=last_negative(M,n,skip)) != prev && row!=-1 && s++<=2*n){
 		prev = row;
 		/*
 		 * 算法会确保基向量总是等于1,在x区和y区选择一个基向量
@@ -170,11 +174,11 @@ int lcp_pivotBlock(real *M,real *x,int n,int m,int skip)
 			base[row+n] = 1;
 			if(!pivot(M,row,row+n,n,m,skip))
 				break;
-		}		
+		}
 	}
 
-	printf("final result:\n");
-	printM(M,NULL,n+m,skip);
+	//printf("final result:\n");
+	//printM(M,NULL,n+m,skip);
 	return check_get_result_and_free_base(M,base,x,n,skip);
 }
 

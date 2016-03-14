@@ -1,12 +1,16 @@
 #include "lcp.h"
 #include "misc.h"
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 void initMLCProblem(int n,real **PA,real **pb,real **px,real **py)
 {
 	*PA = (real *)malloc(n*n*sizeof(real));
 	*pb = (real *)malloc(n*sizeof(real));
-	*px = (real *)mallpoc(2*n*sizeof(real));	
-	*py = (real *)mallpoc(2*n*sizeof(real));
+	*px = (real *)malloc(2*n*sizeof(real));	
+	*py = (real *)malloc(2*n*sizeof(real));
 }
 
 void freeMLCPProblem(real *A,real *b,real *x,real *y)
@@ -25,9 +29,9 @@ void MLCProblem(int n,real *A,real *b,real *x,int *pnub)
 	*pnub = (int)(randomReal()*(n+1));
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			A[i*n+j] = randomReal();
+			A[i*n+j] = (randomReal()>0.5?1:-1)*randomReal();
 		}
-		b[i] = randomReal();
+		b[i] = 2*(randomReal()>0.5?1:-1)*randomReal();
 		x[i] = 0;
 		x[n+i] = 0;
 	}
@@ -39,7 +43,7 @@ void MLCProblem(int n,real *A,real *b,real *x,int *pnub)
 int verifyMLCP(real *A,real *b,real *x,real *y,int nub,int n)
 {
 	int i;
-	real * y = (real *)malloc(n*sizeof(real);
+	
 	multiply0(y,A,x,n,n,1);
 	for(i=0;i<nub;i++){
 		if(!FTEQ(y[i],0))return 0;
@@ -51,238 +55,146 @@ int verifyMLCP(real *A,real *b,real *x,real *y,int nub,int n)
 	return 1;
 }
 
+static void printNumber(real a)
+{
+	if( a > 0 )
+		printf(" %3.2f ",a);
+	else
+		printf("%3.2f ",a);
+}
 /*
  *打印MLCP问题和解
  */
 void printMLCP(real *A,real *b,real *x,int nub,int n)
 {
+	int i,j;
+	for(i=0;i<n;i++){
+		if(i<nub)
+			printf("*");
+		else
+			printf(" ");
+		for(j=0;j<n;j++){
+			printNumber(A[i*n+j]);
+		}
+		printf("|");
+		printNumber(b[i]);
+		printf("\n");
+	}
+	printf("[");
+	for(i=0;i<2*n;i++){
+		printNumber(x[i]);
+	}
+	printf("]\n");
 }
 
 /*
  * 正确性检测
  */
-void testSovler(MLCPSovler sovler,int n)
+int testSovler(LCPSolver sovler,int n,int reps)
 {
 	real *A,*b,*x,*y;
 	int nub;
+	int count = 0;
   	initMLCProblem(n,&A,&b,&x,&y);
-	for(int i=0;i<100;i++){
+	for(int i=0;i<reps;i++){
 		MLCProblem(n,A,b,x,&nub);
-		mlcpSolver(A,b,x,nub,n,PIVOT);
+		mlcpSolver(A,b,x,nub,n,sovler);
 		if(verifyMLCP(A,b,x,y,nub,n)){
-			printMLCP(A,b,x,nub,n);
+			//printMLCP(A,b,x,nub,n);
+			count++;
 		}
 	}
 	freeMLCPProblem(A,b,x,y);
+	return count;
 }
 
-void check_mlcp_result(real * A,real *b,real *x,int nub,int n)
+/*
+ * 使用遍历解，看看到底有多少有解
+ */
+int calcSolveCount(int n,int reps)
 {
-	int i;
-	bool p = true;
-	real * y = (real*)malloc(n*sizeof(real));
-	multiply0(y,A,x,n,n,1);
-	for(i =0;i<n;i++){
-		y[i] += b[i];
-		if( i>=nub&&abs(y[i]*x[i])>0.01 )
-			p = false;
-	}
-	printf("ceck lcp_pgs result: %s \nx=",p?"pass":"fail");
-	for(i=0;i<n;i++){
-		printf("%.2f\t",x[i]);
-	}
-	printf("\ny=");
-	for(i=0;i<n;i++){
-		printf("%.2f\t",y[i]);
-	}
-	printf("\n");
-	free(y);
-}
-
-void printLCPVx(std::vector<real *>& vx)
-{
-	for(auto i=vx.begin();i!=vx.end();++i){
-		printf("[%d]\t",i-vx.begin());
-		for(int j =0;j<2*N;j++){
-			if(j==N)
-				printf("|");
-			printf("%.2f ",(*i)[j]);
+	real *A,*b,*x,*y;
+	int nub;
+	int count = 0;
+	std::vector<real *> xs;
+  	initMLCProblem(n,&A,&b,&x,&y);
+	for(int i=0;i<reps;i++){
+		MLCProblem(n,A,b,x,&nub);
+		mlcp(A,b,xs,nub,n);
+		if(!xs.empty() && verifyMLCP(A,b,xs[0],y,nub,n) ){
+			//printMLCP(A,b,x,nub,n);
+			count++;
 		}
-		printf("\n");
-	}	
-}
-
-//return random 0-n
-static int randomNub(int n)
+		freeLcpSolve(xs);
+	}
+	freeMLCPProblem(A,b,x,y);
+	return count;
+} 
+/*
+ * 检查算法死循环的问题
+ */
+int testSovlerCheck(LCPSolver sovler,int n,int reps)
 {
-	return (int)(randomReal()*(n+1));
-}
-
-static void test_mlcp_pgs()
-{
-	real * b = makeRandVec2();
-	real * x = makeRandVec2();
-	real * xx = makeRandVec2();
-	real * AA = makeMatrix();
-	real * bb = makeRandVec2();
-	int nub = randomNub(N);
-	//real * A = makeRandSPDMatrixNUB(nub);
-	real * A = makeRandSPDMatrix();
-	std::vector<real *> vx;
-	copyMatrix(AA,A);
-	memcpy(bb,b,N*sizeof(real));
-	//memset(x,0,sizeof(real)*N);
-	memset(x,0,N*sizeof(real));
-	//memcpy(xx,b,N*sizeof(real));
-	memset(xx,0,sizeof(real)*N);
-	
-	printf("--------------------------------------------------------\n");
-	printMat("solve lcp A=",A);
-	printVec("lcp b=",b);
-	printf("nub = %d\n",nub);
-	printf("--------------------------------------------------------\n");
-	int result1 = mlcp(A,b,vx,nub,N);	
-	int result2 = mlcp_pgs(A,b,x,nub,N,150,0.01);
-//	int result3 = Solve_GaussSeidel(AA,bb,xx,N,15);
-	printf("lcp solve:\n");
-	printf("--------------------------------------------------------\n");
-	printLCPVx(vx);
-	printf("lcp_pgs solve %s (%d)\n",result2?"true":"false",result2);
-	printVec("lcp_pgs=",x);
-	check_mlcp_result(AA,bb,x,nub,N);
-//	printVec("gs solve :",xx);
-
-	freeMatrix(A);
-	freeMatrix(b);
-	freeMatrix(x);
-	freeMatrix(AA);
-	freeMatrix(bb);
-	freeLcpSolve(vx);
-}
-
-static real exaples_m[]= {
-	1,-1,-1,-1,
-	-1,1,-1,-1,
-	1,1,2,0,
-	1,1,0,2
-};
-
-static real exaples_q[] = {
-	3,5,-9,-5,
-};
-
-static real exaples_m2[]= {
-	2,-1,3,
-	-1,10,2,
-	-3,-2,0
-};
-
-static real exaples_q2[] = {
-	-1,-10,6
-};
-
-static void test_mlcpSolver()
-{
-	real * A = makeRandMatrix();
-	real * b = makeRandVec2();
-	real * x = (real *)malloc(2*N*sizeof(real));
-	real * xx = (real *)malloc(2*N*sizeof(real));
-	real * AA = makeMatrix();
-	real * bb = makeRandVec2();
-	std::vector<real *> vx;
-	int nub = randomNub(N);
-//	copyMatrix(A,exaples_m2);
-//	for(int i =0;i<N;i++)
-//		b[i] = exaples_q2[i];
-	copyMatrix(AA,A);
-	memcpy(bb,b,N*sizeof(real));
-	//memset(x,0,sizeof(real)*N);
-	memset(x,0,N*sizeof(real));
-	//memcpy(xx,b,N*sizeof(real));
-	memset(xx,0,sizeof(real)*N);	
-	
-	printf("--------------------------------------------------------\n");
-	printMat("solve lcp A=",A);
-	printVec("lcp b=",b);
-	printf("nub = %d\n",nub);
-	printf("--------------------------------------------------------\n");
-	int result1 = mlcp(A,b,vx,nub,N);	
-	int result2 = mlcpSolver(A,b,x,nub,N,PIVOT);
-	
-	printf("lcp solve:\n");
-	printf("--------------------------------------------------------\n");
-	printLCPVx(vx);
-	printf("mlcpSolver lemke solver %s (%d)\n",result2?"true":"false",result2);
-	printVec("mlcp_lemke=",x);
-	check_mlcp_result(AA,bb,x,nub,N);
-	
-	freeMatrix(A);
-	freeMatrix(b);
-	freeMatrix(x);
-	freeMatrix(AA);
-	freeMatrix(bb);	
-	freeLcpSolve(vx);	
-}
-
-static void test_sor()
-{
-	real * A = makeRandMatrix();
-	real * b = makeRandVec2();
-	real * lo = makeRandVec2();
-	real * hi = makeRandVec2();
-	real * x = (real *)malloc(2*N*sizeof(real));
-	real * xx = (real *)malloc(2*N*sizeof(real));
-	real * AA = makeMatrix();
-	real * bb = makeRandVec2();
-	std::vector<real *> vx;
-	real w = 0;
-	int nub = randomNub(N);
-//	copyMatrix(A,exaples_m2);
-//	for(int i =0;i<N;i++)
-//		b[i] = exaples_q2[i];
-	copyMatrix(AA,A);
-	memcpy(bb,b,N*sizeof(real));
-	//memset(x,0,sizeof(real)*N);
-	memset(x,0,N*sizeof(real));
-	//memcpy(xx,b,N*sizeof(real));
-	memset(xx,0,sizeof(real)*N);	
-	
-	printf("--------------------------------------------------------\n");
-	printMat("solve lcp A=",A);
-	printVec("lcp b=",b);
-	printf("--------------------------------------------------------\n");
-	int result1 = lcp(A,b,vx,N);	
-	mlcp_sor1(A,b,x,hi,lo,w,N,30);
-	int result2 = 1;
-	
-	printf("lcp solve:\n");
-	printf("--------------------------------------------------------\n");
-	printLCPVx(vx);
-	printf("mlcp_sor1 solve %s (%d)\n",result2?"true":"false",result2);
-	printVec("mlcp_sor1=",x);
-	check_mlcp_result(AA,bb,x,nub,N);
-	
-	freeMatrix(A);
-	freeMatrix(b);
-	freeMatrix(x);
-	freeMatrix(AA);
-	freeMatrix(bb);	
-	freeLcpSolve(vx);	
+	real *A,*b,*x,*y;
+	int i,nub;
+	int count = 0;
+	bool isexit = false;
+	int tc = 0;
+	std::thread * pthread = new std::thread(
+		[&](){
+			while(!isexit){
+				while(tc<5000){
+					std::this_thread::sleep_for(std::chrono::microseconds(10));
+					tc++;
+					if(isexit)return;
+				}
+				printf("%d'th\n",i);
+				printMLCP(A,b,x,nub,n);
+				tc = 0;
+			}
+		}
+	);
+  	initMLCProblem(n,&A,&b,&x,&y);
+	for(i=0;i<reps;i++){
+		MLCProblem(n,A,b,x,&nub);
+		tc = 0;
+		mlcpSolver(A,b,x,nub,n,sovler);
+		if(verifyMLCP(A,b,x,y,nub,n)){
+			//printMLCP(A,b,x,nub,n);
+			count++;
+		}
+	}
+	freeMLCPProblem(A,b,x,y);
+	isexit = true;
+	pthread->join();
+	delete pthread;	
+	return count;
 }
 
 int main(int argn,char * argv[])
 {
+	int s;
 	if(argn>=1){
 		/*
 		 * 2,4
 		 */
-		 int s = atoi(argv[1]);
-		 printf("random seed : %d\n",s);
+		s = atoi(argv[1]);
+		printf("random seed : %d\n",s);
 		srand(s);
 	}
-		
+	for( int i=0;i<1;i++ ){
+		int n = i*10+3;
+		//srand(s);
+		//printf("PGS %d - %d/100\n",n,testSovler(PGS,n));
+		srand(s);
+		printf("ALL %d - %d/1000\n",n,calcSolveCount(n,1000));
+		srand(s);
+		printf("LEMKE %d - %d/1000\n",n,testSovler(LEMKE,n,1000));
+		srand(s);
+		printf("PIVOT %d - %d/1000\n",n,testSovler(PIVOT,n,1000));
+	}
 	//test_mlcp_pgs();
-	test_mlcpSolver();
+	//test_mlcpSolver();
 	//test_sor();
 	return 0;
 }

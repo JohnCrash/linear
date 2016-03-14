@@ -161,8 +161,8 @@ static void pivot(real *M,int *N,int n,int row,int col,int m,int skip)
 	int k;
 	real d = 1.0/M[row*skip+col];
 	N[row] = col;
-	printf("pivot[%d,%d]\n",row,col);
-	printM(M,N,n+m,skip);	
+	//printf("pivot[%d,%d]\n",row,col);
+	//printM(M,N,n+m,skip);	
 	multiply_line(M,d,row,n,skip);
 	for(k=0;k<n;k++){
 		if(k!=row&&M[k*skip+col]!=0){
@@ -214,8 +214,8 @@ static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol,
 	ratios = FLT_MAX;
 	j = -1;
 	k = *enter;
-	printf("argmin_element enter=%d\n",k);
-	printM(M,N,n,skip);
+	//printf("argmin_element enter=%d\n",k);
+	//printM(M,N,n,skip);
 	if(k==2*n)return 0;
 	for(i=0;i<n;i++){
 		d = M[i*skip+n+k];
@@ -231,8 +231,8 @@ static int argmin_element(real * M,int *N,int n,int* enter,int * prow,int *pcol,
 		*prow = j;
 		*pcol = n+k;
 		*enter = N[j];
-		printf("argmin_element return row=%d,col=%d,ratios=%.2f,enter=%d\n",
-		j,k,ratios,N[j]);
+		//printf("argmin_element return row=%d,col=%d,ratios=%.2f,enter=%d\n",
+		//j,k,ratios,N[j]);
 		return 1;
 	}else return 0;
 }
@@ -271,11 +271,11 @@ int lcp_lemkeBlock(real *M,real *x,int n,int m,int skip)
 	int i,enter;
 	int * N = (int *)malloc((n+m)*sizeof(int));
 	for(i=0;i<(n+m);i++)N[i]=i;
-	printM(M,N,n+m,skip);
-	printf("init_probrem\n");
+	//printM(M,N,n+m,skip);
+	//printf("init_probrem\n");
 	if(init_probrem(M,N,n,&enter,m,skip)){
 		int row,col;
-		printM(M,N,n+m,skip);
+		//printM(M,N,n+m,skip);
 		while( argmin_element(M,N,n,&enter,&row,&col,skip) ){
 			pivot(M,N,n,row,col,m,skip);
 		}

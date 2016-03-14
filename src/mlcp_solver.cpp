@@ -45,7 +45,7 @@ template<typename T> void xchange(T *P,int i,int j)
 	T tmp = P[i];
 	P[i] = P[j];
 	P[j] = tmp;
-	printf("##########xchange##########(%d,%d)\n",i,j);
+	//printf("##########xchange##########(%d,%d)\n",i,j);
 }
 
 /*
@@ -138,8 +138,8 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			 *| A | B  | e|
 			 *| C | D  | E|
 			 */
-			printf("pivotNub\n");
-			printM(M,NULL,n,skip);
+			//printf("pivotNub\n");
+			//printM(M,NULL,n,skip);
 			
 			real *AA = (real *)malloc((n-nub)*n*sizeof(real));
 			real * bb = (real *)malloc(n*sizeof(real));
@@ -158,10 +158,10 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 				}
 				bb[i+n-nub] = M[i*skip+skip-1];
 			}
-			printf("new matrix AA\n");
-			printM(AA,NULL,n,skip2);
-			printf("new matrix bb\n");
-			printM(bb,NULL,n,1);			
+			//printf("new matrix AA\n");
+			//printM(AA,NULL,n,skip2);
+			//printf("new matrix bb\n");
+			//printM(bb,NULL,n,1);			
 			/* 
 			 *上面的操作,将AA组合成下面的结构AA
 			 *| -D | n-nub行
@@ -172,13 +172,13 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			 */
 			if(solver==LEMKE){
 				MM = mallocLemkeMatrix(AA,bb,n-nub,nub,&skip2);
-				printf("mallocLemkeMatrix MM\n");
-				printM(MM,NULL,n,skip2);
+				//printf("mallocLemkeMatrix MM\n");
+				//printM(MM,NULL,n,skip2);
 				result = lcp_lemkeBlock(MM,xx,n-nub,nub,skip2);
 			}else if(solver==PIVOT){
 				MM = mallocPivotMatrix(AA,bb,n-nub,nub,&skip2);
-				printf("mallocPivotMatrix MM\n");
-				printM(MM,NULL,n,skip2);				
+				//printf("mallocPivotMatrix MM\n");
+				//printM(MM,NULL,n,skip2);				
 				result = lcp_pivotBlock(MM,xx,n-nub,nub,skip2);			
 			}else if(solver==PGS){
 				
@@ -186,8 +186,8 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			/*
 			 * 通过上面的lcp求解,xx是n-nub对互补解,skip2是矩阵MM的行距
 			 */
-			printf("lcp solve\n");
-			printM(MM,NULL,n,skip2);
+			//printf("lcp solve\n");
+			//printM(MM,NULL,n,skip2);
 			/*
 			 * 收集解
 			 */
