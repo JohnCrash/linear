@@ -65,6 +65,8 @@ static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int 
 	 * 求解 Mx=b
 	 */
 	if( crout_plu(M,P,L,n) ){
+		real * bb = (real *)malloc(n*sizeof(real));
+		memcpy(bb,b,n*sizeof(real));
 		if( solve_plu(P,L,M,b,x,n) ){
 			for(i=0;i<n;i++){
 				if(i>=nub&&x[i]<0){
@@ -85,6 +87,7 @@ static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int 
 			}
 			return 1;
 		}
+		free(bb);
 	}
 	return 0;
 }
@@ -115,7 +118,9 @@ int mlcp(real * A,real *b,std::vector<real *>& xs,int nub,int n)
 	real * L = (real *)malloc(n*n*sizeof(real));
 	real * bb = (real *)malloc(n*sizeof(real));
 	real * x = NULL;
-	memset(N,0,n);
+	memset(N,0,n*sizeof(int));
+	//for(i=0;i<n;i++)
+	//	N[i]=0;
 	for(i=0;i<nub;i++)
 		N[i]=1;
 	do{

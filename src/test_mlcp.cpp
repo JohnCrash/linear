@@ -53,7 +53,7 @@ int verifyMLCP(real *A,real *b,real *x,real *y,int nub,int n)
 		if(!FTEQ(y[i],0))return 0;
 	}
 	for(i=nub;i<n;i++){
-		if(x[i]<0||y[i]<0)return 0;
+		if(x[i]<-FTACC||y[i]<-FTACC)return 0;
 		if(!FTEQ(x[i]*y[i],0))return 0;
 	}
 	return 1;
@@ -118,14 +118,24 @@ int testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 		if(mlcpSolver(A,b,x,nub,n,sovler)){
 			solveC++;
 			count++;
-		}
-		if(verifyMLCP(A,b,x,y,nub,n)){
-			//printMLCP(A,b,x,nub,n);
-			verifyC++;
-			//if(std::find(_sovleInx.begin(),_sovleInx.end(),i)!=_sovleInx.end()){
-			//	printf("Sovler : %s %d\n",sovler==LEMKE?"LEMKE":"PIVOT",i);
-			//	printMLCP(A,b,x,nub,n);
-			//}
+			if(verifyMLCP(A,b,x,y,nub,n)){
+				//printMLCP(A,b,x,nub,n);
+				verifyC++;
+				//if(std::find(_sovleInx.begin(),_sovleInx.end(),i)!=_sovleInx.end()){
+				//	printf("Sovler : %s %d\n",sovler==LEMKE?"LEMKE":"PIVOT",i);
+				//	printMLCP(A,b,x,nub,n);
+				//}
+			}else{
+				printf("==============================\n");
+				printMLCP(A,b,x,nub,n);
+				std::vector<real *> xs;
+				mlcp(A,b,xs,nub,n);
+				if(!xs.empty()){
+					printf("mlcp:\n");
+					printMLCP(A,b,xs[0],nub,n);
+				}
+				freeLcpSolve(xs);
+			}		
 		}
 	}
 	freeMLCPProblem(A,b,x,y);

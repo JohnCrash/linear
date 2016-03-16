@@ -91,7 +91,7 @@ int lcp(real *A,real *b,std::vector<real *>& xs,int n)
 	real * L = (real *)malloc(n*n*sizeof(real));
 	real * bb = (real *)malloc(n*sizeof(real));
 	real * x = NULL;
-	memset(N,0,n);
+	memset(N,0,n*sizeof(int));
 	do{
 		if(!x)
 			x = (real*)malloc(2*n*sizeof(real));
