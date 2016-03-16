@@ -41,25 +41,47 @@ static void printMat(const char * s,real * A,int N)
 }
 
 /*
- * N是一个互补集合，其中N[i]=0表示对于的x[i]=0 或者N[i]=1表示对应的x[i]>=0
+ * N是一个互补集合，其中N[i]=0表示对应的x[i]=0 或者N[i]=1表示对应的x[i]>=0
  */
 static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int nub,int n)
 {
 	int i,j;
-	for(i=0,j=0;i<n;i++,j++){
-		if(N[j]){
-			copyColumAndNeg(M,A,j,i,n);
+	/*
+	 * [I,-A]=b ,然后将互补条件加上，挑选出要解的矩阵Mx=b
+	 * 加上A = | -a -b |
+	 *         | -c -d |
+	 * N    | 0 1 |
+	 *  | 1 0 a b | 挑选出 M = | 1 b |
+	 *  | 0 1 c d |            | 0 d |
+	 */
+	for(i=0;i<n;i++){
+		if(N[i]){
+			copyColumAndNeg(M,A,i,i,n);
 		}else{
-			copyIdentity(M,j,i,n);
+			copyIdentity(M,i,i,n);
 		}
 	}
+	/*
+	 * 求解 Mx=b
+	 */
 	if( crout_plu(M,P,L,n) ){
 		if( solve_plu(P,L,M,b,x,n) ){
 			for(i=0;i<n;i++){
 				if(i>=nub&&x[i]<0){
 					return 0;
 				}
-				x[n+i] = N[i];
+			}
+			//收集答案为标准方式(前面是x,后面是y)
+			for(i=0;i<nub;i++){
+				x[n+i] = 0;
+			}
+			for(i=nub;i<n;i++){
+				if(N[i]==1){
+					x[n+i]=0;
+				}else{
+					x[n+i] = x[i];
+					x[i] = 0;
+				}
 			}
 			return 1;
 		}
@@ -79,9 +101,7 @@ static void printN(int *N,int n)
  * 将线性互补问题全部解穷举出来（因此算法复杂度为O(pow(2,n)*pow(n,3))）
  * y = Ax+b;x,y>=0;x'y=0
  * 成功返回1并将全部的解都放入到xs中,失败返回0
- * 注意返回的解x,y是混合放置的，后面接互补集合，互补集合为1对应x,0对应y
- * 如a b c d 1 0 1 1,那么x=a 0 c d,y=0 c 0 0
- *
+ * xs中放入的解：是一个2n数组，前面是x,后面是y
  * nub 是前nub个x变量是自由变量，而y=0
  * 其他部分和lcp函数相同，仅仅是前nub个变量不参与互补条件判断
  */
@@ -112,7 +132,7 @@ int mlcp(real * A,real *b,std::vector<real *>& xs,int nub,int n)
 		}
 		/* 
 		 * 这里产生一个互补集N,覆盖全部可能性，每一个位上都可能为0或者1
-		 * 这个正好和二进制的进一样，模拟二进制进位。
+		 * 这个正好和二进制的进位一样，模拟二进制进位。
 		 * 确保小于nub的都为0
 		 */
 		for(i=nub;i<n;i++){

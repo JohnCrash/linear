@@ -47,22 +47,19 @@ int solve_upper_triangle(real *U,real * b,real *x,int n)
 	 return 1;
  }
  
- /*
-  * 解方程PLUx=b,其中L是下三角矩阵，U是上三角矩阵
-  * 
-  */
- int solve_plu(real * P,real * L,real * U,real * b,real *x,int n)
- {
-	 transpose(P,N);
-	 multiply0(x,P,b,n,n,1);
-	 memcpy(b,x,n*sizeof(real));
-	 if(!solve_lu(L,U,b,x,n))
-		 return 0;
-	 
-	// multiply0(b,P,x,n,n,1);
-	// memcpy(x,b,n*sizeof(real));
-	 return 1;
- }
+/*
+ * 解方程PLUx=b,其中L是下三角矩阵，U是上三角矩阵
+ * LUx=y,Py=b
+ */
+int solve_plu(real * P,real * L,real * U,real * b,real *x,int n)
+{
+	transpose(P,n);
+	multiply0(x,P,b,n,n,1);
+	memcpy(b,x,n*sizeof(real));
+	if(!solve_lu(L,U,b,x,n))
+		return 0;
+	return 1;
+}
 
  /*
   * 求向量a和向量b的点积，a和b都是n维向量

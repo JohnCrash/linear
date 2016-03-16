@@ -1,6 +1,7 @@
 #include "lcp.h"
 #include "misc.h"
 #include <vector>
+#include <algorithm>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -45,6 +46,9 @@ int verifyMLCP(real *A,real *b,real *x,real *y,int nub,int n)
 	int i;
 	
 	multiply0(y,A,x,n,n,1);
+	for(i=0;i<n;i++){
+		y[i] += b[i];
+	}
 	for(i=0;i<nub;i++){
 		if(!FTEQ(y[i],0))return 0;
 	}
@@ -62,6 +66,7 @@ static void printNumber(real a)
 	else
 		printf("%3.2f ",a);
 }
+
 /*
  *打印MLCP问题和解
  */
@@ -85,23 +90,42 @@ void printMLCP(real *A,real *b,real *x,int nub,int n)
 		printNumber(x[i]);
 	}
 	printf("]\n");
+	//
+	multiply0(x+n,A,x,n,n,1);
+	for(i=0;i<n;i++){
+		x[n+i] += b[i];
+	}
+	printf("[");
+	for(i=0;i<2*n;i++){
+		printNumber(x[i]);
+	}
+	printf("]\n");	
 }
 
+std::vector<int> _sovleInx;
 /*
  * 正确性检测
  */
-int testSovler(LCPSolver sovler,int n,int reps)
+int testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 {
 	real *A,*b,*x,*y;
 	int nub;
 	int count = 0;
+	verifyC = solveC = 0;
   	initMLCProblem(n,&A,&b,&x,&y);
 	for(int i=0;i<reps;i++){
 		MLCProblem(n,A,b,x,&nub);
-		mlcpSolver(A,b,x,nub,n,sovler);
+		if(mlcpSolver(A,b,x,nub,n,sovler)){
+			solveC++;
+			count++;
+		}
 		if(verifyMLCP(A,b,x,y,nub,n)){
 			//printMLCP(A,b,x,nub,n);
-			count++;
+			verifyC++;
+			//if(std::find(_sovleInx.begin(),_sovleInx.end(),i)!=_sovleInx.end()){
+			//	printf("Sovler : %s %d\n",sovler==LEMKE?"LEMKE":"PIVOT",i);
+			//	printMLCP(A,b,x,nub,n);
+			//}
 		}
 	}
 	freeMLCPProblem(A,b,x,y);
@@ -111,18 +135,27 @@ int testSovler(LCPSolver sovler,int n,int reps)
 /*
  * 使用遍历解，看看到底有多少有解
  */
-int calcSolveCount(int n,int reps)
+int calcSolveCount(int n,int reps,int &solveC,int &verifyC)
 {
 	real *A,*b,*x,*y;
-	int nub;
+	int nub,k;
 	int count = 0;
+	verifyC = solveC = 0;
 	std::vector<real *> xs;
   	initMLCProblem(n,&A,&b,&x,&y);
 	for(int i=0;i<reps;i++){
 		MLCProblem(n,A,b,x,&nub);
 		mlcp(A,b,xs,nub,n);
-		if(!xs.empty() && verifyMLCP(A,b,xs[0],y,nub,n) ){
+		if(!xs.empty()){
 			//printMLCP(A,b,x,nub,n);
+			if( verifyMLCP(A,b,xs[0],y,nub,n) )
+				verifyC++;
+			else{
+				printf("mlcp:\n");
+				printMLCP(A,b,xs[0],nub,n);
+			}
+			_sovleInx.push_back(i);
+			solveC++;
 			count++;
 		}
 		freeLcpSolve(xs);
@@ -171,27 +204,42 @@ int testSovlerCheck(LCPSolver sovler,int n,int reps)
 	return count;
 }
 
+#define S 100
+
 int main(int argn,char * argv[])
 {
 	int s;
-	if(argn>=1){
+	int n = 3;
+	if(argn>1){
 		/*
 		 * 2,4
 		 */
 		s = atoi(argv[1]);
 		printf("random seed : %d\n",s);
 		srand(s);
+		if(argn>2)
+			n = atoi(argv[2]);
 	}
 	for( int i=0;i<1;i++ ){
-		int n = i*10+3;
+		
 		//srand(s);
 		//printf("PGS %d - %d/100\n",n,testSovler(PGS,n));
 		srand(s);
-		printf("ALL %d - %d/1000\n",n,calcSolveCount(n,1000));
+		int solveC,verifyC;
+		double t0 = getClock();
+		int c = calcSolveCount(n,S,solveC,verifyC);
+		printf("ALL [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
+		printf("use time : %fms\n",1000*(getClock()-t0));
 		srand(s);
-		printf("LEMKE %d - %d/1000\n",n,testSovler(LEMKE,n,1000));
+		t0 = getClock();
+		c = testSovler(LEMKE,n,S,solveC,verifyC);
+		printf("LEMKE [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
+		printf("use time : %fms\n",1000*(getClock()-t0));
 		srand(s);
-		printf("PIVOT %d - %d/1000\n",n,testSovler(PIVOT,n,1000));
+		t0 = getClock();
+		c = testSovler(PIVOT,n,S,solveC,verifyC);
+		printf("PIVOT [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
+		printf("use time : %fms\n",1000*(getClock()-t0));
 	}
 	//test_mlcp_pgs();
 	//test_mlcpSolver();

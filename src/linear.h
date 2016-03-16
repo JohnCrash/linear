@@ -16,7 +16,7 @@ typedef float real;
 #else
 #define REAL(x) (x)
 typedef double real;
-#define FTACC 0.000001
+#define FTACC 0.0001
 	#ifndef FLT_MIN
 	#define FLT_MIN 2.2250738585072014e-308
 	#endif
