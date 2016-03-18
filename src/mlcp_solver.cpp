@@ -4,15 +4,57 @@
  #include <memory.h>
  #include <stdio.h>
  
+ template<typename T> void xchange(T *P,int i,int j)
+ {
+	T tmp = P[i];
+	P[i] = P[j];
+	P[j] = tmp;
+ }
+
+ //找到最大的主元行
+ static int maxPrincipalLine(real *A,int i,int n,int skip)
+ {
+	int j,k;
+	real d,m = 0;
+	k = i;
+	for(j=i;j<n;j++){
+		d = fabs(A[j*skip+i]);
+		if(d>m){
+			m = d;
+			k = j;
+		}
+	}
+	return k;
+ }
+ //交换i和k行
+ static int xchangeLine(real *A,int i,int k,int n,int skip)
+ {
+	 int j;
+	 real d;
+	 for(j=0;j<skip;j++){
+		 d = A[i*skip+j];
+		 A[i*skip+j] = A[k*skip+j];
+		 A[k*skip+j] = d;
+	 }
+ }
  /*
   * 对A的左上角(nub)x(nub)的区域进行消元处理，将该区块处理成单元矩阵
   */
- static int pivotNub(real *A,int *P,int nub,int n,int skip)
+ static int pivotNub(real *A,int nub,int n,int skip)
  {
-	int i,j;
+	int i,j,k;
+	real d;
 	for(i=0;i<nub;i++){
-		if( A[i*skip+i] == 0 )return 0; //FIXBUG,使用交换行来解决
-		real d = 1.0/A[i*skip+i];
+		/*
+		 * 取主元为绝对值最大，有利于数值精度同时避免主元为0导致不可解
+		 */
+		k = maxPrincipalLine(A,i,nub,skip);
+		if(k!=i){
+			xchangeLine(A,i,k,nub,skip);
+		}
+		d = A[i*skip+i];
+		if( d == 0 )return 0;
+		d = 1.0/d;
 		multiply_line(A,d,i,n,skip);
 		A[i*skip+i] = 1;
 		for(j=0;j<n;j++){
@@ -38,14 +80,6 @@ static int absMaxPrincipalLeading(real * A,int n,int skip,int raw,int col)
 		}
 	}
 	return maxcol;	
-}
-
-template<typename T> void xchange(T *P,int i,int j)
-{
-	T tmp = P[i];
-	P[i] = P[j];
-	P[j] = tmp;
-	//printf("##########xchange##########(%d,%d)\n",i,j);
 }
 
 /*
@@ -77,7 +111,13 @@ static int pivotNub2(real *A,int *P,int nub,int n,int skip)
 	}
 	return 1;
 }
-
+static void printNumber(real a)
+{
+	if( a > 0 )
+		printf(" %3.2f ",a);
+	else
+		printf("%3.2f ",a);
+}
 /*
  * M表示如下(M|y,x|'=0,'表示转置)，nub为自由区。
  * 因为在nub区x=R(任意实数)y=0，因此y的nub区被排除(互补里面y始终为0)
@@ -103,13 +143,10 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 	int result = 0;
 	
 	if(nub<0||nub>n)return result;
-	P = (int *)malloc(nub*sizeof(int));
 	/*
 	 * nub = n问题完全转化为线性方程问题
 	 * nub = 0问题是一个完全的线性互补问题
 	 */
-	for(i = 0;i<nub;i++)
-		P[i] = i;
 	real * M = (real*)malloc(n*(n+1)*sizeof(real));
 	skip = n+1;
 	
@@ -123,7 +160,7 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 	 * M矩阵结构
 	 * |-A,b|
 	 */
-	if( pivotNub(M,P,nub,n,skip) ){
+	if( pivotNub(M,nub,n,skip) ){
 		if(nub<n){
 			/*
 			 *|<---n+1--->|
@@ -169,6 +206,8 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			 *而bb是一个下面的结构
 			 *| E |
 			 *| e |
+			 *这样做的目的是为了在使用Lemke和pivot求解时进行变换时，
+		     *将|-B e|作为附件行参加变换。
 			 */
 			if(solver==LEMKE){
 				MM = mallocLemkeMatrix(AA,bb,n-nub,nub,&skip2);
@@ -214,18 +253,7 @@ int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 			result = 1;
 		}
 	}
-	/*
-	 * 根据P将x的位置重新换回来
-	 * 因为y区都为0，先借用下这部分空间进行交换
-	 */
-	for(i=0;i<nub;i++){
-		x[n+P[i]] = x[n+i];
-	}
-	for(i=0;i<nub;i++){
-		x[i] = x[n+i];
-		x[n+i] = 0;
-	}
+
 	free(M);
-	free(P);
 	return result;
 }

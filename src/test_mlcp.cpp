@@ -25,17 +25,63 @@ void freeMLCPProblem(real *A,real *b,real *x,real *y)
 /*
  * 构造一个随机的混合互补问题
  */
-void MLCProblem(int n,real *A,real *b,real *x,int *pnub)
+void MLCProblem2(int n,real *A,real *b,real *x,int *pnub)
 {
 	*pnub = (int)(randomReal()*(n+1));
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
 			A[i*n+j] = (randomReal()>0.5?1:-1)*randomReal();
 		}
-		b[i] = 2*(randomReal()>0.5?1:-1)*randomReal();
+		b[i] = 10*(randomReal()>0.5?1:-1)*randomReal();
 		x[i] = 0;
 		x[n+i] = 0;
 	}
+	multiply0(A,A,A,n,n,n);
+}
+
+static void buildPDMatrix(real *A,int n){
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			A[i*n+j] = (randomReal()>0.5?1:-1)*randomReal();
+		}
+	}
+	multiply0(A,A,A,n,n,n);
+}
+static void copyMatrix(int i,real *A,int n,real *PD,int m)
+{
+	for(int j=0;j<m;j++){
+		for(int k=0;k<m;k++){
+			A[(i+j)*n+i+k] = PD[j*m+k];
+		}
+	}
+}
+/*
+ * 对于很大的n,构造一个对角线正定矩阵
+ */
+void MLCProblem(int n,real *A,real *b,real *x,int *pnub)
+{
+	int i;
+	real * PD = (real *)malloc(9*9*sizeof(real));
+	*pnub = (int)(randomReal()*(n+1));
+	memset(A,0,n*n*sizeof(real));
+	for(i=0;i<n;i++){
+		b[i] = 10*(randomReal()>0.5?1:-1)*randomReal();
+		x[i] = 0;
+		x[n+i] = 0;
+	}
+	i = 0;
+	while(i<n){
+		if(i+9<=n){
+			buildPDMatrix(PD,9);
+			copyMatrix(i,A,n,PD,9);
+		}else{
+			buildPDMatrix(PD,n-i);
+			copyMatrix(i,A,n,PD,n-i);
+		}
+		i+=9;
+	}
+	multiply0(A,A,A,n,n,n);
+	free(PD);
 }
 
 /*
@@ -102,22 +148,24 @@ void printMLCP(real *A,real *b,real *x,int nub,int n)
 	printf("]\n");	
 }
 
-std::vector<int> _sovleInx;
+//std::vector<int> _sovleInx;
 /*
  * 正确性检测
  */
-int testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
+double testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 {
 	real *A,*b,*x,*y;
 	int nub;
-	int count = 0;
+	double dt = 0;
 	verifyC = solveC = 0;
   	initMLCProblem(n,&A,&b,&x,&y);
 	for(int i=0;i<reps;i++){
 		MLCProblem(n,A,b,x,&nub);
+		double t0 = getClock();
 		if(mlcpSolver(A,b,x,nub,n,sovler)){
+			dt += (getClock()-t0);
+			//printf("nub = %d\n",nub);
 			solveC++;
-			count++;
 			if(verifyMLCP(A,b,x,y,nub,n)){
 				//printMLCP(A,b,x,nub,n);
 				verifyC++;
@@ -126,6 +174,7 @@ int testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 				//	printMLCP(A,b,x,nub,n);
 				//}
 			}else{
+				/*
 				printf("==============================\n");
 				printMLCP(A,b,x,nub,n);
 				std::vector<real *> xs;
@@ -135,43 +184,45 @@ int testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 					printMLCP(A,b,xs[0],nub,n);
 				}
 				freeLcpSolve(xs);
+				*/
 			}		
 		}
 	}
 	freeMLCPProblem(A,b,x,y);
-	return count;
+	return dt;
 }
 
 /*
  * 使用遍历解，看看到底有多少有解
  */
-int calcSolveCount(int n,int reps,int &solveC,int &verifyC)
+double calcSolveCount(int n,int reps,int &solveC,int &verifyC)
 {
 	real *A,*b,*x,*y;
 	int nub,k;
-	int count = 0;
+	double dt = 0;
 	verifyC = solveC = 0;
 	std::vector<real *> xs;
   	initMLCProblem(n,&A,&b,&x,&y);
 	for(int i=0;i<reps;i++){
 		MLCProblem(n,A,b,x,&nub);
+		double t0 = getClock();
 		mlcp(A,b,xs,nub,n);
+		dt += (getClock()-t0);
 		if(!xs.empty()){
 			//printMLCP(A,b,x,nub,n);
 			if( verifyMLCP(A,b,xs[0],y,nub,n) )
 				verifyC++;
 			else{
-				printf("mlcp:\n");
-				printMLCP(A,b,xs[0],nub,n);
+			//	printf("mlcp:\n");
+			//	printMLCP(A,b,xs[0],nub,n);
 			}
-			_sovleInx.push_back(i);
+			//_sovleInx.push_back(i);
 			solveC++;
-			count++;
 		}
 		freeLcpSolve(xs);
 	}
 	freeMLCPProblem(A,b,x,y);
-	return count;
+	return dt;
 } 
 /*
  * 检查算法死循环的问题
@@ -220,6 +271,7 @@ int main(int argn,char * argv[])
 {
 	int s;
 	int n = 3;
+	double c;
 	if(argn>1){
 		/*
 		 * 2,4
@@ -237,19 +289,19 @@ int main(int argn,char * argv[])
 		srand(s);
 		int solveC,verifyC;
 		double t0 = getClock();
-		int c = calcSolveCount(n,S,solveC,verifyC);
-		printf("ALL [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
-		printf("use time : %fms\n",1000*(getClock()-t0));
+		c = calcSolveCount(n,S,solveC,verifyC);
+		printf("ALL [%d] - %d-%d/%d\n",n,solveC,verifyC,S);
+		printf("use time : %fms  %fms\n",1000*c,1000*(getClock()-t0));
 		srand(s);
 		t0 = getClock();
 		c = testSovler(LEMKE,n,S,solveC,verifyC);
-		printf("LEMKE [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
-		printf("use time : %fms\n",1000*(getClock()-t0));
+		printf("LEMKE [%d] - %d-%d/%d\n",n,solveC,verifyC,S);
+		printf("use time : %fms  %fms\n",1000*c,1000*(getClock()-t0));
 		srand(s);
 		t0 = getClock();
 		c = testSovler(PIVOT,n,S,solveC,verifyC);
-		printf("PIVOT [%d] - %d-%d-%d/%d\n",n,solveC,verifyC,c,S);
-		printf("use time : %fms\n",1000*(getClock()-t0));
+		printf("PIVOT [%d] - %d-%d/%d\n",n,solveC,verifyC,S);
+		printf("use time : %fms  %fms\n",1000*c,1000*(getClock()-t0));
 	}
 	//test_mlcp_pgs();
 	//test_mlcpSolver();

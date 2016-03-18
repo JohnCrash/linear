@@ -4,3 +4,7 @@ autom4te.cache/
 config.status
 .libs/
 *.lo
+*.o
+*.exe
+*.Plo
+*.Po
