@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#define N 3
+#define NN 3
 
 void disablePrint(int b);
 int printDiffent(const char * s,real * A, real *B);

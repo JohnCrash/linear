@@ -45,7 +45,7 @@ static void printMat(const char * s,real * A,int N)
  */
 static int doSolveN(real *A,real *b,int *N,real * M,real *P,real *L,real *x,int nub,int n)
 {
-	int i,j;
+	int i;
 	/*
 	 * [I,-A]=b ,然后将互补条件加上，挑选出要解的矩阵Mx=b
 	 * 加上A = | -a -b |

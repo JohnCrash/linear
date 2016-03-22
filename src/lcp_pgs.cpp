@@ -89,7 +89,7 @@ static void printGussSolve2(real * A,real *b,int n)
 int lcp_pgs2(real * A,real *b,real *x,int n)
 {
 	int i,j,k;
-	real d,z,c;
+	real d,c;
 	real * y = (real *)malloc(n*sizeof(real));
 	real * AA = (real *)malloc(n*n*sizeof(real));
 	real * bb = (real *)malloc(n*sizeof(real));
@@ -139,7 +139,7 @@ int lcp_pgs2(real * A,real *b,real *x,int n)
 		}
 		//printX(y,n);
 		for(i=0;i<n;i++){
-			y[i] = fmax(0,y[i]);
+			y[i] = (real)fmax(0,y[i]);
 			c = fmax(c,fabs(x[i]-y[i]));
 			x[i] = y[i];
 		}		
@@ -212,7 +212,7 @@ int lcp_pgs(real * A,real *b,real *x,int n,int nMax,real acc)
 			for(j=0;j<n;j++){
 				d += (A[i*n+j]*x[j]);
 			}
-			z = fmax(0,d-b[i]);
+			z = (real)fmax(0,d-b[i]);
 			c = fmax(c,fabs(x[i]-z));
 			x[i] = z;
 		}

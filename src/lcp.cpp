@@ -128,7 +128,7 @@ int lcp(real *A,real *b,std::vector<real *>& xs,int n)
 /*
  * 释放lcp的解
  */
-int freeLcpSolve(std::vector<real *>& xs)
+void freeLcpSolve(std::vector<real *>& xs)
 {
 	for(auto i=xs.begin();i!=xs.end();++i)
 		free( *i );

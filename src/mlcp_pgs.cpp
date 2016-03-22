@@ -55,7 +55,7 @@ int mlcp_pgs(real * A,real *b,real *x,int nub,int n,int nMax,real acc)
 				z = dot-b[i];
 				c = fmax(c,fabs(z));
 			}else{
-				z = fmax(0,dot-b[i]);
+				z = (real)fmax(0,dot-b[i]);
 				c = fmax(c,fabs(x[i]-z));
 			}
 			x[i] = z;

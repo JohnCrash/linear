@@ -11,9 +11,9 @@ void disablePrint(int b)
 int printDiffent(const char * s,real * A, real *B)
 {
 	real v = 0;
-	for (int i = 0; i < N; i++){
-		for (int j = 0; j < N; j++){
-			real s = fabs(A[i*N+j]-B[i*N+j]);
+	for (int i = 0; i < NN; i++){
+		for (int j = 0; j < NN; j++){
+			real s = fabs(A[i*NN+j]-B[i*NN+j]);
 			if (s>v){
 				v = s;
 			}
@@ -27,7 +27,7 @@ int printDiffent(const char * s,real * A, real *B)
 int printDiffent1(const char * s,real * b,real *x)
 {
 	real v = 0;
-	for(int i=0;i<N;i++){
+	for(int i=0;i<NN;i++){
 		real s = fabs(b[i]-x[i]);
 		if(s>v){
 			v=s;
@@ -44,9 +44,9 @@ void printMat(const char * s,real * A)
 		int i, j;
 		if(s)
 			printf("%s\n",s);
-		for (i = 0; i<N; i++){
-			for (j = 0; j<N; j++){
-				printf("%.4f\t", A[i*N + j]);
+		for (i = 0; i<NN; i++){
+			for (j = 0; j<NN; j++){
+				printf("%.4f\t", A[i*NN + j]);
 			}
 			printf("\n");
 		}
@@ -59,7 +59,7 @@ void printVec(const char * s,real *v)
 		return;
 	if(s)
 		printf("%s\n",s);	
-	for(int i=0;i<N;i++){
+	for(int i=0;i<NN;i++){
 		printf("%.4f\t",v[i]);
 	}
 	printf("\n");
@@ -102,22 +102,22 @@ void printMat3(real * P,real * A,real *B,int n)
 
 void copyMatrix(real * des,real * src)
 {
-	memcpy(des,src,N*N*sizeof(real));
+	memcpy(des,src,NN*NN*sizeof(real));
 }
 
 real * makeMatrix()
 {
-	real * A = (real*)malloc(N*N*sizeof(real));
+	real * A = (real*)malloc(NN*NN*sizeof(real));
 	return A;	
 }
 
 real * makeRandMatrix()
 {
 	real * A = makeMatrix();
-	random_matrix(A,N);
-	for (int i = 0; i < N; i++){
-		for (int j = 0; j < N; j++){
-			A[i*N + j] = (int)(A[i*N + j]*10);
+	random_matrix(A,NN);
+	for (int i = 0; i < NN; i++){
+		for (int j = 0; j < NN; j++){
+			A[i*NN + j] = (real)((int)(A[i*NN + j]*10));
 		}
 	}
 	return A;
@@ -127,8 +127,8 @@ real * makeRandSPDMatrix()
 {
 	real * B = makeMatrix();
 	real * A = makeRandMatrix();
-	random_matrix(A,N);
-	multiply0(B,A,A,N,N,N);
+	random_matrix(A,NN);
+	multiply0(B,A,A,NN,NN,NN);
 	free(A);
 	return B;
 }
@@ -139,7 +139,7 @@ real * makeRandMatrixN(int n)
 	random_matrix(A,n);
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < n; j++){
-			A[i*n + j] = (int)(A[i*n + j]*10);
+			A[i*n + j] = (real)((int)(A[i*n + j]*10));
 		}
 	}
 	return A;
@@ -148,13 +148,13 @@ real * makeRandMatrixN(int n)
 real * makeRandSPDMatrixNUB(int nub)
 {
 	real * B = makeRandMatrix();
-	real * A = makeRandMatrixN(N-nub);
-	real * C = makeRandMatrixN(N-nub);
-	random_matrix(A,N-nub);
-	multiply0(C,A,A,N-nub,N-nub,N-nub);
-	for(int i=nub;i<N;i++){
-		for(int j=nub;j<N;j++){
-			B[i*N+j] = C[(i-nub)*N+j-nub];
+	real * A = makeRandMatrixN(NN-nub);
+	real * C = makeRandMatrixN(NN-nub);
+	random_matrix(A,NN-nub);
+	multiply0(C,A,A,NN-nub,NN-nub,NN-nub);
+	for(int i=nub;i<NN;i++){
+		for(int j=nub;j<NN;j++){
+			B[i*NN+j] = C[(i-nub)*NN+j-nub];
 		}
 	}
 	free(A);
@@ -164,26 +164,26 @@ real * makeRandSPDMatrixNUB(int nub)
 
 real * makeRandVec()
 {
-	real * V = (real *)malloc(N*sizeof(real));
-	random_vector(V,N);
-	for(int i = 0; i < N; i++){
-		V[i] = (int)(V[i]*10);
+	real * V = (real *)malloc(NN*sizeof(real));
+	random_vector(V,NN);
+	for(int i = 0; i < NN; i++){
+		V[i] = (real)((int)(V[i]*10));
 	}
 	return V;
 }
 
 real randNegative()
 {
-	return (randomReal()>0.5?1.0:-1.0);
+	return (real)(randomReal()>0.5?1.0:-1.0);
 }
 
 real * makeRandMatrix2()
 {
 	real * A = makeMatrix();
-	random_matrix(A,N);
-	for (int i = 0; i < N; i++){
-		for (int j = 0; j < N; j++){
-			A[i*N + j] = (int)(A[i*N + j]*10)*randNegative();
+	random_matrix(A,NN);
+	for (int i = 0; i < NN; i++){
+		for (int j = 0; j < NN; j++){
+			A[i*NN + j] = (int)(A[i*NN + j]*10)*randNegative();
 		}
 	}
 	return A;
@@ -191,9 +191,9 @@ real * makeRandMatrix2()
 
 real * makeRandVec2()
 {
-	real * V = (real *)malloc(N*sizeof(real));
-	random_vector(V,N);
-	for(int i = 0; i < N; i++){
+	real * V = (real *)malloc(NN*sizeof(real));
+	random_vector(V,NN);
+	for(int i = 0; i < NN; i++){
 		V[i] = (int)(V[i]*10)*randNegative();
 	}
 	return V;

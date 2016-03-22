@@ -23,7 +23,7 @@ int lcp(real *A,real *b,std::vector<real *>& xs,int n);
 int mlcp(real * A,real *b,std::vector<real *>& xs,int nub,int n);
 
 /* 释放数组xs */
-int freeLcpSolve(std::vector<real *>& xs);
+void freeLcpSolve(std::vector<real *>& xs);
 
 /*
  * 使用Gauss-Seidel迭代法解LCP

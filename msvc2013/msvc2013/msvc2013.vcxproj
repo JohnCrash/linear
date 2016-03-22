@@ -41,6 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>linear</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -78,6 +79,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\config.h" />
+    <ClInclude Include="..\..\src\lcp.h" />
+    <ClInclude Include="..\..\src\linear.h" />
+    <ClInclude Include="..\..\src\mflib.h" />
+    <ClInclude Include="..\..\src\misc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\lcp.cpp" />
+    <ClCompile Include="..\..\src\lcp_lemke.cpp" />
+    <ClCompile Include="..\..\src\lcp_pgs.cpp" />
+    <ClCompile Include="..\..\src\lcp_pivot.cpp" />
+    <ClCompile Include="..\..\src\lu.cpp" />
+    <ClCompile Include="..\..\src\matrix.cpp" />
+    <ClCompile Include="..\..\src\misc.cpp" />
+    <ClCompile Include="..\..\src\mlcp.cpp" />
+    <ClCompile Include="..\..\src\mlcp_pgs.cpp" />
+    <ClCompile Include="..\..\src\mlcp_solver.cpp" />
+    <ClCompile Include="..\..\src\mlcp_sor.cpp" />
+    <ClCompile Include="..\..\src\solve.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

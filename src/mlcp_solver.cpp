@@ -11,23 +11,24 @@
 	P[j] = tmp;
  }
 
- //找到最大的主元行
- static int maxPrincipalLine(real *A,int i,int n,int skip)
+ /* 找到最大的主元行 */
+ static int maxPrincipalLine(real *A, int i, int n, int skip)
  {
-	int j,k;
-	real d,m = 0;
-	k = i;
-	for(j=i;j<n;j++){
-		d = fabs(A[j*skip+i]);
-		if(d>m){
-			m = d;
-			k = j;
-		}
-	}
-	return k;
- }
- //交换i和k行
- static int xchangeLine(real *A,int i,int k,int n,int skip)
+	 int j, k;
+	 real d, m = 0;
+	 k = i;
+	 for (j = i; j<n; j++){
+		 d = fabs(A[j*skip + i]);
+		 if (d>m){
+			 m = d;
+			 k = j;
+		 }
+	 }
+	 return k;
+}
+
+ /* 交换i和k行 */
+ static void xchangeLine(real *A,int i,int k,int n,int skip)
  {
 	 int j;
 	 real d;
@@ -54,7 +55,7 @@
 		}
 		d = A[i*skip+i];
 		if( d == 0 )return 0;
-		d = 1.0/d;
+		d = (real)1.0/d;
 		multiply_line(A,d,i,n,skip);
 		A[i*skip+i] = 1;
 		for(j=0;j<n;j++){
@@ -100,7 +101,7 @@ static int pivotNub2(real *A,int *P,int nub,int n,int skip)
 		if(FTEQ(mr,0)){
 			return 0;
 		}
-		real d = 1.0/A[i*skip+i];
+		real d = (real)1.0/A[i*skip+i];
 		multiply_line(A,d,i,n,skip);
 		A[i*skip+i] = 1;
 		for(j=0;j<n;j++){
@@ -139,7 +140,6 @@ static void printNumber(real a)
 int mlcpSolver(real * A,real *b,real *x,int nub,int n,LCPSolver solver)
 {
 	int i,j,skip;
-	int * P;
 	int result = 0;
 	
 	if(nub<0||nub>n)return result;

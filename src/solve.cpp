@@ -114,7 +114,7 @@ int solve_plu(real * P,real * L,real * U,real * b,real *x,int n)
 int solve_gauss_seidel(real * A,real * b,real * x,int n,int c)
 {
 	/* 不进行行交换处理，如果有主元为0直接进行下一个步骤 */
-	int i,j;
+	int i;
 	
 	initial(A,b,n);
 	

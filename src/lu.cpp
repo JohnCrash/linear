@@ -402,7 +402,7 @@ int cholesky(real * A,real *L,int n)
 {
 	int i,j,k;
 	real sum,s;
-	for(k<0;k<n;k++){
+	for (k = 0; k < n; k++){
 		sum=0;
 		for(i=0;i<k;i++){
 			sum += L[k*n+i]*L[k*n+i];

@@ -1,17 +1,20 @@
 #ifndef _LINEAR_H_
 #define _LINEAR_H_
 
+#include "mflib.h"
+#include <math.h>
+
 #define dSINGLE 1
 
 #if defined(dSINGLE)
 #define REAL(x) (x##f)
 typedef float real;
 #define FTACC 0.01f
-	#ifndef FLT_MIN
-	#define FLT_MIN 1.1754943508222875e-38
+	#ifndef HAVE_FLT_MIN
+		#define FLT_MIN 1.1754943508222875e-38
 	#endif
-	#ifndef FLT_MAX
-	#define FLT_MAX 3.4028234663852886e+38
+	#ifndef HAVE_FLT_MAX
+		#define FLT_MAX 3.4028234663852886e+38
 	#endif	
 #else
 #define REAL(x) (x)
@@ -25,9 +28,6 @@ typedef double real;
 	#endif	
 #endif
 
-#define fmax(a,b) ((a)>(b)?(a):(b))
-#define fmin(a,b) ((a)<(b)?(a):(b))
-#define fabs(x) ((x)>0?(x):-(x))
 #define FTEQ(x,y) (fabs(x-y)>FTACC/100?0:1)
 
 typedef long long int64;

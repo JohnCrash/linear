@@ -66,7 +66,7 @@ static int pivot(real *M,int row,int col,int n,int m,int skip)
 	//printf("pivot[%d,%d]\n",row,col);
 	//printM(M,NULL,n+m,skip);	
 	if( d == 0 )return 0;
-	multiply_line(M,1.0/d,row,n,skip);
+	multiply_line(M,(real)1.0/d,row,n,skip);
 	M[row*skip+col] = 1;
 	for(i=0;i<n;i++){
 		if( i != row&&M[i*skip+col]!=0 )
