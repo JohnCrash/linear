@@ -33,12 +33,12 @@ static void test_lu_1()
 	copyMatrix(X, A);
 	printf("test lu\n");
 	printMat("A=",A);
-	lu(A,P, L, N);
+	lu(A,P, L, NN);
 	printMat("U=",A);
 	printMat("L=",L);
 	printMat("P=", P);
-	multiply0(C, P, L, N, N, N);
-	multiply0(P, C, A, N, N, N);
+	multiply0(C, P, L, NN, NN, NN);
+	multiply0(P, C, A, NN, NN, NN);
 	printMat("L*U=",P);
 	printDiffent("A=L*U",X,P);
 	freeMatrix(A);
@@ -55,16 +55,16 @@ static void test_inverse_low_triangle()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	identity(X, N);
+	identity(X, NN);
 	printf("test inverse_low_triangle\n");
-	clearUpperTriangle(A,N);
-	for (int i = 0; i < N; i++)
-		A[i*N + i] = 1;
+	clearUpperTriangle(A,NN);
+	for (int i = 0; i < NN; i++)
+		A[i*NN + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
-	inverse_low_triangle(A,N);
+	inverse_low_triangle(A,NN);
 	printMat("inverse=",A);
-	multiply0(C, A, B, N, N, N);
+	multiply0(C, A, B, NN, NN, NN);
 	printMat("A*A'=",C);	
 	printMat("X=", X);
 	printDiffent("A*A'=I",X, C);
@@ -81,16 +81,16 @@ static void test_inverse_upper_triangle()
 	real * C = makeMatrix();	
 	real * X = makeMatrix();
 
-	identity(X, N);
+	identity(X, NN);
 	printf("test inverse_upper_triangle\n");
-	clearLowerTriangle(A,N);
-	for (int i = 0; i < N; i++)
-		A[i*N + i] = 1;
+	clearLowerTriangle(A,NN);
+	for (int i = 0; i < NN; i++)
+		A[i*NN + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
-	inverse_upper_triangle(A,N);
+	inverse_upper_triangle(A,NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);	
 	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -106,20 +106,20 @@ static void test_inverse_pivoting()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	identity(X, N);
+	identity(X, NN);
 	printf("test inverse_pivoting\n");
-	identity(A, N);
-	for(int i=0;i<N;i++){
-		int m = (int)((N-1)*((real)rand()/(real)RAND_MAX));
-		if(i!=m && m>=0 && m<N){
-			xchangeRaw(A,N,i,m);
+	identity(A, NN);
+	for(int i=0;i<NN;i++){
+		int m = (int)((NN-1)*((real)rand()/(real)RAND_MAX));
+		if(i!=m && m>=0 && m<NN){
+			xchangeRaw(A,NN,i,m);
 		}
 	}
 	copyMatrix(B, A);
 	printMat("A=",A);
-	inverse_pivoting(A, N);
+	inverse_pivoting(A, NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);
 	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -135,15 +135,15 @@ static void test_inverse_diagonal()
 	real * C = makeMatrix();	
 	real * X = makeMatrix();
 
-	identity(X, N);
+	identity(X, NN);
 	printf("test inverse_diagonal\n");
-	clearLowerTriangle(A,N);
-	clearUpperTriangle(A,N);
+	clearLowerTriangle(A,NN);
+	clearUpperTriangle(A,NN);
 	copyMatrix(B,A);
 	printMat("A=",A);
-	inverse_diagonal(A, N);
+	inverse_diagonal(A, NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);
 	printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -197,10 +197,10 @@ static void test_crout_lu()
 	copyMatrix(X, A);
 	printf("test crout_lu\n");
 	printMat("A=",A);
-	crout_lu(A, L, N);
+	crout_lu(A, L, NN);
 	printMat("U=",A);
 	printMat("L=",L);
-	multiply0(C, L, A, N, N, N);
+	multiply0(C, L, A, NN, NN, NN);
 	printMat("L*U=",C);	
 	printDiffent("A=L*U", X, C);
 	freeMatrix(A);
@@ -216,17 +216,17 @@ static void test_cholesky()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	clearUpperTriangle(A,N);
+	clearUpperTriangle(A,NN);
 	copyMatrix(X, A);
 	printMat("X=",X);
 	copyMatrix(C, A);
-	transpose(C,N);
-	multiply0(L,A,C,N,N,N);
+	transpose(C,NN);
+	multiply0(L,A,C,NN,NN,NN);
 	copyMatrix(A,L);
 	printf("test test_cholesky\n");
 	printMat("A=",A);
-	cholesky(A, L, N);
-	clearUpperTriangle(L,N);
+	cholesky(A, L, NN);
+	clearUpperTriangle(L,NN);
 	printMat("L=",L);
 	printDiffent("L", X, L);
 	freeMatrix(A);

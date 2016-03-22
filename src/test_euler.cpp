@@ -28,9 +28,9 @@ real func_0(real t,real A,FormulaParamter s)
 		case DERIVATIVE:
 			return A+1;
 		case SOLVE:
-			return A*pow(M_E,t)-1;
+			return A*pow((real)M_E,(real)t)-1;
 		case INITIAL:
-			return (A+1)/pow(M_E,t);
+			return (A+1)/pow((real)M_E,(real)t);
 	}
 	//assert(0,"error func_0_solve FormulaParamter");
 	return 0;
@@ -45,9 +45,9 @@ real func_1(real t,real A,FormulaParamter s)
 		case DERIVATIVE:
 			return A+t;
 		case SOLVE:
-			return A*pow(M_E,t)-1-t;
+			return A*pow((real)M_E, t) - 1 - t;
 		case INITIAL:
-			return (A+1+t)/pow(M_E,t);
+			return (A+1+t)/pow((real)M_E,t);
 	}
 	//assert(0,"error func_0_solve FormulaParamter");
 	return 0;
@@ -62,9 +62,9 @@ real func_2(real t,real A,FormulaParamter s)
 		case DERIVATIVE:
 			return A*sin(t);
 		case SOLVE:
-			return A*pow(M_E,-cos(t));
+			return A*pow((real)M_E, -cos(t));
 		case INITIAL:
-			return A/pow(M_E,-cos(t));
+			return A / pow((real)M_E, -cos(t));
 	}
 	//assert(0,"error func_0_solve FormulaParamter");
 	return 0;
@@ -142,6 +142,7 @@ real testStep(OdeFormula f,real t0,real x0,real step)
 	k4 = step*f(t0+step,x0+k3,DERIVATIVE);
 	return x0+k1/6+k2/3+k3/3+k4/6;
 }
+
 /*
  * 打印通过欧拉法
  */

@@ -3,6 +3,22 @@
 
 #include "config.h"
 
+#ifdef WIN32
+	#define HAVE_FABS 1
+	#define HAVE_FMAX 1
+	#define HAVE_FMIN 1
+	#define HAVE_FLT_MIN 1
+	#define HAVE_FLT_MAX 1
+
+	#ifdef _DLLEXPORT_
+	#define DYNFUNC __declspec( dllexport )
+	#else
+	#define DYNFUNC __declspec( dllimport )
+	#endif
+#else
+	#define DYNFUNC
+#endif
+
 #ifndef HAVE_FABS
 #define fabs(x) ((x)>0?(x):-(x))
 #endif

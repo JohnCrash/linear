@@ -7,29 +7,29 @@
 
 #define NN 3
 
-void disablePrint(int b);
-int printDiffent(const char * s,real * A, real *B);
-int printDiffent1(const char * s,real * b,real *x);
-void printMat(const char * s,real * A);
-void printMat3(real * P,real * A,real *B,int n);
-void printVec(const char * s,real *v);
-void copyMatrix(real * des,real * src);
-real * makeMatrix();
-real * makeRandMatrix();
-real * makeRandVec();
+DYNFUNC void disablePrint(int b);
+DYNFUNC int printDiffent(const char * s, real * A, real *B);
+DYNFUNC int printDiffent1(const char * s, real * b, real *x);
+DYNFUNC void printMat(const char * s, real * A);
+DYNFUNC void printMat3(real * P, real * A, real *B, int n);
+DYNFUNC void printVec(const char * s, real *v);
+DYNFUNC void copyMatrix(real * des, real * src);
+DYNFUNC real * makeMatrix();
+DYNFUNC real * makeRandMatrix();
+DYNFUNC real * makeRandVec();
 
-real randNegative();
+DYNFUNC real randNegative();
 /*
  * 允许有正负数
  */
-real * makeRandMatrix2();
-real * makeRandVec2();
-real randomReal();
+DYNFUNC real * makeRandMatrix2();
+DYNFUNC real * makeRandVec2();
+DYNFUNC real randomReal();
 
-real * makeRandSPDMatrix();
-real * makeRandSPDMatrixNUB(int nub);
+DYNFUNC real * makeRandSPDMatrix();
+DYNFUNC real * makeRandSPDMatrixNUB(int nub);
 
-void freeMatrix(real * A);
+DYNFUNC void freeMatrix(real * A);
 
-double getClock();
+DYNFUNC double getClock();
 #endif

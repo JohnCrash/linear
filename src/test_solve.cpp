@@ -3,7 +3,7 @@
 
 void printColumn(real *c)
 {
-	for(int i = 0;i<N;i++){
+	for(int i = 0;i<NN;i++){
 		printf("[%d][%.2f]\n",i,c[i]);
 	}
 }
@@ -15,25 +15,25 @@ void test_solve_plu()
 	real * L = makeMatrix(); 
 	real * U = makeMatrix();
 	real * b,*x,*bb;
-	b = (real*)malloc(N*sizeof(real));
-	x = (real*)malloc(N*sizeof(real));
-	bb = (real*)malloc(N*sizeof(real));
+	b = (real*)malloc(NN*sizeof(real));
+	x = (real*)malloc(NN*sizeof(real));
+	bb = (real*)malloc(NN*sizeof(real));
 	copyMatrix(U,A);
-	for(int i = 0;i<N;i++){
+	for(int i = 0;i<NN;i++){
 		b[i] = (int)(randomReal()*20);
 		bb[i] = b[i];
 	}
-	int ret = lu(U,P,L,N);
+	int ret = lu(U,P,L,NN);
 	if(ret){
 		printMat("A:",A);
 		printColumn(b);
-		printMat3(P,L,U,N);
-		ret = solve_plu(P,L,U,b,x,N);
+		printMat3(P,L,U,NN);
+		ret = solve_plu(P,L,U,b,x,NN);
 	}
 	if(ret){
 		printf("solve:\n");
 		printColumn(x);
-		multiply0(b,A,x,N,N,1);
+		multiply0(b,A,x,NN,NN,1);
 		printDiffent1("result:\n",b,bb);
 	}
 	freeMatrix(A);
@@ -51,25 +51,25 @@ void test_solve_crout_plu()
 	real * L = makeMatrix(); 
 	real * U = makeMatrix();
 	real * b,*x,*bb;
-	b = (real*)malloc(N*sizeof(real));
-	x = (real*)malloc(N*sizeof(real));
-	bb = (real*)malloc(N*sizeof(real));
+	b = (real*)malloc(NN*sizeof(real));
+	x = (real*)malloc(NN*sizeof(real));
+	bb = (real*)malloc(NN*sizeof(real));
 	copyMatrix(U,A);
-	for(int i = 0;i<N;i++){
+	for(int i = 0;i<NN;i++){
 		b[i] = (int)(randomReal()*20);
 		bb[i] = b[i];
 	}
-	int ret = crout_plu(U,P,L,N);
+	int ret = crout_plu(U,P,L,NN);
 	if(ret){
 		printMat("A:",A);
 		printColumn(b);
-		printMat3(P,L,U,N);
-		ret = solve_plu(P,L,U,b,x,N);
+		printMat3(P,L,U,NN);
+		ret = solve_plu(P,L,U,b,x,NN);
 	}
 	if(ret){
 		printf("solve:\n");
 		printColumn(x);
-		multiply0(b,A,x,N,N,1);
+		multiply0(b,A,x,NN,NN,1);
 		printDiffent1("result:\n",b,bb);
 	}
 	freeMatrix(A);

@@ -8,13 +8,13 @@ void test_inverse0()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	identity(X, N);
+	identity(X, NN);
 	printf("test inverse0\n");
 	copyMatrix(B, A);
 	printMat("A=", A);
-	inverse(A,C, N);
+	inverse(A,C, NN);
 	printMat("inverse=", C);
-	multiply0(A, B, C, N, N, N);
+	multiply0(A, B, C, NN, NN, NN);
 	printMat("A*A'=", A);
 	printDiffent("A*A'=I", X, A);
 	freeMatrix(A);
@@ -31,13 +31,13 @@ void test_lup()
 	real * X = makeMatrix();
 	real * P = makeMatrix();
 	
-	identity(X, N);
+	identity(X, NN);
 	printf("test crout_plu\n");
 	copyMatrix(B, A);
 	printMat("A=", A);
-	crout_plu(A,P,L,N);
-	multiply0(X, P, L, N, N, N);
-	multiply0(P, X, A, N, N, N);
+	crout_plu(A,P,L,NN);
+	multiply0(X, P, L, NN, NN, NN);
+	multiply0(P, X, A, NN, NN, NN);
 	printMat("A*A'=", P);
 	printDiffent("A*A'=I", B, P);
 	freeMatrix(A);

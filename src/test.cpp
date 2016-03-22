@@ -11,18 +11,18 @@ static int test_lu_1()
 	
 	copyMatrix(X, A);
 	printMat("A=",A);
-	int r = lu(A,P, L, N);
-	if(!r && N<5 ){
+	int r = lu(A,P, L, NN);
+	if(!r && NN<5 ){
 		printf("lu failed\n");
 		disablePrint(0);
-		printMat3(X,L,A,N);
+		printMat3(X,L,A,NN);
 		disablePrint(1);
 	}
 	printMat("U=",A);
 	printMat("L=",L);
 	printMat("P=", P);
-	multiply0(C, P, L, N, N, N);
-	multiply0(P, C, A, N, N, N);
+	multiply0(C, P, L, NN, NN, NN);
+	multiply0(P, C, A, NN, NN, NN);
 	printMat("L*U=",P);
 	int ret = printDiffent("A=L*U",X,P);
 	freeMatrix(A);
@@ -72,15 +72,15 @@ static int test_inverse_low_triangle()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	identity(X, N);
-	clearUpperTriangle(A,N);
-	for (int i = 0; i < N; i++)
-		A[i*N + i] = 1;
+	identity(X, NN);
+	clearUpperTriangle(A,NN);
+	for (int i = 0; i < NN; i++)
+		A[i*NN + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
-	inverse_low_triangle(A,N);
+	inverse_low_triangle(A,NN);
 	printMat("inverse=",A);
-	multiply0(C, A, B, N, N, N);
+	multiply0(C, A, B, NN, NN, NN);
 	printMat("A*A'=",C);	
 	printMat("X=", X);
 	int ret = printDiffent("A*A'=I",X, C);
@@ -98,15 +98,15 @@ static int test_inverse_upper_triangle()
 	real * C = makeMatrix();	
 	real * X = makeMatrix();
 
-	identity(X, N);
-	clearLowerTriangle(A,N);
-	for (int i = 0; i < N; i++)
-		A[i*N + i] = 1;
+	identity(X, NN);
+	clearLowerTriangle(A,NN);
+	for (int i = 0; i < NN; i++)
+		A[i*NN + i] = 1;
 	printMat("A=",A);
 	copyMatrix(B,A);
-	inverse_upper_triangle(A,N);
+	inverse_upper_triangle(A,NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);	
 	int ret = printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -123,19 +123,19 @@ static int test_inverse_pivoting()
 	real * C = makeMatrix();
 	real * X = makeMatrix();
 
-	identity(X, N);
-	identity(A, N);
-	for(int i=0;i<N;i++){
-		int m = (int)((N-1)*((real)rand()/(real)RAND_MAX));
-		if(i!=m && m>=0 && m<N){
-			xchangeRaw(A,N,i,m);
+	identity(X, NN);
+	identity(A, NN);
+	for(int i=0;i<NN;i++){
+		int m = (int)((NN-1)*((real)rand()/(real)RAND_MAX));
+		if(i!=m && m>=0 && m<NN){
+			xchangeRaw(A,NN,i,m);
 		}
 	}
 	copyMatrix(B, A);
 	printMat("A=",A);
-	inverse_pivoting(A, N);
+	inverse_pivoting(A, NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);
 	int ret = printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -152,14 +152,14 @@ static int test_inverse_diagonal()
 	real * C = makeMatrix();	
 	real * X = makeMatrix();
 
-	identity(X, N);
-	clearLowerTriangle(A,N);
-	clearUpperTriangle(A,N);
+	identity(X, NN);
+	clearLowerTriangle(A,NN);
+	clearUpperTriangle(A,NN);
 	copyMatrix(B,A);
 	printMat("A=",A);
-	inverse_diagonal(A, N);
+	inverse_diagonal(A, NN);
 	printMat("inverse=",A);
-	multiply0(C, B, A, N, N, N);
+	multiply0(C, B, A, NN, NN, NN);
 	printMat("A*A'=",C);
 	int ret = printDiffent("A*A'=I", X, C);
 	freeMatrix(A);
@@ -212,16 +212,16 @@ static int test_crout_lu()
 
 	copyMatrix(X, A);
 	printMat("A=",A);
-	int r = crout_lu(A, L, N);
-	if(!r && N<5 ){
+	int r = crout_lu(A, L, NN);
+	if(!r && NN<5 ){
 		printf("crout_lu failed\n");
 		disablePrint(0);
-		printMat3(X,L,A,N);
+		printMat3(X,L,A,NN);
 		disablePrint(1);
 	}	
 	printMat("U=",A);
 	printMat("L=",L);
-	multiply0(C, L, A, N, N, N);
+	multiply0(C, L, A, NN, NN, NN);
 	printMat("L*U=",C);	
 	int ret = printDiffent("A=L*U", X, C);
 	freeMatrix(A);
@@ -241,11 +241,11 @@ static int test_crout_plu()
 
 	copyMatrix(X, A);
 	printMat("A=",A);
-	int r = crout_plu(A, P,L, N);
-	if(!r && N<5 ){
+	int r = crout_plu(A, P,L, NN);
+	if(!r && NN<5 ){
 		printf("crout_plu failed\n");
 		disablePrint(0);
-		printMat3(X,L,A,N);
+		printMat3(X,L,A,NN);
 		disablePrint(1);
 	}	
 	printMat("U=",A);
@@ -254,8 +254,8 @@ static int test_crout_plu()
 //	multiply0(C, L, A, N, N, N);
 //	multiply0(A, C, P, N, N, N);
 	
-	multiply0(C, P, L, N, N, N);
-	multiply0(P, C, A, N, N, N);	
+	multiply0(C, P, L, NN, NN, NN);
+	multiply0(P, C, A, NN, NN, NN);	
 	copyMatrix(A,P);
 	
 	printMat("L*U=",A);	
