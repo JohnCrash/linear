@@ -8,3 +8,4 @@ config.status
 *.exe
 *.Plo
 *.Po
+*.obj
