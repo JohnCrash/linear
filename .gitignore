@@ -9,3 +9,6 @@ config.status
 *.Plo
 *.Po
 *.obj
+*.tlog
+*.pdb
+*.idb
