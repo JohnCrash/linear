@@ -136,8 +136,8 @@ real midpointStep2(OdeFormula f,real t0,real x0,real step)
 real testStep(OdeFormula f,real t0,real x0,real step)
 {
 	real k1,k2,k3,k4;
-	k1 = step*f(t0,x0,DERIVATIVE); //欧拉法
-	k2 = step*f(t0+step/2,x0+k1/2,DERIVATIVE); //中点法
+	k1 = step*f(t0,x0,DERIVATIVE);
+	k2 = step*f(t0+step/2,x0+k1/2,DERIVATIVE);
 	k3 = step*f(t0+step/2,x0+k2/2,DERIVATIVE);
 	k4 = step*f(t0+step,x0+k3,DERIVATIVE);
 	return x0+k1/6+k2/3+k3/3+k4/6;
