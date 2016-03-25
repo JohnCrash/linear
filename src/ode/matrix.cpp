@@ -20,10 +20,9 @@
  *                                                                       *
  *************************************************************************/
 
-#include <ode/common.h>
 #include "config.h"
-#include "matrix.h"
-#include "util.h"
+#include "ode/matrix.h"
+#include "ode/util.h"
 
 // misc defines
 #define ALLOCA dALLOCA16

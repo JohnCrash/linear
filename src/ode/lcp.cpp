@@ -108,14 +108,10 @@ rows/columns and manipulate C.
 
 */
 
-#include <ode/common.h>
-#include <ode/misc.h>
-#include <ode/timer.h>		// for testing
 #include "config.h"
-#include "matrix.h"
-#include "lcp_ode.h"
-#include "mat.h"		// for testing
-#include "util.h"
+#include "ode/matrix.h"
+#include "ode/lcp.h"
+#include "ode/mat.h"		// for testing
 
 //***************************************************************************
 // code generation parameters

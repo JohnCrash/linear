@@ -27,7 +27,7 @@
 #define _ODE_MAT_H_
 
 #include "linear.h"
-
+#include <stdio.h>
 
 class dMatrix {
     int n,m;		// matrix dimension, n,m >= 0

@@ -29,7 +29,7 @@
 #define _ODE__PRIVATE_MATRIX_H_
 
 
-#include <ode/matrix.h>
+#include "linear.h"
 
 
 #ifdef __cplusplus

@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+#define ODE_PURE_INLINE inline
 #ifdef WIN32
 	#define HAVE_FABS 1
 	#define HAVE_FMAX 1
