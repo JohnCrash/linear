@@ -9,6 +9,7 @@
 #if defined(dSINGLE)
 #define REAL(x) (x##f)
 typedef float real;
+typedef float dReal;
 #define FTACC 0.01f
 	#ifndef HAVE_FLT_MIN
 		#define FLT_MIN 1.1754943508222875e-38
@@ -19,6 +20,7 @@ typedef float real;
 #else
 #define REAL(x) (x)
 typedef double real;
+typedef double dReal;
 #define FTACC 0.0001
 	#ifndef FLT_MIN
 	#define FLT_MIN 2.2250738585072014e-308

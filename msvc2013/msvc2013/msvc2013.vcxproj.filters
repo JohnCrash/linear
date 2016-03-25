@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\ode">
+      <UniqueIdentifier>{0c6589b0-f497-4a40-b2eb-f765b9b855a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ode">
+      <UniqueIdentifier>{c96a7ae5-7c9f-4d3b-8b88-0649f74ec4a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\config.h">
@@ -29,6 +35,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\mflib.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ode\lcp.h">
+      <Filter>头文件\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ode\mat.h">
+      <Filter>头文件\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ode\matrix.h">
+      <Filter>头文件\ode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +82,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\solve.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\fastdot.c">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\fastldlt.c">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\fastlsolve.c">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\fastltsolve.c">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\lcp.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\mat.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\matrix.cpp">
+      <Filter>源文件\ode</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

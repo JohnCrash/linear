@@ -11,20 +11,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{026EB0C5-26F2-4437-BD79-C6B23E68B5A5}</ProjectGuid>
+    <ProjectGuid>{421B1F34-8D6D-4EC2-AA43-C72FCECF0543}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>msvc2013</RootNamespace>
-    <ProjectName>linear</ProjectName>
+    <RootNamespace>test_lcp</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -42,7 +41,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>linear</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -53,12 +51,11 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MSVC2013_EXPORTS;_DLLEXPORT_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -70,46 +67,23 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;MSVC2013_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\config.h" />
-    <ClInclude Include="..\..\src\lcp.h" />
-    <ClInclude Include="..\..\src\linear.h" />
-    <ClInclude Include="..\..\src\mflib.h" />
-    <ClInclude Include="..\..\src\misc.h" />
-    <ClInclude Include="..\..\src\ode\lcp.h" />
-    <ClInclude Include="..\..\src\ode\mat.h" />
-    <ClInclude Include="..\..\src\ode\matrix.h" />
+    <ClCompile Include="..\..\src\test_lcp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\lcp.cpp" />
-    <ClCompile Include="..\..\src\lcp_lemke.cpp" />
-    <ClCompile Include="..\..\src\lcp_pgs.cpp" />
-    <ClCompile Include="..\..\src\lcp_pivot.cpp" />
-    <ClCompile Include="..\..\src\lu.cpp" />
-    <ClCompile Include="..\..\src\matrix.cpp" />
-    <ClCompile Include="..\..\src\misc.cpp" />
-    <ClCompile Include="..\..\src\mlcp.cpp" />
-    <ClCompile Include="..\..\src\mlcp_pgs.cpp" />
-    <ClCompile Include="..\..\src\mlcp_solver.cpp" />
-    <ClCompile Include="..\..\src\mlcp_sor.cpp" />
-    <ClCompile Include="..\..\src\ode\fastdot.c" />
-    <ClCompile Include="..\..\src\ode\fastldlt.c" />
-    <ClCompile Include="..\..\src\ode\fastlsolve.c" />
-    <ClCompile Include="..\..\src\ode\fastltsolve.c" />
-    <ClCompile Include="..\..\src\ode\lcp.cpp" />
-    <ClCompile Include="..\..\src\ode\mat.cpp" />
-    <ClCompile Include="..\..\src\ode\matrix.cpp" />
-    <ClCompile Include="..\..\src\solve.cpp" />
+    <ProjectReference Include="..\msvc2013\msvc2013.vcxproj">
+      <Project>{026eb0c5-26f2-4437-bd79-c6b23e68b5a5}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
