@@ -30,7 +30,7 @@
 
 
 #include "linear.h"
-
+#include "ode/common.h"
 
 #ifdef __cplusplus
 

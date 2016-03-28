@@ -20,44 +20,76 @@
  *                                                                       *
  *************************************************************************/
 
-/*
+#include <ode/odeconfig.h>
+#include <ode/memory.h>
+#include <ode/error.h>
+#include "config.h"
 
-given (A,b,lo,hi), solve the LCP problem: A*x = b+w, where each x(i),w(i)
-satisfies one of
-    (1) x = lo, w >= 0
-    (2) x = hi, w <= 0
-    (3) lo < x < hi, w = 0
-A is a matrix of dimension n*n, everything else is a vector of size n*1.
-lo and hi can be +/- dInfinity as needed. the first `nub' variables are
-unbounded, i.e. hi and lo are assumed to be +/- dInfinity.
 
-we restrict lo(i) <= 0 and hi(i) >= 0.
+static dAllocFunction *allocfn = 0;
+static dReallocFunction *reallocfn = 0;
+static dFreeFunction *freefn = 0;
 
-the original data (A,b) may be modified by this function.
-
-if the `findex' (friction index) parameter is nonzero, it points to an array
-of index values. in this case constraints that have findex[i] >= 0 are
-special. all non-special constraints are solved for, then the lo and hi values
-for the special constraints are set:
-    hi[i] = abs( hi[i] * x[findex[i]] )
-    lo[i] = -hi[i]
-and the solution continues. this mechanism allows a friction approximation
-to be implemented. the first `nub' variables are assumed to have findex < 0.
-
+#ifdef __MINGW32__
+/* 
+this is a guard against AC_FUNC_MALLOC and AC_FUNC_REALLOC
+which break cross compilation, no issues in native MSYS.
 */
-
-
-#ifndef _ODE_LCP_H_
-#define _ODE_LCP_H_
-#include "linear.h"
-#include "ode/common.h"
-
-class dxWorldProcessMemArena;
-
-void dSolveLCP (dxWorldProcessMemArena *memarena, 
-                int n, dReal *A, dReal *x, dReal *b, dReal *w,
-                int nub, dReal *lo, dReal *hi, int *findex);
-
-size_t dEstimateSolveLCPMemoryReq(int n, bool outer_w_avail);
-
+#undef malloc
+#undef realloc
 #endif
+
+void dSetAllocHandler (dAllocFunction *fn)
+{
+    allocfn = fn;
+}
+
+
+void dSetReallocHandler (dReallocFunction *fn)
+{
+    reallocfn = fn;
+}
+
+
+void dSetFreeHandler (dFreeFunction *fn)
+{
+    freefn = fn;
+}
+
+
+dAllocFunction *dGetAllocHandler()
+{
+    return allocfn;
+}
+
+
+dReallocFunction *dGetReallocHandler()
+{
+    return reallocfn;
+}
+
+
+dFreeFunction *dGetFreeHandler()
+{
+    return freefn;
+}
+
+
+void * dAlloc (size_t size)
+{
+    if (allocfn) return allocfn (size); else return malloc (size);
+}
+
+
+void * dRealloc (void *ptr, size_t oldsize, size_t newsize)
+{
+    if (reallocfn) return reallocfn (ptr,oldsize,newsize);
+    else return realloc (ptr,newsize);
+}
+
+
+void dFree (void *ptr, size_t size)
+{
+    if (!ptr) return;
+    if (freefn) freefn (ptr,size); else free (ptr);
+}

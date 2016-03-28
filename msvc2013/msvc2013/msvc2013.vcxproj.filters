@@ -45,6 +45,15 @@
     <ClInclude Include="..\..\src\ode\matrix.h">
       <Filter>头文件\ode</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\ode\common.h">
+      <Filter>头文件\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ode\error.h">
+      <Filter>头文件\ode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ode\memory.h">
+      <Filter>头文件\ode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lcp.cpp">
@@ -102,6 +111,15 @@
       <Filter>源文件\ode</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ode\matrix.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\error.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\memory.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\misc.cpp">
       <Filter>源文件\ode</Filter>
     </ClCompile>
   </ItemGroup>

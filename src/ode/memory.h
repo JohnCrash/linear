@@ -20,44 +20,40 @@
  *                                                                       *
  *************************************************************************/
 
-/*
+/* this comes from the `reuse' library. copy any changes back to the source */
 
-given (A,b,lo,hi), solve the LCP problem: A*x = b+w, where each x(i),w(i)
-satisfies one of
-    (1) x = lo, w >= 0
-    (2) x = hi, w <= 0
-    (3) lo < x < hi, w = 0
-A is a matrix of dimension n*n, everything else is a vector of size n*1.
-lo and hi can be +/- dInfinity as needed. the first `nub' variables are
-unbounded, i.e. hi and lo are assumed to be +/- dInfinity.
+#ifndef _ODE_MEMORY_H_
+#define _ODE_MEMORY_H_
 
-we restrict lo(i) <= 0 and hi(i) >= 0.
+#include <ode/odeconfig.h>
 
-the original data (A,b) may be modified by this function.
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-if the `findex' (friction index) parameter is nonzero, it points to an array
-of index values. in this case constraints that have findex[i] >= 0 are
-special. all non-special constraints are solved for, then the lo and hi values
-for the special constraints are set:
-    hi[i] = abs( hi[i] * x[findex[i]] )
-    lo[i] = -hi[i]
-and the solution continues. this mechanism allows a friction approximation
-to be implemented. the first `nub' variables are assumed to have findex < 0.
+/* function types to allocate and free memory */
+typedef void * dAllocFunction (size_t size);
+typedef void * dReallocFunction (void *ptr, size_t oldsize, size_t newsize);
+typedef void dFreeFunction (void *ptr, size_t size);
 
-*/
+/* set new memory management functions. if fn is 0, the default handlers are
+ * used. */
+ODE_API void dSetAllocHandler (dAllocFunction *fn);
+ODE_API void dSetReallocHandler (dReallocFunction *fn);
+ODE_API void dSetFreeHandler (dFreeFunction *fn);
 
+/* get current memory management functions */
+ODE_API dAllocFunction *dGetAllocHandler (void);
+ODE_API dReallocFunction *dGetReallocHandler (void);
+ODE_API dFreeFunction *dGetFreeHandler (void);
 
-#ifndef _ODE_LCP_H_
-#define _ODE_LCP_H_
-#include "linear.h"
-#include "ode/common.h"
+/* allocate and free memory. */
+ODE_API void * dAlloc (size_t size);
+ODE_API void * dRealloc (void *ptr, size_t oldsize, size_t newsize);
+ODE_API void dFree (void *ptr, size_t size);
 
-class dxWorldProcessMemArena;
-
-void dSolveLCP (dxWorldProcessMemArena *memarena, 
-                int n, dReal *A, dReal *x, dReal *b, dReal *w,
-                int nub, dReal *lo, dReal *hi, int *findex);
-
-size_t dEstimateSolveLCPMemoryReq(int n, bool outer_w_avail);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

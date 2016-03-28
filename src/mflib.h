@@ -2,8 +2,11 @@
 #define _MFLIB_H_
 
 #include "config.h"
+#include <malloc.h>
+/*
+ * 下面代码来至于ode
+ */
 
-#define ODE_PURE_INLINE inline
 #ifdef WIN32
 	#define HAVE_FABS 1
 	#define HAVE_FMAX 1

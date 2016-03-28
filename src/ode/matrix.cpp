@@ -21,8 +21,8 @@
  *************************************************************************/
 
 #include "config.h"
+#include "ode/common.h"
 #include "ode/matrix.h"
-#include "ode/util.h"
 
 // misc defines
 #define ALLOCA dALLOCA16
@@ -95,7 +95,7 @@ void _dMultiply2 (dReal *A, const dReal *B, const dReal *C, int p, int q, int r)
 }
 
 
-int _dFactorCholesky (dReal *A, int n, void *tmpbuf/*[n]*/)
+int _dFactorCholesky (dReal *A, int n, void *tmpbuf)
 {
     dAASSERT (n > 0 && A);
     bool failure = false;

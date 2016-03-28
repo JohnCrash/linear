@@ -27,6 +27,7 @@
 #define _ODE_MAT_H_
 
 #include "linear.h"
+#include "ode/common.h"
 #include <stdio.h>
 
 class dMatrix {
