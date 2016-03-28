@@ -44,7 +44,7 @@
 
 //#define ODE_API DYNFUNC
 /* ================== */
-
+#define dTHREADING_INTF_DISABLED 1
 #ifdef __cplusplus
 extern "C" {
 #endif

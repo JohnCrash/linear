@@ -20,37 +20,54 @@
  *                                                                       *
  *************************************************************************/
 
-/* this comes from the `reuse' library. copy any changes back to the source */
+#ifndef _ODE_TIMER_H_
+#define _ODE_TIMER_H_
 
-#ifndef _ODE_MEMORY_H_
-#define _ODE_MEMORY_H_
-#include "linear.h"
-#include "ode/odeconfig.h"
+#include <ode/odeconfig.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* function types to allocate and free memory */
-typedef void * dAllocFunction (size_t size);
-typedef void * dReallocFunction (void *ptr, size_t oldsize, size_t newsize);
-typedef void dFreeFunction (void *ptr, size_t size);
 
-/* set new memory management functions. if fn is 0, the default handlers are
- * used. */
-ODE_API void dSetAllocHandler (dAllocFunction *fn);
-ODE_API void dSetReallocHandler (dReallocFunction *fn);
-ODE_API void dSetFreeHandler (dFreeFunction *fn);
+/* stop watch objects */
 
-/* get current memory management functions */
-ODE_API dAllocFunction *dGetAllocHandler (void);
-ODE_API dReallocFunction *dGetReallocHandler (void);
-ODE_API dFreeFunction *dGetFreeHandler (void);
+typedef struct dStopwatch {
+  double time;			/* total clock count */
+  unsigned long cc[2];		/* clock count since last `start' */
+} dStopwatch;
 
-/* allocate and free memory. */
-ODE_API void * dAlloc (size_t size);
-ODE_API void * dRealloc (void *ptr, size_t oldsize, size_t newsize);
-ODE_API void dFree (void *ptr, size_t size);
+ODE_API void dStopwatchReset (dStopwatch *);
+ODE_API void dStopwatchStart (dStopwatch *);
+ODE_API void dStopwatchStop  (dStopwatch *);
+ODE_API double dStopwatchTime (dStopwatch *);	/* returns total time in secs */
+
+
+/* code timers */
+
+ODE_API void dTimerStart (const char *description);	/* pass a static string here */
+ODE_API void dTimerNow (const char *description);	/* pass a static string here */
+ODE_API void dTimerEnd(void);
+
+/* print out a timer report. if `average' is nonzero, print out the average
+ * time for each slot (this is only meaningful if the same start-now-end
+ * calls are being made repeatedly.
+ */
+ODE_API void dTimerReport (FILE *fout, int average);
+
+
+/* resolution */
+
+/* returns the timer ticks per second implied by the timing hardware or API.
+ * the actual timer resolution may not be this great.
+ */
+ODE_API double dTimerTicksPerSecond(void);
+
+/* returns an estimate of the actual timer resolution, in seconds. this may
+ * be greater than 1/ticks_per_second.
+ */
+ODE_API double dTimerResolution(void);
+
 
 #ifdef __cplusplus
 }

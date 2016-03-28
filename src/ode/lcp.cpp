@@ -109,9 +109,11 @@ rows/columns and manipulate C.
 */
 
 #include "config.h"
+#include "ode/util.h"
 #include "ode/matrix.h"
 #include "ode/lcp.h"
 #include "ode/mat.h"		// for testing
+#include "ode/timer.h"
 
 //***************************************************************************
 // code generation parameters

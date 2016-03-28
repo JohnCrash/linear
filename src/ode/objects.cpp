@@ -20,40 +20,58 @@
  *                                                                       *
  *************************************************************************/
 
-/* this comes from the `reuse' library. copy any changes back to the source */
+// Object, body, and world methods.
 
-#ifndef _ODE_MEMORY_H_
-#define _ODE_MEMORY_H_
-#include "linear.h"
-#include "ode/odeconfig.h"
 
-#ifdef __cplusplus
-extern "C" {
+#include "ode/common.h"
+#include "ode/objects.h"
+#include "config.h"
+#include "matrix.h"
+#include "objects.h"
+#include "util.h"
+
+
+#define dWORLD_DEFAULT_GLOBAL_ERP REAL(0.2)
+
+#if defined(dSINGLE)
+#define dWORLD_DEFAULT_GLOBAL_CFM REAL(1e-5)
+#elif defined(dDOUBLE)
+#define dWORLD_DEFAULT_GLOBAL_CFM REAL(1e-10)
+#else
+#error dSINGLE or dDOUBLE must be defined
 #endif
 
-/* function types to allocate and free memory */
-typedef void * dAllocFunction (size_t size);
-typedef void * dReallocFunction (void *ptr, size_t oldsize, size_t newsize);
-typedef void dFreeFunction (void *ptr, size_t size);
-
-/* set new memory management functions. if fn is 0, the default handlers are
- * used. */
-ODE_API void dSetAllocHandler (dAllocFunction *fn);
-ODE_API void dSetReallocHandler (dReallocFunction *fn);
-ODE_API void dSetFreeHandler (dFreeFunction *fn);
-
-/* get current memory management functions */
-ODE_API dAllocFunction *dGetAllocHandler (void);
-ODE_API dReallocFunction *dGetReallocHandler (void);
-ODE_API dFreeFunction *dGetFreeHandler (void);
-
-/* allocate and free memory. */
-ODE_API void * dAlloc (size_t size);
-ODE_API void * dRealloc (void *ptr, size_t oldsize, size_t newsize);
-ODE_API void dFree (void *ptr, size_t size);
-
-#ifdef __cplusplus
+dObject::~dObject()
+{
+    // Do nothing - a virtual destructor
 }
-#endif
 
-#endif
+
+dxAutoDisable::dxAutoDisable(void *):
+    idle_time(REAL(0.0)),
+    idle_steps(10),
+    average_samples(1), // Default is 1 sample => Instantaneous velocity
+    linear_average_threshold(REAL(0.01)*REAL(0.01)), // (magnitude squared)
+    angular_average_threshold(REAL(0.01)*REAL(0.01)) // (magnitude squared)
+{
+}
+
+dxDampingParameters::dxDampingParameters(void *):
+    linear_scale(REAL(0.0)),
+    angular_scale(REAL(0.0)),
+    linear_threshold(REAL(0.01) * REAL(0.01)),
+    angular_threshold(REAL(0.01) * REAL(0.01))
+{
+}
+
+dxQuickStepParameters::dxQuickStepParameters(void *):
+    num_iterations(20),
+    w(REAL(1.3))
+{
+}
+
+dxContactParameters::dxContactParameters(void *):
+    max_vel(dInfinity),
+    min_depth(REAL(0.0))
+{
+}

@@ -53,7 +53,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MSVC2013_EXPORTS;_DLLEXPORT_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MSVC2013_EXPORTS;_DLLEXPORT_;ODE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -92,6 +92,9 @@
     <ClInclude Include="..\..\src\ode\mat.h" />
     <ClInclude Include="..\..\src\ode\matrix.h" />
     <ClInclude Include="..\..\src\ode\memory.h" />
+    <ClInclude Include="..\..\src\ode\objects.h" />
+    <ClInclude Include="..\..\src\ode\timer.h" />
+    <ClInclude Include="..\..\src\ode\util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lcp.cpp" />
@@ -115,6 +118,9 @@
     <ClCompile Include="..\..\src\ode\matrix.cpp" />
     <ClCompile Include="..\..\src\ode\memory.cpp" />
     <ClCompile Include="..\..\src\ode\misc.cpp" />
+    <ClCompile Include="..\..\src\ode\objects.cpp" />
+    <ClCompile Include="..\..\src\ode\timer.cpp" />
+    <ClCompile Include="..\..\src\ode\util.cpp" />
     <ClCompile Include="..\..\src\solve.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
