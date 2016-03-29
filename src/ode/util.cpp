@@ -32,6 +32,11 @@
 #define dMIN(A,B)  ((A)>(B) ? (B) : (A))
 #define dMAX(A,B)  ((B)>(A) ? (B) : (A))
 
+//****************************************************************************
+// Malloc based world stepping memory manager
+
+/*extern */dxWorldProcessMemoryManager g_WorldProcessMallocMemoryManager(dAlloc, dRealloc, dFree);
+/*extern */dxWorldProcessMemoryReserveInfo g_WorldProcessDefaultReserveInfo(dWORLDSTEP_RESERVEFACTOR_DEFAULT, dWORLDSTEP_RESERVESIZE_DEFAULT);
 
 //****************************************************************************
 // World processing context management

@@ -214,8 +214,4 @@ void dxFreeTemporaryWorldProcessMemArena(dxWorldProcessMemArena *arena);
 #define END_STATE_SAVE(memarena, state) memarena->RestoreState(state)
 extern dxWorldProcessMemoryManager g_WorldProcessMallocMemoryManager;
 extern dxWorldProcessMemoryReserveInfo g_WorldProcessDefaultReserveInfo;
-
-dxWorldProcessMemoryManager g_WorldProcessMallocMemoryManager(dAlloc, dRealloc, dFree);
-dxWorldProcessMemoryReserveInfo g_WorldProcessDefaultReserveInfo(dWORLDSTEP_RESERVEFACTOR_DEFAULT, dWORLDSTEP_RESERVESIZE_DEFAULT);
-
 #endif

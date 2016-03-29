@@ -115,7 +115,7 @@
     <ClCompile Include="..\..\src\ode\fastltsolve.c" />
     <ClCompile Include="..\..\src\ode\lcp.cpp" />
     <ClCompile Include="..\..\src\ode\mat.cpp" />
-    <ClCompile Include="..\..\src\ode\matrix.cpp" />
+    <ClCompile Include="..\..\src\ode\matrix2.cpp" />
     <ClCompile Include="..\..\src\ode\memory.cpp" />
     <ClCompile Include="..\..\src\ode\misc.cpp" />
     <ClCompile Include="..\..\src\ode\objects.cpp" />
