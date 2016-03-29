@@ -36,7 +36,7 @@ TODO
 #include "util.h"
 
 // misc defines
-#define ALLOCA dALLOCA16
+//#define ALLOCA dALLOCA16
 
 //****************************************************************************
 // implementation for windows based on the multimedia performance counter.

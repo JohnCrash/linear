@@ -198,7 +198,7 @@ double testSovler(LCPSolver sovler,int n,int reps,int &solveC,int &verifyC)
 double calcSolveCount(int n,int reps,int &solveC,int &verifyC)
 {
 	real *A,*b,*x,*y;
-	int nub,k;
+	int nub;
 	double dt = 0;
 	verifyC = solveC = 0;
 	std::vector<real *> xs;

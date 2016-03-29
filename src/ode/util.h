@@ -22,9 +22,10 @@
 
 #ifndef _ODE_UTIL_H_
 #define _ODE_UTIL_H_
-
+#include "ode/common.h"
 #include "ode/objects.h"
 #include "ode/memory.h"
+
 #include <malloc.h>
 
 /* the efficient alignment. most platforms align data structures to some
@@ -36,9 +37,9 @@
  * a (very) small amount of memory. NOTE: this number must be a power of
  * two. this is set to 16 by default.
  */
-#ifndef EFFICIENT_ALIGNMENT
-#define EFFICIENT_ALIGNMENT 16
-#endif
+//#ifndef EFFICIENT_ALIGNMENT
+//#define EFFICIENT_ALIGNMENT 16
+//#endif
 
 //****************************************************************************
 // Malloc based world stepping memory manager
@@ -48,15 +49,15 @@
 
 /* round something up to be a multiple of the EFFICIENT_ALIGNMENT */
 
-#define dEFFICIENT_SIZE(x) (((x)+(EFFICIENT_ALIGNMENT-1)) & ~((size_t)(EFFICIENT_ALIGNMENT-1)))
+//#define dEFFICIENT_SIZE(x) (((x)+(EFFICIENT_ALIGNMENT-1)) & ~((size_t)(EFFICIENT_ALIGNMENT-1)))
 #define dEFFICIENT_PTR(p) ((void *)dEFFICIENT_SIZE((size_t)(p)))
 #define dOFFSET_EFFICIENTLY(p, b) ((void *)((size_t)(p) + dEFFICIENT_SIZE(b)))
 
 /* alloca aligned to the EFFICIENT_ALIGNMENT. note that this can waste
  * up to 15 bytes per allocation, depending on what alloca() returns.
  */
-#define dALLOCA16(n) \
-    dEFFICIENT_PTR(alloca((n)+(EFFICIENT_ALIGNMENT)))
+//#define dALLOCA16(n) \
+//    dEFFICIENT_PTR(alloca((n)+(EFFICIENT_ALIGNMENT)))
 
 
 #ifndef SIZE_MAX

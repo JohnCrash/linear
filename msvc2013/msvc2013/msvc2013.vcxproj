@@ -117,7 +117,7 @@
     <ClCompile Include="..\..\src\ode\mat.cpp" />
     <ClCompile Include="..\..\src\ode\matrix2.cpp" />
     <ClCompile Include="..\..\src\ode\memory.cpp" />
-    <ClCompile Include="..\..\src\ode\misc.cpp" />
+    <ClCompile Include="..\..\src\ode\misc2.cpp" />
     <ClCompile Include="..\..\src\ode\objects.cpp" />
     <ClCompile Include="..\..\src\ode\timer.cpp" />
     <ClCompile Include="..\..\src\ode\util.cpp" />

@@ -125,9 +125,6 @@
     <ClCompile Include="..\..\src\ode\memory.cpp">
       <Filter>源文件\ode</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ode\misc.cpp">
-      <Filter>源文件\ode</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ode\util.cpp">
       <Filter>源文件\ode</Filter>
     </ClCompile>
@@ -138,6 +135,9 @@
       <Filter>源文件\ode</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ode\matrix2.cpp">
+      <Filter>源文件\ode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ode\misc2.cpp">
       <Filter>源文件\ode</Filter>
     </ClCompile>
   </ItemGroup>
